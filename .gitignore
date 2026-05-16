@@ -1,0 +1,34 @@
+# Bulk / cached data — fetchers re-create on demand
+data/raw/
+data/*.nc
+data/*.netcdf
+data/*.h5
+data/*.parquet
+data/*.zip
+data/*.tmp
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# Wolfram
+*.nb~
+*.bak
+.WolframKernelHistory
+$Failed.txt
+
+# Built artefacts that are large or regeneratable — selectively committed
+# (we DO commit final community/*.nb and community/*.pdf intentionally)
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/
+*.swp
