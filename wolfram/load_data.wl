@@ -18,19 +18,18 @@ DataDirectory[] := FileNameJoin[{
    "data"
 }];
 
-iso2Date[s_String] := DateObject[StringSplit[s, "-"] // ToExpression];
-
-LoadNino34[] := Module[{path, csv, hdr, rows},
+LoadNino34[] := Module[{path, csv, hdr, rows, ys, ms},
    path = FileNameJoin[{DataDirectory[], "nino34_monthly.csv"}];
    csv = Import[path, "CSV"];
    hdr = csv[[1]];
    rows = csv[[2 ;;]];
-   (* columns: year, month, date(ISO), sst_anom *)
+   ys = rows[[All, 1]];
+   ms = rows[[All, 2]];
    <|
-     "year"   -> rows[[All, 1]],
-     "month"  -> rows[[All, 2]],
-     "date"   -> iso2Date /@ rows[[All, 3]],
-     "anom"   -> rows[[All, 4]] // N,
+     "year"   -> ys,
+     "month"  -> ms,
+     "date"   -> MapThread[DateObject[{#1, #2, 15}, "Day"] &, {ys, ms}],
+     "anom"   -> N @ rows[[All, 4]],
      "header" -> hdr
    |>
 ];
