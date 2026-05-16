@@ -39,20 +39,24 @@ notoriously unreliable.
 
 ## Repository layout
 
-| path           | what lives there                                              |
-| ---            | ---                                                           |
-| `src/`         | Python fetchers for the live NOAA / IRI feeds                 |
-| `data/`        | cached raw + tidy CSV / JSON pulled by `src/` (git-ignored bulk) |
-| `wolfram/`     | `.wls` scripts implementing the toy models + plots            |
-| `community/`   | the buildable Wolfram Community notebook + its `.wls` source  |
-| `docs/images/` | rendered figures referenced from the notebook and the README  |
-| `tests/`       | sanity checks (data shape, model conservation laws)           |
+The entire pipeline is pure Wolfram Language — no Python, no other runtime.
+
+| path                  | what lives there                                                       |
+| ---                   | ---                                                                    |
+| `wolfram/fetch_*.wls` | live data fetchers (PSL Niño 3.4, CPC ONI, IRI plume, CPC discussion)  |
+| `wolfram/*.wls`       | toy-model implementations and figure renderers                         |
+| `wolfram/*.wl`        | shared packages loaded by the scripts                                  |
+| `data/`               | tidy CSV / JSON output of the fetchers (committed for reproducibility) |
+| `data/raw/`           | bulk raw downloads (git-ignored, regenerable)                          |
+| `community/`          | the buildable Wolfram Community notebook + its `.wls` source           |
+| `docs/images/`        | rendered figures referenced from the notebook and the README           |
+| `tests/`              | sanity checks (data shape, model conservation laws)                    |
 
 ## Reproducing
 
 ```sh
 # 1. Fetch the live data (writes into data/)
-python -m src.fetch_all
+wolframscript -file wolfram/fetch_all.wls
 
 # 2. Run the analysis + render figures (writes into docs/images/)
 wolframscript -file wolfram/run_all.wls

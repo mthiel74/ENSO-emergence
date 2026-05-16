@@ -1,62 +1,62 @@
 {
-  "issued": "2026-05",
-  "headline": "El Ni\u00f1o Watch in effect: ~82% chance of El Ni\u00f1o onset during May\u2013July 2026, ~96% chance of persistence through December 2026 \u2013 February 2027.",
-  "source": "NOAA CPC / IRI ENSO Diagnostic Discussion (May 2026 issuance)",
-  "probabilities": [
-    {
-      "season": "MJJ 2026",
-      "la_nina": 0,
-      "neutral": 18,
-      "el_nino": 82
-    },
-    {
-      "season": "JJA 2026",
-      "la_nina": 0,
-      "neutral": 9,
-      "el_nino": 91
-    },
-    {
-      "season": "JAS 2026",
-      "la_nina": 0,
-      "neutral": 6,
-      "el_nino": 94
-    },
-    {
-      "season": "ASO 2026",
-      "la_nina": 0,
-      "neutral": 5,
-      "el_nino": 95
-    },
-    {
-      "season": "SON 2026",
-      "la_nina": 0,
-      "neutral": 4,
-      "el_nino": 96
-    },
-    {
-      "season": "OND 2026",
-      "la_nina": 0,
-      "neutral": 4,
-      "el_nino": 96
-    },
-    {
-      "season": "NDJ 2026",
-      "la_nina": 0,
-      "neutral": 4,
-      "el_nino": 96
-    },
-    {
-      "season": "DJF 2027",
-      "la_nina": 1,
-      "neutral": 4,
-      "el_nino": 95
-    },
-    {
-      "season": "JFM 2027",
-      "la_nina": 3,
-      "neutral": 9,
-      "el_nino": 88
-    }
-  ],
-  "fetched_at": "2026-05-16T22:14:57+00:00"
+	"issued":"2026-05",
+	"headline":"El NiÃ±o Watch in effect: ~82% chance of El NiÃ±o onset during MayâJuly 2026, ~96% chance of persistence through December 2026 â February 2027.",
+	"source":"NOAA CPC \/ IRI ENSO Diagnostic Discussion (May 2026 issuance)",
+	"probabilities":[
+		{
+			"season":"MJJ 2026",
+			"la_nina":0,
+			"neutral":18,
+			"el_nino":82
+		},
+		{
+			"season":"JJA 2026",
+			"la_nina":0,
+			"neutral":9,
+			"el_nino":91
+		},
+		{
+			"season":"JAS 2026",
+			"la_nina":0,
+			"neutral":6,
+			"el_nino":94
+		},
+		{
+			"season":"ASO 2026",
+			"la_nina":0,
+			"neutral":5,
+			"el_nino":95
+		},
+		{
+			"season":"SON 2026",
+			"la_nina":0,
+			"neutral":4,
+			"el_nino":96
+		},
+		{
+			"season":"OND 2026",
+			"la_nina":0,
+			"neutral":4,
+			"el_nino":96
+		},
+		{
+			"season":"NDJ 2026",
+			"la_nina":0,
+			"neutral":4,
+			"el_nino":96
+		},
+		{
+			"season":"DJF 2027",
+			"la_nina":1,
+			"neutral":4,
+			"el_nino":95
+		},
+		{
+			"season":"JFM 2027",
+			"la_nina":3,
+			"neutral":9,
+			"el_nino":88
+		}
+	],
+	"fetched_at":"2026-05-16T23:21:15"
 }

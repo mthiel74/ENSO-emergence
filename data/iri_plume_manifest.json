@@ -1,11 +1,12 @@
 {
-  "fetched_at": "2026-05-16T22:16:42+00:00",
-  "issue_month": "2026-04-01",
-  "attempt": {
-    "url": "https://ensoforecast.iri.columbia.edu/cgi-bin/sst_table_img?month=4&year=2026",
-    "saved_to": "raw/iri_plume_current.png",
-    "bytes": 209126,
-    "cached": false,
-    "ok": true
-  }
+	"fetched_at":"2026-05-16T23:21:56",
+	"issue_month":"2026-04-01",
+	"attempt":{
+		"ok":true,
+		"url":"https:\/\/ensoforecast.iri.columbia.edu\/cgi-bin\/sst_table_img?month=4&year=2026",
+		"savedTo":"\/Users\/thiel\/GitHub\/ENSO-emergence\/data\/raw\/iri_plume_current.png",
+		"bytes":209126,
+		"cached":false,
+		"error":""
+	}
 }

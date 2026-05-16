@@ -8,13 +8,17 @@ barrier**. Live NOAA / IRI data + two textbook ENSO toy models
 (recharge–discharge oscillator, delayed oscillator) implemented in
 Wolfram Language.
 
-## Pipeline
+## Pipeline (pure Wolfram Language — no Python)
 
 ```
-src/fetch_*.py   ──>   data/*.csv / *.json          (live data, regenerable)
+wolfram/fetch_nino34.wls         ─┐
+wolfram/fetch_oni.wls             ├─> data/*.csv / *.json
+wolfram/fetch_iri_plume.wls       │   (live data, regenerable)
+wolfram/fetch_cpc_probabilities.wls ─┘
+wolfram/fetch_all.wls              one-shot driver
+
+wolfram/load_data.wl   shared loader package
                        │
-wolfram/load_data.wls  │
-                       ▼
 wolfram/barrier.wls    ── observed Niño 3.4 → ρ(month, lead) heatmap
 wolfram/rdo.wls        ── recharge–discharge oscillator + ensembles
 wolfram/delayed.wls    ── Suarez–Schopf delayed oscillator
@@ -31,10 +35,13 @@ community/build_notebook.wls   ── assembles enso_emergence.nb + .pdf
   Wolfram Community submission is trivial).
 * Figures live in `docs/images/` only — referenced from both the README
   and the notebook.
-* Bulk raw downloads (NetCDF, large CSV) stay in `data/raw/` which is
-  git-ignored. Tidy small CSVs used by the Wolfram pipeline live at
-  `data/*.csv` and are committed for reproducibility on machines
-  without internet access at the moment of running.
+* Bulk raw downloads stay in `data/raw/` which is git-ignored. Tidy
+  small CSV / JSON files used by the Wolfram pipeline live at
+  `data/*.csv` / `data/*.json` and are committed for reproducibility
+  on machines without internet access at the moment of running.
+* All HTTP fetches use `URLRead[HTTPRequest[...]]` and check the
+  status code — `URLDownload` silently writes server error pages
+  on 4xx/5xx, so don't use it.
 
 ## Commit cadence
 
