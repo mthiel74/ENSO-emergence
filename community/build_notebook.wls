@@ -1333,16 +1333,7 @@ built programmatically via ", mono["wolframscript"],
    ". The educational illustrations (Figures 1.1, 1.2, 3.1, 4.1, 5.1) \
 were generated with OpenAI's ", mono["gpt-image-2"], " model. \
 The repository skeleton, git workflow, and notebook-build pipeline \
-were assembled with the help of Anthropic's Claude Code."}],
-
-para[{ital["Companion projects."], " This is the third in a series \
-of standalone-notebook Wolfram Community submissions: ",
-   link["Contiguous-Cartograms",
-     "https://github.com/mthiel74/Contiguous-Cartograms"],
-   ", ", link["streetview360",
-     "https://github.com/mthiel74/streetview360"], ", ",
-   link["SofaProblem",
-     "https://github.com/mthiel74/SofaProblem"], "."}]
+were assembled with the help of Anthropic's Claude Code."}]
 }];
 
 
