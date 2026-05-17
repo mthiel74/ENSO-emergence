@@ -1,6 +1,9 @@
 # Bulk / cached data — fetchers re-create on demand
 data/raw/
 data/*.nc
+
+# Notebook build cache (regenerated on demand)
+community/.img-cache/
 data/*.netcdf
 data/*.h5
 data/*.parquet
