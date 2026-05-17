@@ -92,6 +92,15 @@ Output goes to the script's own directory by default; override with
 Active. Target publication window: before the next NOAA CPC ENSO
 diagnostic discussion update.
 
+## Popular-science companion
+
+For a 5-minute accessible introduction to the same May 2026 El Niño
+Watch this project is built around, see the BBC News explainer by
+their lead weather presenter Simon King:
+[*El Niño is coming — could this year see a "Godzilla" event?*](https://www.youtube.com/watch?v=UEseLvpl9ss).
+The notebook embeds this link as a callout in §2 and as the
+popular-science reference in §8.
+
 ## Related projects
 
 * [Contiguous-Cartograms](https://github.com/mthiel74/Contiguous-Cartograms)
