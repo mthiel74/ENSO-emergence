@@ -183,11 +183,21 @@ captionCell[args__] := Cell[
    CellMargins -> {{70, 70}, {2, 14}}
 ];
 
-(* Code blocks: input cell with the literal code as a string *)
-codeIn[code_String] := Cell[code, "Code",
+(* Code blocks: a "Program" cell style displays text as a fixed-width
+   block but doesn't try to syntax-highlight it as Wolfram code, so
+   shell snippets with `#` comments don't confuse the parser. *)
+codeIn[code_String] := Cell[code, "Program",
    CellMargins -> {{60, 30}, {6, 6}},
    FontFamily -> "Courier", FontSize -> 11,
+   ShowStringCharacters -> False,
    Background -> RGBColor[0.95, 0.96, 0.98]];
+
+(* Inline hyperlink that renders well in both interactive and PDF
+   views: link text followed by the URL in parentheses. *)
+link[txt_String, url_String] := Sequence[
+   StyleBox[txt, FontWeight -> "SemiBold"],
+   " (", StyleBox[url, FontFamily -> "Courier", FontSize -> 10], ")"
+];
 
 
 (* ==================================================================
@@ -384,21 +394,27 @@ para[{ital["What the data show right now."], " The most recent four \
 months of Ni\[NTilde]o 3.4 anomalies, fetched live for this notebook, \
 are:"}],
 
-(* dynamic table from live data — built as ExpressionCell so the FE
-   handles boxing. *)
+(* Dynamic table from live data, rendered as a TextData chunk so it
+   serialises cleanly to InputForm without needing the FE to
+   re-evaluate ExpressionCell. *)
 With[
-   {rows = Take[Drop[Import[FileNameJoin[{repoRoot, "data", "nino34_monthly.csv"}], "CSV"], 1], -6]},
-   ExpressionCell[
-     Grid[
-        Prepend[
-          {DateString[DateObject[{#[[1]], #[[2]], 15}, "Day"],
-            {"MonthName", " ", "Year"}],
-           NumberForm[#[[4]], {4, 2}]} & /@ rows,
-          {Style["Month", Bold],
-           Style["Ni\[NTilde]o 3.4 anomaly (\[Degree]C)", Bold]}],
-        Frame -> All, Spacings -> {2, 1},
-        Background -> {None, {RGBColor[0.95, 0.95, 0.92], White}}],
-     "Output", CellMargins -> {{80, 80}, {6, 6}}]
+   {rows = Take[Drop[Import[FileNameJoin[{repoRoot, "data",
+       "nino34_monthly.csv"}], "CSV"], 1], -6]},
+   Cell[
+     TextData[Riffle[
+       ({StyleBox[DateString[DateObject[{#[[1]], #[[2]], 15}, "Day"],
+            {"MonthName", " ", "Year"}], FontWeight -> Bold],
+         "    ",
+         StyleBox[ToString[NumberForm[#[[4]], {4, 2}]] <> " \[Degree]C",
+            FontFamily -> "Courier"]
+        } & /@ rows),
+       "\n"
+     ]],
+     "Text",
+     FontSize -> 13, FontFamily -> "Helvetica",
+     CellMargins -> {{100, 100}, {6, 6}},
+     Background -> RGBColor[0.96, 0.97, 0.92]
+   ]
 ],
 
 para[{"The +0.31 \[Degree]C jump from February to April \
@@ -1245,11 +1261,11 @@ were assembled with the help of Anthropic's Claude Code."}],
 
 para[{ital["Companion projects."], " This is the third in a series \
 of standalone-notebook Wolfram Community submissions: ",
-   Hyperlink["Contiguous-Cartograms",
+   link["Contiguous-Cartograms",
      "https://github.com/mthiel74/Contiguous-Cartograms"],
-   ", ", Hyperlink["streetview360",
+   ", ", link["streetview360",
      "https://github.com/mthiel74/streetview360"], ", ",
-   Hyperlink["SofaProblem",
+   link["SofaProblem",
      "https://github.com/mthiel74/SofaProblem"], "."}]
 }];
 
@@ -1263,7 +1279,7 @@ writeAll[{
 hd1["10.  Reproducibility"],
 
 para[{"All source code lives in the public repository ",
-   Hyperlink["github.com/mthiel74/ENSO-emergence",
+   link["github.com/mthiel74/ENSO-emergence",
      "https://github.com/mthiel74/ENSO-emergence"],
    ". The entire pipeline is pure Wolfram Language \[LongDash] no \
 Python, no other runtime. To regenerate this notebook from scratch \
