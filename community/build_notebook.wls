@@ -361,6 +361,27 @@ exceeds ~55 %, the CPC raises an ", bold["El Ni\[NTilde]o Watch"],
    "; when it exceeds ~70 %, a Watch is escalated to an ",
    bold["Advisory"], " (similar logic for La Ni\[NTilde]a)."}],
 
+(* Popular-science companion callout *)
+Cell[TextData[{
+   StyleBox["Popular-science take.", FontWeight -> Bold,
+      FontSlant -> Italic], " The BBC's lead weather presenter Simon \
+King has a 5-minute explainer on the same emerging event \[LongDash] \
+\[OpenCurlyDoubleQuote]Right now, across the Pacific Ocean, something \
+is happening that could change the world's weather.\
+\[CloseCurlyDoubleQuote]  He notes that US, Australian, and European \
+forecasters all see this El Ni\[NTilde]o forming within the next \
+month, with a 2-in-3 chance of becoming strong or very strong by late \
+autumn / early winter, and around half of the European model runs \
+suggesting it could be one of the strongest on record. Some \
+forecasters have already nicknamed it the \
+\[OpenCurlyDoubleQuote]Godzilla\[CloseCurlyDoubleQuote] El \
+Ni\[NTilde]o. ", link["BBC News explainer (Simon King)",
+   "https://www.youtube.com/watch?v=UEseLvpl9ss"], "."
+}], "Text",
+   FontSize -> 12, CellMargins -> {{70, 70}, {6, 6}},
+   Background -> RGBColor[0.93, 0.95, 0.99],
+   FrameMargins -> 12, CellFrame -> {{0, 0}, {0, 0}}],
+
 para[{"The May 2026 issuance is unambiguous. The probability bars \
 below show El Ni\[NTilde]o probabilities climbing from 82 % in \
 May\[Dash]June\[Dash]July 2026 to 96 % in the four overlapping seasons \
@@ -1222,7 +1243,17 @@ comprehensive review.]"}],
 para[{bold["Tippett, M. K., Barnston, A. G., & Li, S."], " (2012). \
 Performance of recent multimodel ENSO forecasts. ", ital["Journal \
 of Applied Meteorology and Climatology"], " 51, 637\[Dash]654. \
-[Quantitative evaluation of IRI plume skill.]"}]
+[Quantitative evaluation of IRI plume skill.]"}],
+
+para[{ital["Popular-science companion:"], " ", bold["King, S."],
+   " (2026). ", ital["El Ni\[NTilde]o is coming \[LongDash] could \
+this year see a \[OpenCurlyDoubleQuote]Godzilla\[CloseCurlyDoubleQuote] \
+event?"], " BBC News explainer (5 min video). ",
+   link["youtube.com/watch?v=UEseLvpl9ss",
+      "https://www.youtube.com/watch?v=UEseLvpl9ss"],
+   ".  An accessible narration of the same May 2026 developing \
+event from a lead BBC meteorologist; useful entry point for the \
+general-audience side of this notebook."}]
 }];
 
 
