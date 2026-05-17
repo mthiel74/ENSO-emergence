@@ -62,6 +62,18 @@ ital[s_]   := StyleBox[s, FontSlant -> Italic];
 math[s_]   := StyleBox[s, FontFamily -> "Times", FontSlant -> Italic];
 mono[s_]   := StyleBox[s, FontFamily -> "Courier"];
 
+(* True in-line math via real boxes (e.g. SubscriptBox), so subscripts
+   actually render as subscripts and not as literal underscores. The
+   inline Cell needs an explicit style; "InlineFormula" is the standard
+   one in Default.nb. *)
+imath[boxes_] := Cell[BoxData @ FormBox[boxes, TraditionalForm],
+   "InlineFormula"];
+sub[base_, k_] := imath @ SubscriptBox[base, k];
+sigT = imath @ SubscriptBox["\[Sigma]", "T"];
+sigH = imath @ SubscriptBox["\[Sigma]", "h"];
+sigW = imath @ RowBox[{SubscriptBox["\[Sigma]", "w"], "(", "t", ")"}];
+Rt   = imath @ RowBox[{"R", "(", "t", ")"}];
+
 (* Display math via TraditionalForm of an explicit expression. *)
 displayMath[expr_] := Cell[
    BoxData @ FormBox[expr, TraditionalForm],
@@ -92,22 +104,67 @@ resizedCopy[path_] := Module[{cached, w, h, im, target},
    cached
 ];
 
-(* Build the boxes for an image cell. We pre-resize the source PNG
-   (720 px wide cached on disk), then force the in-cell raster to
-   8-bit "Byte" type (1 byte per channel, vs the default Real32 at
-   4 bytes per channel). For a 720-wide image that drops the
-   in-notebook footprint from ~6 MB to ~1.5 MB per image. *)
-imageBoxes[path_String] := Module[{small, im, byteIm},
+(* Build a GraphicsBox/RasterBox/CompressedData expression by hand,
+   matching what NotebookSave normally produces. Storing the pixel
+   data as a Compress'd base64 string is 6-8× more compact than
+   ASCII InputForm of the raw NumericArray. We return a *string*
+   that, when interpolated into the .nb body via ToString[InputForm]
+   on a Skeleton stand-in, is exact byte-for-byte boxes. *)
+
+(* Sentinel symbols used to splice raw RasterBox text past InputForm.
+   For each image we generate a unique Symbol RasterPlaceholderN whose
+   InputForm prints as the bare identifier "RasterPlaceholderN".  After
+   ToString[InputForm], we string-substitute each placeholder with the
+   compressed-RasterBox box-text. *)
+$rasterSubstitutions = <||>;
+$rasterCounter = 0;
+
+imageBoxes[path_String] := Module[
+   {small, im, na, h, w, compressed, key, boxStr},
    small = resizedCopy[path];
-   im = Import[small];
-   byteIm = Image[im, "Byte", ColorSpace -> "RGB"];
-   ToBoxes[Image[byteIm, ImageSize -> 640]]
+   im = Image[Import[small], "Byte"];
+   (* RasterBox's y-axis runs bottom-to-top, while ImageData returns
+      rows top-to-bottom. Reverse the row order so the image renders
+      right-side-up. *)
+   na = Reverse @ ImageData[im, "Byte"];         (* {h, w, 3} bytes *)
+   {h, w} = Take[Dimensions[na], 2];
+   compressed = Compress[na];                    (* "1:eJ..." *)
+   $rasterCounter += 1;
+   (* Trailing letter X marks the end of the unique ID so "RasterPh1X"
+      is NOT a substring of "RasterPh10X" — otherwise the first
+      StringReplace would corrupt all higher-numbered placeholders. *)
+   key = "RasterPh" <> ToString[$rasterCounter] <> "X";
+   boxStr = StringJoin[
+      "GraphicsBox[",
+        "TagBox[",
+          "RasterBox[",
+            "CompressedData[\"", compressed, "\"], ",
+            "{{0, 0}, {", ToString[w], ", ", ToString[h], "}}, ",
+            "{0, 255}, ",
+            "ColorFunction -> RGBColor",
+          "],",
+          "BoxForm`ImageTag[\"Byte\", ColorSpace -> \"RGB\", Interleaving -> True],",
+          " Selectable -> False",
+        "],",
+        " DefaultBaseStyle -> \"ImageGraphics\",",
+        " ImageSize -> ", ToString[Round[640]], ",",
+        " ImageSizeRaw -> {", ToString[w], ", ", ToString[h], "},",
+        " PlotRange -> {{0, ", ToString[w], "}, {0, ", ToString[h], "}}",
+      "]"
+   ];
+   $rasterSubstitutions[key] = boxStr;
+   key
 ];
 
-imgCell[file_, opts___] := Module[{path = FileNameJoin[{imgDir, file}]},
+(* imageBoxes returns a placeholder string. We wrap it in a Symbol so
+   InputForm later prints it as an unquoted identifier; after
+   serialization we string-substitute the placeholder identifiers
+   with the actual compressed RasterBox boxes. *)
+imgCell[file_, opts___] := Module[{path = FileNameJoin[{imgDir, file}], key},
    If[FileExistsQ[path],
-     Cell[BoxData @ imageBoxes[path], "Output",
-        CellMargins -> {{50, 30}, {10, 6}}],
+     key = imageBoxes[path];   (* "RasterPh<N>X" *)
+     Cell[BoxData @ Symbol[key],
+        "Output", CellMargins -> {{50, 30}, {10, 6}}],
      Cell[
        TextData[{bold["[ missing figure: " <> file <> " ]"]}],
        "Text", FontColor -> RGBColor[0.7, 0.1, 0.1]]
@@ -117,8 +174,10 @@ imgCell[file_, opts___] := Module[{path = FileNameJoin[{imgDir, file}]},
 genImgCell[file_, opts___] := imgCell[
    FileNameJoin[{"figures-generated", file}], opts];
 
-captionCell[txt_] := Cell[
-   txt, "Text",
+(* Variadic so captionCell["plain string"] and
+   captionCell["fragment 1 ", math["x"], " fragment 2"] both work. *)
+captionCell[args__] := Cell[
+   TextData[{args}], "Text",
    FontSlant -> Italic, FontSize -> 11,
    FontColor -> GrayLevel[0.35],
    CellMargins -> {{70, 70}, {2, 14}}
@@ -465,7 +524,7 @@ displayMath[
 ],
 
 para[{"\[Rho]"," is computed across all available years ",
-   math["y"], "; ", math["\[Sigma]\_T"],
+   math["y"], "; ", sigT,
    " is the marginal standard deviation for that calendar month; the \
 floor and mod arithmetic carry the verification time forward into the \
 next year when ", math["m\:2080 + \[Tau] > 12"],
@@ -505,7 +564,7 @@ the first six leads; lines that start in summer and autumn (Jul, \
 Aug, Sep, Oct) retain ", math["\[Rho] > 0.5"], " out to lead 9."],
 
 para[{ital["Why the barrier exists."], " There are three reinforcing \
-mechanisms. (a) The Bjerknes feedback ", math["R(t)"], " (the \
+mechanisms. (a) The Bjerknes feedback ", Rt, " (the \
 coupled-system growth rate that we will derive in \[Section]5.1) is \
 seasonally modulated. It is strongest in boreal autumn, when the \
 climatological cold tongue and trade winds are most pronounced, and \
@@ -658,9 +717,9 @@ displayMath[
 
 para[{"where the three ", math["\[Xi](t)"], " are independent unit \
 white noises (formally d", math["W"], "/d", math["t"], "), \
-", math["\[Sigma]\_T"], ", ", math["\[Sigma]\_h"], " are the slow \
+", sigT, ", ", sigH, " are the slow \
 (synoptic + sub-monthly) stochastic forcing amplitudes, and \
-", math["\[Sigma]\_w(t)"], " is the specifically-westerly-wind-burst \
+", sigW, " is the specifically-westerly-wind-burst \
 forcing whose variance peaks in boreal spring."}],
 
 para[{ital["The Stein\[Dash]Levine\[Dash]Jin seasonal mechanism."],
@@ -690,15 +749,15 @@ displayMath[
    }]
 ],
 
-para[{math["R(t)"], " peaks in September (most positive, strongest \
+para[{Rt, " peaks in September (most positive, strongest \
 growth) and dips in March (least positive or negative, strongest \
-damping); ", math["\[Sigma]\_w(t)"], " peaks in March\[Dash]April \
+damping); ", sigW, " peaks in March\[Dash]April \
 (spring WWB activity), giving the model an in-built spring barrier."}],
 
 imgCell["rdo_seasonality.png"],
 captionCell["Figure 5.2  The two seasonally varying coefficients used \
-in the recharge\[Dash]discharge model: ", math["R(t)"], " (blue) and ",
-   math["\[Sigma]\_w(t)"], " (orange). The phase relationship is the \
+in the recharge\[Dash]discharge model: ", Rt, " (blue) and ",
+   sigW, " (orange). The phase relationship is the \
 heart of the Stein\[Dash]Levine\[Dash]Jin spring-barrier mechanism."],
 
 para[{ital["Numerical integration."], " We use the Euler\[Dash]Maruyama \
@@ -1254,6 +1313,16 @@ nbExpr = Notebook[$allCells,
    write the file as raw ASCII bytes — no UTF-8 re-encoding. *)
 nbBody = ToString[nbExpr, InputForm, PageWidth -> Infinity,
    CharacterEncoding -> "ASCII"];
+
+(* Substitute raster placeholders with the actual compressed
+   RasterBox boxes. *)
+Print["substituting ", Length[$rasterSubstitutions],
+   " raster placeholders..."];
+nbBody = Fold[
+   StringReplace[#1, #2[[1]] -> #2[[2]]] &,
+   nbBody,
+   Normal[$rasterSubstitutions]
+];
 
 nbHeader = StringJoin[
    "(* Content-type: application/vnd.wolfram.mathematica *)\n\n",
