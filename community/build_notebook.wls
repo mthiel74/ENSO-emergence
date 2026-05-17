@@ -164,10 +164,13 @@ imgCell[file_, opts___] := Module[{path = FileNameJoin[{imgDir, file}], key},
    If[FileExistsQ[path],
      key = imageBoxes[path];   (* "RasterPh<N>X" *)
      Cell[BoxData @ Symbol[key],
-        "Output", CellMargins -> {{50, 30}, {10, 6}}],
+        "Output",
+        TextAlignment -> Center,
+        CellMargins -> {{Automatic, Automatic}, {10, 6}}],
      Cell[
        TextData[{bold["[ missing figure: " <> file <> " ]"]}],
-       "Text", FontColor -> RGBColor[0.7, 0.1, 0.1]]
+       "Text", FontColor -> RGBColor[0.7, 0.1, 0.1],
+       TextAlignment -> Center]
    ]
 ];
 
