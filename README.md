@@ -39,18 +39,25 @@ notoriously unreliable.
 
 ## Repository layout
 
-The entire pipeline is pure Wolfram Language — no Python, no other runtime.
+The analysis pipeline (data fetch → toy models → live forecast →
+notebook build) is **pure Wolfram Language**. The five
+gpt-image-2-generated educational illustrations under
+`docs/images/figures-generated/` are produced by a one-off Python
+script (see "Image generation" below); their PNG outputs are
+committed so no Python is needed to rebuild the notebook itself.
 
-| path                  | what lives there                                                       |
-| ---                   | ---                                                                    |
-| `wolfram/fetch_*.wls` | live data fetchers (PSL Niño 3.4, CPC ONI, IRI plume, CPC discussion)  |
-| `wolfram/*.wls`       | toy-model implementations and figure renderers                         |
-| `wolfram/*.wl`        | shared packages loaded by the scripts                                  |
-| `data/`               | tidy CSV / JSON output of the fetchers (committed for reproducibility) |
-| `data/raw/`           | bulk raw downloads (git-ignored, regenerable)                          |
-| `community/`          | the buildable Wolfram Community notebook + its `.wls` source           |
-| `docs/images/`        | rendered figures referenced from the notebook and the README           |
-| `tests/`              | sanity checks (data shape, model conservation laws)                    |
+| path                                  | what lives there                                                       |
+| ---                                   | ---                                                                    |
+| `wolfram/fetch_*.wls`                 | live data fetchers (PSL Niño 3.4, CPC ONI, IRI plume, CPC discussion)  |
+| `wolfram/*.wls`                       | toy-model implementations and figure renderers                         |
+| `wolfram/*.wl`                        | shared packages loaded by the scripts                                  |
+| `data/`                               | tidy CSV / JSON output of the fetchers (committed for reproducibility) |
+| `data/raw/`                           | bulk raw downloads (git-ignored, regenerable)                          |
+| `community/`                          | the buildable Wolfram Community notebook + its `.wls` source           |
+| `docs/images/`                        | rendered figures referenced from the notebook and the README           |
+| `docs/images/figures-generated/*.png` | gpt-image-2 illustrations (committed)                                  |
+| `docs/images/figures-generated/generate_enso_figures.py` | one-off Python script that regenerates them      |
+| `tests/`                              | sanity checks (data shape, model conservation laws)                    |
 
 ## Reproducing
 
@@ -64,6 +71,21 @@ wolframscript -file wolfram/run_all.wls
 # 3. Build the community notebook (writes community/enso_emergence.nb)
 wolframscript -file community/build_notebook.wls
 ```
+
+## Image generation (optional, only needed to regenerate illustrations)
+
+The five gpt-image-2 educational illustrations are committed to the
+repository, so a normal rebuild does NOT need to call OpenAI. If you
+want to regenerate them:
+
+```sh
+export OPENAI_API_KEY=sk-...
+python docs/images/figures-generated/generate_enso_figures.py
+```
+
+Requires Python ≥ 3.10 and the `openai` SDK (`pip install openai`).
+Output goes to the script's own directory by default; override with
+`OUT_DIR=/somewhere/else`.
 
 ## Status
 

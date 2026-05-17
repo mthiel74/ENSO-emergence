@@ -23,10 +23,21 @@ If[res["ok"],
    Print["  discussion: FAILED — ", res["error"]]
 ];
 
+(* IMPORTANT: the nine probability rows below are TRANSCRIBED BY HAND
+   from the May 2026 NOAA CPC / IRI ENSO Diagnostic Discussion bar
+   chart. There is no machine-readable feed for these probabilities
+   (CPC publishes them as a PNG bar chart embedded in HTML prose), so
+   this fetcher cannot refresh them automatically. Re-running this
+   script will NOT pick up newer ENSO Diagnostic Discussions. The
+   "snapshot_of" field below records the source date the numbers were
+   typed in; "fetched_at" records when this file was last written. *)
+
 snapshot = <|
-   "issued"   -> "2026-05",
+   "issued"         -> "2026-05",
+   "snapshot_of"    -> "2026-05",   (* date these numbers reflect *)
+   "is_static_snapshot" -> True,
    "headline" -> "El Niño Watch in effect: ~82% chance of El Niño onset during May–July 2026, ~96% chance of persistence through December 2026 – February 2027.",
-   "source"   -> "NOAA CPC / IRI ENSO Diagnostic Discussion (May 2026 issuance)",
+   "source"   -> "NOAA CPC / IRI ENSO Diagnostic Discussion (May 2026 issuance) — hand-curated from the published probability bar chart.",
    "probabilities" -> {
      <|"season" -> "MJJ 2026", "la_nina" -> 0, "neutral" -> 18, "el_nino" -> 82|>,
      <|"season" -> "JJA 2026", "la_nina" -> 0, "neutral" -> 9,  "el_nino" -> 91|>,
@@ -42,4 +53,5 @@ snapshot = <|
 |>;
 
 Export[outJson, snapshot, "JSON"];
-Print["  snapshot: ", outJson];
+Print["  snapshot: ", outJson,
+   "  (HAND-CURATED — does NOT auto-refresh from CPC)"];

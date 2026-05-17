@@ -12,7 +12,10 @@ from pathlib import Path
 
 from openai import OpenAI
 
-OUTPUT_DIR = Path("/Users/thiel/GitHub/ENSO-emergence/docs/images/figures-generated")
+# Default to the directory containing this script (the same
+# docs/images/figures-generated/ the rest of the pipeline reads from).
+# Override with $OUT_DIR if you want to render somewhere else.
+OUTPUT_DIR = Path(os.environ.get("OUT_DIR", Path(__file__).resolve().parent))
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 client = OpenAI()

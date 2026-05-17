@@ -394,7 +394,11 @@ the next nine rolling 3-month seasons, as issued in the May 2026 \
 ENSO Diagnostic Discussion. Red = El Ni\[NTilde]o (Ni\[NTilde]o 3.4 \
 ONI \[GreaterEqual] +0.5 \[Degree]C); grey = Neutral; blue = La \
 Ni\[NTilde]a (ONI \[LessEqual] \[Minus]0.5 \[Degree]C). Each column \
-sums to 100 %."],
+sums to 100 %.  ", ital["Note:"], " unlike the Ni\[NTilde]o 3.4 \
+anomaly series and the ONI, these probability bars are not available \
+in any machine-readable feed and were transcribed by hand from the \
+May 2026 CPC PNG bar chart; they do not auto-refresh in subsequent \
+runs of the pipeline."],
 
 para[{"This Watch is striking for two reasons. (a) It comes just six \
 months after the end of the 2024\[Dash]25 La Ni\[NTilde]a (ONI \
@@ -442,9 +446,11 @@ With[
 ],
 
 para[{"The +0.31 \[Degree]C jump from February to April \
-(\[Minus]0.27 \[RightArrow] +0.23) is the largest two-month boreal \
-spring warming in the historical record. It is exactly the kind of \
-emergent behaviour that the toy models in \[Section]5 are designed \
+(\[Minus]0.27 \[RightArrow] +0.23) sits comfortably in the top decile \
+of all Feb\[Dash]Apr changes since 1950 (ranked 9th of 77, tied with \
+1963 \[LongDash] the top three are 1951 at +0.81, 2014 at +0.70, and \
+2000 at +0.68). It is exactly the kind of emergent behaviour that the \
+toy models in \[Section]5 are designed \
 to capture: a stochastic system on the edge of bifurcation, given a \
 favourable phase-space starting point by the upper-ocean heat content \
 left over from previous La Ni\[NTilde]a recharge, gets a spring \
@@ -945,23 +951,33 @@ modulated stochastic WWB forcing. Time is rescaled so that one model \
 time-unit = two calendar months, putting the canonical 6-month wave \
 delay at \[Delta] = 3 in dimensionless units."}],
 
-para[{ital["Hopf bifurcation."], " Linearising about ", math["T = 0"],
-   " and substituting ", math["T \[Tilde] e^(\[Lambda] t)"], " gives \
-the characteristic equation ", math["\[Lambda] = 1 \[Minus] \[Alpha] \
-e^(\[Minus] \[Lambda] \[Delta])"], ", a transcendental equation whose \
-roots can be found numerically. For ", math["\[Delta] = 3"], " the \
-real part of the leading eigenvalue passes through zero at \
-", math["\[Alpha] \[TildeTilde] 0.5"], "; below that the origin is \
-stable, above it the system bifurcates into a stable nonlinear limit \
-cycle. The bifurcation sweep:"}],
+para[{ital["Bifurcation structure."], " Linearising about ",
+   math["T = 0"], " and substituting ", math["T \[Tilde] e^(\[Lambda] t)"],
+   " gives the characteristic equation ",
+   math["\[Lambda] = 1 \[Minus] \[Alpha] e^(\[Minus] \[Lambda] \[Delta])"],
+   ". This is transcendental and admits infinitely many complex \
+eigenvalues. At ", math["\[Alpha] = 1"], " the real part of the \
+leading (real) eigenvalue passes through zero \[LongDash] this is the \
+pitchfork transition, marking the loss of stability of the trivial \
+fixed point. For ", math["\[Alpha] < 1"], " the origin is unstable in \
+the deterministic system and the cubic damping ", math["\[Minus] T^3"],
+   " saturates trajectories near ", math["T = \[PlusMinus]1"], "; \
+adding the delayed feedback at finite ", math["\[Delta]"], " converts \
+the would-be stable fixed points into sustained limit-cycle \
+oscillations of period ", math["\[TildeTilde] 4 \[Delta]"], " through \
+the original Suarez\[Dash]Schopf mechanism. Below we sweep ",
+   math["\[Alpha]"], " at fixed ", math["\[Delta] = 3"],
+   " and report the amplitude envelope from stochastic runs."}],
 
 imgCell["delayed_bifurcation.png"],
 captionCell["Figure 5.7  Min and max of T in long stochastic runs of \
-the delayed oscillator, as a function of the wave-coupling \
-\[Alpha], with \[Delta] = 3 (= 6 months) held fixed. The Hopf \
-bifurcation at ", math["\[Alpha] \[TildeTilde] 0.5"], " is the \
-transition from noise-driven fluctuations about the fixed point to \
-a sustained nonlinear limit cycle."],
+the delayed oscillator, as a function of the wave-coupling ",
+   math["\[Alpha]"], ", with ", math["\[Delta] = 3"],
+   " (= 6 months) held fixed. The amplitude grows continuously from \
+near zero at small ", math["\[Alpha]"],
+   " (where the cubic damping holds the trajectory close to \
+", math["T = \[PlusMinus]1"], ") to a full \[PlusMinus]1.2 swing at \
+", math["\[Alpha] = 0.75\[Dash]1.0"], "."],
 
 para[{ital["Implementation."], " The Wolfram implementation maintains \
 a circular history buffer so the delayed value ", math["T(t-\[Delta])"],
@@ -993,10 +1009,14 @@ codeIn["simulateDDE[m0_, tEnd_, dt_, hist0_, seed_] := Module[
 
 imgCell["delayed_timeseries.png"],
 captionCell["Figure 5.8  A 20-year realisation of the delayed \
-oscillator with \[Alpha] = 0.75 (well above the Hopf threshold) and \
-\[Delta] = 6 months. The limit cycle period is approximately 4\
-\[Delta] = 24 months \[LongDash] shorter than the canonical ENSO \
-period \[LongDash] but the nonlinear-oscillator phenomenology is \
+oscillator with ", math["\[Alpha] = 0.75"], " and ",
+   math["\[Delta] = 6"], " months. The system sits below the \
+pitchfork threshold ", math["\[Alpha] = 1"],
+   " so the deterministic skeleton has unstable origin saturated by \
+the cubic; the delayed negative feedback produces sustained \
+oscillations of period ", math["\[TildeTilde] 4\[Delta] = 24"],
+   " months \[LongDash] shorter than the canonical 3\[Dash]6-year \
+ENSO band, but the delay-induced limit-cycle phenomenology is \
 correct."],
 
 imgCell["delayed_cone.png"],
@@ -1056,6 +1076,26 @@ seasonal feedback ", math["R(Apr) \[TildeTilde] \[Minus]0.21 month\.bb"],
 ", math["h"], " \[TildeTilde] +4.9, a large positive thermocline \
 anomaly consistent with the substantial subsurface heat content \
 remaining from the previous La Ni\[NTilde]a recharge."}],
+
+para[{ital["Caveat on this inversion."], " The expression above \
+inverts only the ", bold["deterministic skeleton"], " of the SST \
+equation. The actual observed ", math["dT/dt"], " also contains \
+contributions from the slow stochastic forcing ",
+   sub["\[Sigma]", "T"], " ", sub["\[Xi]", "T"],
+   " and \[LongDash] in spring \[LongDash] a substantial \
+westerly-wind-burst term ", sigW, " ", sub["\[Xi]", "w"],
+   ". Attributing the entire spring warming to ", math["h"],
+   " therefore over-estimates the true thermocline anomaly: the \
+inversion absorbs whatever spring WWB activity drove part of the \
+observed tendency. A real-time SST-only proxy is unavoidable here \
+because there is no clean machine-readable feed for the warm-water-\
+volume index in the same monthly format as Ni\[NTilde]o 3.4; the \
+NOAA PMEL TAO/TRITON mooring array publishes warm-water-volume but \
+not in a format we can fetch in pure WL. Readers extending this \
+notebook with a proper subsurface-data source should expect the \
+forecast median to come down somewhat \[LongDash] our +2 to +3 \
+\[Degree]C peak is therefore an ", ital["upper-bound"],
+   " estimate."}],
 
 para[{"With ", math["(T, h)"], " = (+0.23, +4.9) as the initial \
 condition, we run a 500-member RDO ensemble out 18 months \
@@ -1141,8 +1181,10 @@ hd1["7.  Conclusions and outlook"],
 
 para[{ital["What we showed."], " (1) The May 2026 El Ni\[NTilde]o \
 Watch is supported by a clear emergence signal in the observational \
-record: the sharpest two-month boreal-spring warming in the 1950\
-\[Dash]present Ni\[NTilde]o 3.4 record. (2) The spring predictability \
+record: a Feb\[Dash]Apr Ni\[NTilde]o 3.4 warming in the top decile \
+of all such windows since 1950 (ranked 9th of 77), combined with \
+substantial residual subsurface heat content from the previous La \
+Ni\[NTilde]a recharge. (2) The spring predictability \
 barrier is unambiguous in 77 years of observations: forecasts \
 initialised in boreal winter collapse to near-zero skill by mid-summer, \
 while forecasts initialised in late summer keep skill all the way to \
