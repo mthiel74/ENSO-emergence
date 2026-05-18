@@ -22,7 +22,8 @@ scripts = {
    "barrier.wls",
    "rdo.wls",
    "delayed.wls",
-   "forecast.wls"
+   "forecast.wls",
+   "hero.wls"
 };
 
 Do[

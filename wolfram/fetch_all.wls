@@ -11,7 +11,8 @@ fetchers = {
    "fetch_nino34.wls",
    "fetch_oni.wls",
    "fetch_iri_plume.wls",
-   "fetch_cpc_probabilities.wls"
+   "fetch_cpc_probabilities.wls",
+   "fetch_ersst_grid.wls"
 };
 
 Do[

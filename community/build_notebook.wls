@@ -228,6 +228,18 @@ through the lens of two classical coupled ocean\[Dash]atmosphere toy models"],
 Cell["Wolfram Community submission \[LongDash] May 2026",
    "Subsubtitle", FontSlant -> Italic, FontColor -> GrayLevel[0.4]],
 
+(* Hero image: most recent monthly SST anomaly map, immediately under the title *)
+imgCell["hero_spatial_still.png"],
+captionCell["Cover figure.  Equatorial Pacific SST anomaly for April \
+2026 from the NOAA ERSSTv5 monthly gridded analysis, the most recent \
+month available at the time of writing. The Ni\[NTilde]o 3.4 \
+monitoring box (5\[Degree]N\[Dash]5\[Degree]S, 170\[Degree]W\[Dash]\
+120\[Degree]W) is outlined in black. The basin is dominated by \
+warm anomalies (red), with a small relic of the previous La \
+Ni\[NTilde]a cold tongue still visible as the pale streak inside the \
+eastern half of the box. The animated 15-month evolution that \
+this still is a frame of is shown in \[Section]3.5."],
+
 
 (* ----------------- ABSTRACT ----------------- *)
 
@@ -495,6 +507,67 @@ billion-dollar consequences across agriculture, water resources, \
 disaster preparedness, and energy markets."}],
 
 para[{"Which is why the spring predictability barrier matters."}]
+}];
+
+
+(* ============================================================
+   §3.5 Spatial dynamics — the 12-month time-lapse
+   ============================================================ *)
+
+writeAll[{
+
+hd1["3.5  Spatial dynamics: 15 months of the basin"],
+
+para[{"The Ni\[NTilde]o 3.4 box-mean used everywhere else in this \
+notebook collapses the entire equatorial Pacific into a single \
+scalar per month. That is the right summary statistic for indices \
+and forecasts, but it hides everything ", ital["spatial"],
+   " about what is going on \[LongDash] in particular, ",
+   bold["where"], " in the basin the warm anomaly is accumulating and \
+how the cold tongue is dissolving. To make the spatial story \
+visible, we render the most recent 15 months of the NOAA ERSSTv5 \
+gridded monthly anomaly field over the tropical Pacific \
+(2\[Degree]\[Times]2\[Degree] resolution, latitudes 30\[Degree]S to \
+30\[Degree]N, longitudes 130\[Degree]E to 70\[Degree]W) as an \
+animation:"}],
+
+imgCell["hero_spatial_still.png"],
+captionCell["Figure 3.5.1  Final frame (April 2026) of the 15-month \
+ERSSTv5 SST-anomaly time-lapse over the tropical Pacific. The full \
+animated version of this figure is available as ", link[
+   "docs/images/hero_spatial.gif (1.3 MB, GIF)",
+   "https://github.com/mthiel74/ENSO-emergence/blob/main/docs/images/hero_spatial.gif"],
+   " and ", link["docs/images/hero_spatial.mp4 (370 KB, MP4)",
+   "https://github.com/mthiel74/ENSO-emergence/blob/main/docs/images/hero_spatial.mp4"],
+   " in the project repository. The Ni\[NTilde]o 3.4 monitoring box \
+is outlined in black; the basin-mean anomaly is shown in the upper \
+left. Land is grey. Colour scale: bright red \[Tilde] +3 \[Degree]C, \
+deep blue \[Tilde] \[Minus]3 \[Degree]C, white = 0. Source: NOAA \
+NCEI ERSSTv5 (anomaly variable ssta, baseline 1971\[Dash]2000)."],
+
+para[{ital["What the animation shows."], " The early frames \
+(spring/summer 2025) sit in the tail end of the 2024\[Dash]25 La \
+Ni\[NTilde]a: a wide blue cold-tongue band along the equator \
+between the dateline and the South American coast, with the warm \
+pool concentrated west of 160\[Degree]E. Through autumn 2025 the \
+cold tongue weakens but stays present; the basin remains \
+sub-thermal. The shift begins in December 2025\[Dash]January 2026: \
+the central Pacific (around 170\[Degree]W) starts to warm first, \
+then the warm signature propagates eastward along the equator \
+through Feb\[Dash]Mar\[Dash]Apr 2026. By the final frame the \
+eastern Pacific cold tongue has retreated to a thin sliver against \
+the South American coast, and the basin-mean is +0.37 \[Degree]C. \
+This is the spatial manifestation of the recharge\[Dash]discharge \
+cycle described in \[Section]5.1 and animated in the toy model in \
+Figures 5.3\[Dash]5.4."}],
+
+para[{ital["Note on resolution."], " ERSSTv5 is a 2\[Degree]\
+\[Times]2\[Degree] gridded product designed for long-term climate \
+analysis (data back to 1854). The visible \"pixelation\" of the \
+animation is the underlying grid; finer-resolution products like \
+NOAA OISST (0.25\[Degree]) exist but at the cost of a much shorter \
+homogeneous historical record. For the present analysis the coarser \
+ERSSTv5 grid suffices."}]
 }];
 
 
@@ -1307,15 +1380,53 @@ writeAll[{
 
 hd1["9.  Acknowledgements"],
 
-para[{ital["Data."], " Live data for this notebook are supplied by \
-two US federal agencies and one academic centre, all of whom make \
-their data freely available. The Ni\[NTilde]o 3.4 monthly SST \
-anomaly time series (NOAA ERSSTv5) is from NOAA's ", bold["Physical \
-Sciences Laboratory"], " (Boulder, CO). The Oceanic Ni\[NTilde]o Index \
-and the ENSO Diagnostic Discussion are from NOAA's ", bold["Climate \
-Prediction Center"], " (College Park, MD). The forecast plume is \
-from Columbia University's ", bold["International Research Institute \
-for Climate and Society"], " (Palisades, NY)."}],
+para[{ital["Data sources and licences."], " All scientific data \
+used here are public-domain or open-licence and explicitly cleared \
+for reuse, including for educational and commercial work."}],
+
+para[{"\[Bullet] ", bold["NOAA NCEI ERSSTv5"], " (monthly box-mean \
+anomalies ", ital["and"], " the 2\[Degree]\[Times]2\[Degree] \
+gridded ", mono["ssta"], " fields used in \[Section]3.5). \
+US Federal Government work, public domain (17 U.S.C. \[Section]105). \
+Recommended citation: Huang, B., P. W. Thorne, V. F. Banzon, T. \
+Boyer, G. Chepurin, J. H. Lawrimore, M. J. Menne, T. M. Smith, R. \
+S. Vose, & H.-M. Zhang (2017). NOAA Extended Reconstructed Sea \
+Surface Temperature (ERSST), Version 5. ", bold["NOAA NCEI"],
+   ". doi:10.7289/V5T72FNM."}],
+
+para[{"\[Bullet] ", bold["NOAA PSL"],
+   " (the Ni\[NTilde]o 3.4 monthly anomaly text file we parse for \
+the box-mean time series). Public domain; redistribution free with \
+attribution to the NOAA Physical Sciences Laboratory, Boulder, CO. \
+", link["psl.noaa.gov/data/correlation/nina34.anom.data",
+   "https://psl.noaa.gov/data/correlation/nina34.anom.data"], "."}],
+
+para[{"\[Bullet] ", bold["NOAA CPC Oceanic Ni\[NTilde]o Index (ONI)"],
+   " and the ", bold["ENSO Diagnostic Discussion"], " (May 2026 \
+probability table). Public domain. ",
+   link["cpc.ncep.noaa.gov", "https://www.cpc.ncep.noaa.gov/"], "."}],
+
+para[{"\[Bullet] ", bold["IRI / CPC ENSO forecast plume"],
+   " (the rendered PNG used as Figure 6.2 panel A). Produced by \
+Columbia University's International Research Institute for Climate \
+and Society; the published plume image is free to use with \
+attribution. ",
+   link["iri.columbia.edu/our-expertise/climate/forecasts/enso/current/",
+     "https://iri.columbia.edu/our-expertise/climate/forecasts/enso/current/"],
+   ". (IRI ceased publishing the underlying per-model numerical \
+table in 2024; only the rendered PNG remains publicly addressable.)"}],
+
+para[{"\[Bullet] ", bold["OpenAI gpt-image-2"], " was used to \
+generate Figures 1.1, 1.2, 3.1, 4.1, 5.1 (the five conceptual \
+illustrations). Per OpenAI's Terms of Use, outputs are owned by \
+the API caller and are licensed for commercial use; we additionally \
+acknowledge the model here for transparency."}],
+
+para[{"\[Bullet] ", bold["BBC News popular-science explainer"],
+   " (Simon King, May 2026 \"El Ni\[NTilde]o is coming\") is linked, \
+not redistributed; the link is fair use as a contextual reference. \
+", link["youtube.com/watch?v=UEseLvpl9ss",
+   "https://www.youtube.com/watch?v=UEseLvpl9ss"], "."}],
 
 para[{ital["Scientific lineage."], " The recharge\[Dash]discharge \
 oscillator is due to ", bold["Fei-Fei Jin"], " (1997); the delayed \
@@ -1348,9 +1459,14 @@ hd1["10.  Reproducibility"],
 para[{"All source code lives in the public repository ",
    link["github.com/mthiel74/ENSO-emergence",
      "https://github.com/mthiel74/ENSO-emergence"],
-   ". The entire pipeline is pure Wolfram Language \[LongDash] no \
-Python, no other runtime. To regenerate this notebook from scratch \
-on a machine with Wolfram Language 14 installed:"}],
+   ". The analysis pipeline (live data fetch \[Rule] toy models \
+\[Rule] live forecast \[Rule] notebook build) is pure Wolfram \
+Language; the one exception is a one-off Python script that calls \
+OpenAI's ", mono["gpt-image-2"], " API to regenerate the five \
+educational illustrations (Figures 1.1, 1.2, 3.1, 4.1, 5.1) \
+\[LongDash] their PNG outputs are committed to the repository so a \
+normal rebuild does not invoke Python. To regenerate the notebook \
+from scratch on a machine with Wolfram Language 14 installed:"}],
 
 codeIn["# 1. Fetch the latest live data into data/
 wolframscript -file wolfram/fetch_all.wls
@@ -1367,11 +1483,16 @@ wolframscript -file wolfram/delayed.wls
 # 5. Compute the live forecast overlay
 wolframscript -file wolfram/forecast.wls
 
-# 6. Rebuild this notebook
-wolframscript -file community/build_notebook.wls"],
+# 6. Render the spatial SST-anomaly time-lapse hero
+wolframscript -file wolfram/hero.wls
 
-para[{"The full pipeline runs in approximately 4 minutes on a 2024 \
-MacBook M3. The .nb file (~30 MB with all images embedded) is \
+# 7. Rebuild this notebook
+wolframscript -file community/build_notebook.wls
+
+# Steps 2-6 are also wrapped in wolfram/run_all.wls."],
+
+para[{"The full pipeline runs in approximately 5 minutes on a 2024 \
+MacBook M3. The .nb file (~5 MB with all images embedded) is \
 committed to the repository so the notebook is browseable without \
 running anything."}],
 
