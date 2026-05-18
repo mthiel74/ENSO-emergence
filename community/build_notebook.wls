@@ -1160,7 +1160,9 @@ wlIn["(* Figure 5.2: seasonal cycles of R(t) and sigma_w(t).
    we just plot them here. *)
 Plot[{Rseason[t - 1, 1], sigWWB[t - 1, 1]}, {t, 1, 13},
    PlotStyle -> {RGBColor[0.05, 0.20, 0.55], RGBColor[0.85, 0.32, 0.10]},
-   PlotLegends -> {\"R(t)  Bjerknes feedback\", \"\\[Sigma]_w(t)  WWB std-dev\"},
+   PlotLegends -> {
+      \"R(t)  Bjerknes feedback\",
+      Row[{Subscript[\"\\[Sigma]\", \"w\"], \"(t)  WWB std-dev\"}]},
    Frame -> True, Axes -> False,
    FrameTicks -> {{Automatic, None},
       {Table[{m, monthNames[[m]]}, {m, 12}], None}},

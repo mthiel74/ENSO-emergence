@@ -79,9 +79,11 @@ seasonPlot = Plot[
    {Rseason[t - 1, 1], sigWWB[t - 1, 1]},
    {t, 1, 13}, PlotRange -> All,
    Frame -> True, Axes -> False,
-   FrameLabel -> {{"value (month\!\(\*SuperscriptBox[\(\), \(-1\)]\) or \[Degree]C)",
+   FrameLabel -> {{"value (month\[Minus]\:00b9 or \[Degree]C)",
        None}, {"calendar month", None}},
-   PlotLegends -> {"R(t)  Bjerknes feedback", "\[Sigma]\_w(t)  WWB std-dev"},
+   PlotLegends -> {
+      "R(t)  Bjerknes feedback",
+      Row[{Subscript["\[Sigma]", "w"], "(t)  WWB std-dev"}]},
    PlotStyle -> {RGBColor[0.05, 0.20, 0.55], RGBColor[0.85, 0.32, 0.10]},
    FrameTicks -> {{Automatic, None},
       {Table[{m, {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"}[[m]]},
