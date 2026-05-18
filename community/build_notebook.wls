@@ -229,16 +229,17 @@ Cell["Wolfram Community submission \[LongDash] May 2026",
    "Subsubtitle", FontSlant -> Italic, FontColor -> GrayLevel[0.4]],
 
 (* Hero image: most recent monthly SST anomaly map, immediately under the title *)
-imgCell["hero_spatial_still.png"],
-captionCell["Cover figure.  Equatorial Pacific SST anomaly for April \
-2026 from the NOAA ERSSTv5 monthly gridded analysis, the most recent \
-month available at the time of writing. The Ni\[NTilde]o 3.4 \
-monitoring box (5\[Degree]N\[Dash]5\[Degree]S, 170\[Degree]W\[Dash]\
-120\[Degree]W) is outlined in black. The basin is dominated by \
-warm anomalies (red), with a small relic of the previous La \
-Ni\[NTilde]a cold tongue still visible as the pale streak inside the \
-eastern half of the box. The animated 15-month evolution that \
-this still is a frame of is shown in \[Section]3.5."],
+imgCell["hero_satellite_still.png"],
+captionCell["Cover figure.  Equatorial-Pacific SST anomaly for April \
+2026, from the NOAA ERSSTv5 monthly gridded analysis, overlaid at \
+65% opacity on Wolfram's built-in satellite imagery so the \
+geographic context (the Maritime Continent on the left edge, the \
+Americas on the right, the Ni\[NTilde]o 3.4 monitoring box \
+outlined in yellow at the equator) is visible. The basin is \
+dominated by warm anomalies (red), with the relic of the previous \
+La Ni\[NTilde]a cold tongue still visible as the pale band just \
+inside the eastern half of the box. The animated 15-month evolution \
+that this still is a frame of is in \[Section]3.5."],
 
 
 (* ----------------- ABSTRACT ----------------- *)
@@ -526,48 +527,100 @@ and forecasts, but it hides everything ", ital["spatial"],
    bold["where"], " in the basin the warm anomaly is accumulating and \
 how the cold tongue is dissolving. To make the spatial story \
 visible, we render the most recent 15 months of the NOAA ERSSTv5 \
-gridded monthly anomaly field over the tropical Pacific \
-(2\[Degree]\[Times]2\[Degree] resolution, latitudes 30\[Degree]S to \
-30\[Degree]N, longitudes 130\[Degree]E to 70\[Degree]W) as an \
-animation:"}],
+gridded monthly anomaly field, overlaid on Wolfram's built-in \
+satellite imagery for the same region. Latitudes 40\[Degree]S to \
+40\[Degree]N and longitudes 110\[Degree]E to 50\[Degree]W so that \
+the western Maritime Continent, Australia, and both American \
+coastlines are all visible for context:"}],
 
-imgCell["hero_spatial_still.png"],
+imgCell["hero_satellite_still.png"],
 captionCell["Figure 3.5.1  Final frame (April 2026) of the 15-month \
-ERSSTv5 SST-anomaly time-lapse over the tropical Pacific. The full \
-animated version of this figure is available as ", link[
-   "docs/images/hero_spatial.gif (1.3 MB, GIF)",
-   "https://github.com/mthiel74/ENSO-emergence/blob/main/docs/images/hero_spatial.gif"],
-   " and ", link["docs/images/hero_spatial.mp4 (370 KB, MP4)",
-   "https://github.com/mthiel74/ENSO-emergence/blob/main/docs/images/hero_spatial.mp4"],
-   " in the project repository. The Ni\[NTilde]o 3.4 monitoring box \
-is outlined in black; the basin-mean anomaly is shown in the upper \
-left. Land is grey. Colour scale: bright red \[Tilde] +3 \[Degree]C, \
-deep blue \[Tilde] \[Minus]3 \[Degree]C, white = 0. Source: NOAA \
-NCEI ERSSTv5 (anomaly variable ssta, baseline 1971\[Dash]2000)."],
+NOAA ERSSTv5 SST-anomaly time-lapse, overlaid at 65 % opacity on \
+Wolfram's satellite basemap. The Ni\[NTilde]o 3.4 monitoring box \
+(5\[Degree]N\[Dash]5\[Degree]S, 170\[Degree]W\[Dash]120\[Degree]W) \
+is outlined in yellow; the basin-mean Ni\[NTilde]o 3.4 anomaly is \
+in the upper-left badge. Colour scale: bright red \[Tilde] +3 \
+\[Degree]C, deep blue \[Tilde] \[Minus]3 \[Degree]C, white = 0. \
+The full animated 15-frame version (February 2025 \[Rule] April \
+2026, 1.25 fps) is downloadable as ",
+   link["hero_satellite.gif",
+     "https://github.com/mthiel74/ENSO-emergence/blob/main/docs/images/hero_satellite.gif"],
+   " (2.5 MB) or ",
+   link["hero_satellite.mp4",
+     "https://github.com/mthiel74/ENSO-emergence/blob/main/docs/images/hero_satellite.mp4"],
+   " (800 KB). The Wolfram Community version of this post embeds the \
+GIF inline above; in the static PDF only the final frame appears."],
 
-para[{ital["What the animation shows."], " The early frames \
-(spring/summer 2025) sit in the tail end of the 2024\[Dash]25 La \
-Ni\[NTilde]a: a wide blue cold-tongue band along the equator \
-between the dateline and the South American coast, with the warm \
-pool concentrated west of 160\[Degree]E. Through autumn 2025 the \
-cold tongue weakens but stays present; the basin remains \
-sub-thermal. The shift begins in December 2025\[Dash]January 2026: \
-the central Pacific (around 170\[Degree]W) starts to warm first, \
-then the warm signature propagates eastward along the equator \
-through Feb\[Dash]Mar\[Dash]Apr 2026. By the final frame the \
-eastern Pacific cold tongue has retreated to a thin sliver against \
-the South American coast, and the basin-mean is +0.37 \[Degree]C. \
-This is the spatial manifestation of the recharge\[Dash]discharge \
-cycle described in \[Section]5.1 and animated in the toy model in \
-Figures 5.3\[Dash]5.4."}],
+para[{ital["What the animation shows."], " The early frames (spring \
+/summer 2025) sit in the tail end of the 2024\[Dash]25 La \
+Ni\[NTilde]a: a cool band along the equator between the dateline \
+and the South American coast, with the warm pool concentrated west \
+of 160\[Degree]E. Through autumn 2025 the cold tongue weakens but \
+stays present; the basin remains sub-thermal. The shift begins in \
+December 2025\[Dash]January 2026: the central Pacific (around \
+170\[Degree]W) warms first, then the warm signature propagates \
+eastward along the equator through Feb\[Dash]Mar\[Dash]Apr 2026. By \
+the final frame the eastern Pacific cold tongue has retreated to a \
+thin sliver against the South American coast, and the basin-mean is \
++0.37 \[Degree]C. This is the spatial manifestation of the \
+recharge\[Dash]discharge cycle described in \[Section]5.1 and \
+animated in the toy model in Figures 5.3\[Dash]5.4."}],
+
+para[{ital["How this was made."], " The grid we are plotting is the \
+", mono["ssta"], " variable from the NCEI ERSSTv5 monthly NetCDFs \
+(2\[Degree]\[Times]2\[Degree], anomaly vs the 1971\[Dash]2000 \
+climatology embedded by NCEI). One file per month, fetched from"}],
+
+codeIn["https://www.ncei.noaa.gov/pub/data/cmb/ersst/v5/netcdf/ersst.v5.YYYYMM.nc"],
+
+para[{"by ", mono["wolfram/fetch_ersst_grid.wls"], " into ",
+   mono["data/raw/"],
+   ". The frame renderer (full implementation: ",
+   mono["wolfram/hero_satellite.wls"],
+   ", ~120 lines) does, per month:"}],
+
+codeIn["(* Load one month of gridded SST anomaly from the NetCDF *)
+ssta = Normal @ Import[file, {\"NetCDF\", \"Data\", \"ssta\"}];
+
+(* Build one geographic polygon per 2-degree-by-2-degree cell,
+   coloured by the cell's anomaly value *)
+polygons = Flatten @ Table[
+   With[{v = ssta[[1, 1, latIdx[[i]], lonIdx[[j]]]]},
+      If[v < -10., Nothing,    (* skip land sentinel *)
+         {divergingCmap[v], Opacity[0.65], EdgeForm[None],
+          GeoPolygon[{
+             {latSub[[i]] - 1, lonTo180[lonSub[[j]] - 1]},
+             {latSub[[i]] - 1, lonTo180[lonSub[[j]] + 1]},
+             {latSub[[i]] + 1, lonTo180[lonSub[[j]] + 1]},
+             {latSub[[i]] + 1, lonTo180[lonSub[[j]] - 1]}}]}]],
+   {i, nLat}, {j, nLon}];
+
+(* Render with satellite background via GeoGraphics *)
+frame = GeoGraphics[
+   {polygons,
+    Directive[Yellow, Thick], GeoPath[{
+       {5, -170}, {5, -120}, {-5, -120}, {-5, -170}, {5, -170}}]},
+   GeoRange      -> {{-40, 40}, {110, -50}},
+   GeoProjection -> \"Equirectangular\",
+   GeoBackground -> \"Satellite\",
+   ImageSize     -> {1100, 580}];
+
+(* Stitch 15 monthly frames into MP4 + GIF *)
+Export[\"hero_satellite.gif\",
+   AnimatedImage[Rasterize /@ frames, FrameRate -> 1.25], \"GIF\"];
+Export[\"hero_satellite.mp4\",
+   AnimatedImage[Rasterize /@ frames, FrameRate -> 1.25], \"MP4\"];"],
 
 para[{ital["Note on resolution."], " ERSSTv5 is a 2\[Degree]\
 \[Times]2\[Degree] gridded product designed for long-term climate \
-analysis (data back to 1854). The visible \"pixelation\" of the \
-animation is the underlying grid; finer-resolution products like \
-NOAA OISST (0.25\[Degree]) exist but at the cost of a much shorter \
-homogeneous historical record. For the present analysis the coarser \
-ERSSTv5 grid suffices."}]
+analysis (data back to 1854). The visible blockiness of the overlay \
+is the underlying grid; finer-resolution products like NOAA OISST \
+(0.25\[Degree], available daily) exist but at the cost of a much \
+shorter homogeneous historical record. For the present analysis the \
+coarser ERSSTv5 grid suffices, and the geographic context provided \
+by the satellite basemap (the visible coastlines of Asia, Australia, \
+and the Americas) makes the location of the equatorial cold tongue \
+unambiguous to a non-specialist reader."}]
 }];
 
 
