@@ -48,17 +48,111 @@ a GeoGraphics frame with SST anomaly overlaid on satellite imagery.";
 loadERSSTFrame::usage = "loadERSSTFrame[file, latAxis, lonAxis, latIdx, \
 lonIdx] reads one monthly ERSSTv5 NetCDF and returns the Pacific window.";
 
+LoadNino34::usage = "LoadNino34[] -> association with `year`, `month`, \
+`date`, `anom`. Live-fetched from NOAA PSL.";
+LoadONI::usage = "LoadONI[] -> association with seasonal ONI values.";
+LoadProbSnapshot::usage = "LoadProbSnapshot[] -> hand-curated May 2026 \
+CPC/IRI probability snapshot.";
+
 Rseason::usage = "Rseason[t, m0] -- seasonal Bjerknes growth rate.";
 sigWWB::usage  = "sigWWB[t, m0] -- seasonal westerly-wind-burst std-dev.";
 divergingCmap::usage = "divergingCmap[v] -- red/blue diverging colour function.";
 lonTo180::usage = "lonTo180[L] -- convert 0..360 longitude to -180..180.";
 monthName::usage = "monthName[m] -- 3-letter month name for m in 1..12.";
+monthNames::usage = "monthNames -- {Jan, Feb, ..., Dec}.";
 
+(* alphaDel is public so the §5.7 bifurcation sweep can Block-rebind it. *)
 {R0, R1, phiR, gammaC, rDamp, alpha, sigmaT, sigmaH, sigW0, aW, phiW,
  alphaDel, delayTau, sigBase, sigSpring, unit2Mon};
 
+alphaDel::usage = "Wave-coupling strength for simulateDDE. Public so \
+the bifurcation sweep can Block-rebind it.";
+
+(* alphaDel is declared here in the PUBLIC section so its global symbol
+   is in ENSOHelpers`, not Private. *)
+alphaDel = 0.75;
+
 
 Begin["`Private`"];
+
+monthNames = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+(* ============== Live data loaders (URL-fetched, no local files) ==== *)
+
+(* Niño 3.4 monthly anomalies from NOAA PSL (ERSSTv5, 1991-2020 base).
+   Live HTTPS fetch — no local CSV needed. *)
+LoadNino34[] := Module[
+   {url = "https://psl.noaa.gov/data/correlation/nina34.anom.data",
+    text, lines, header, y0, y1, missing = {}, rows = {}, parts, yr, vals},
+   text = Import[url, "Text"];
+   lines = Select[StringTrim /@ StringSplit[text, "\n"], # =!= "" &];
+   header = StringSplit @ First @ lines;
+   {y0, y1} = ToExpression /@ header;
+   Do[parts = StringSplit @ ln;
+      Which[
+         Length[parts] == 1,
+            Quiet @ Check[AppendTo[missing, ToExpression@First@parts], Null],
+         Length[parts] >= 13,
+            yr = ToExpression @ parts[[1]];
+            If[IntegerQ[yr] && y0 <= yr <= y1,
+               vals = ToExpression /@ parts[[2 ;; 13]];
+               MapIndexed[AppendTo[rows, {yr, First@#2, #1}] &, vals]]],
+      {ln, Rest @ lines}];
+   If[missing =!= {},
+      rows = Select[rows, ! MemberQ[missing, #[[3]]] &]];
+   <|
+     "year"  -> rows[[All, 1]],
+     "month" -> rows[[All, 2]],
+     "date"  -> (DateObject[{#[[1]], #[[2]], 15}, "Day"] & /@ rows),
+     "anom"  -> N @ rows[[All, 3]]
+   |>
+];
+
+(* Oceanic Niño Index (3-mo running mean) from CPC. *)
+LoadONI[] := Module[
+   {url = "https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt",
+    text, lines, seasonMid, rows = {}, parts, seas, yr, total, anom},
+   seasonMid = <|"DJF" -> 1, "JFM" -> 2, "FMA" -> 3, "MAM" -> 4,
+      "AMJ" -> 5, "MJJ" -> 6, "JJA" -> 7, "JAS" -> 8, "ASO" -> 9,
+      "SON" -> 10, "OND" -> 11, "NDJ" -> 12|>;
+   text = Import[url, "Text"];
+   lines = Select[StringTrim /@ StringSplit[text, "\n"], # =!= "" &];
+   Do[parts = StringSplit @ ln;
+      If[Length[parts] == 4 && KeyExistsQ[seasonMid, parts[[1]]],
+         yr    = Quiet @ ToExpression @ parts[[2]];
+         total = Quiet @ ToExpression @ parts[[3]];
+         anom  = Quiet @ ToExpression @ parts[[4]];
+         If[IntegerQ[yr] && NumericQ[total] && NumericQ[anom],
+            AppendTo[rows, <|"season" -> parts[[1]], "year" -> yr,
+               "midMonth" -> seasonMid[parts[[1]]],
+               "sst" -> total, "anom" -> anom|>]]],
+      {ln, lines}];
+   rows
+];
+
+(* Hand-curated May-2026 ENSO probability snapshot.
+   No machine-readable CPC feed exists for this table; transcribed from
+   the official PNG bar chart. *)
+LoadProbSnapshot[] := <|
+   "issued" -> "2026-05",
+   "is_static_snapshot" -> True,
+   "headline" -> "El Nino Watch in effect: ~82% chance of onset MJJ 2026, \
+~96% chance of persistence through DJF 2026-27.",
+   "source" -> "NOAA CPC / IRI ENSO Diagnostic Discussion (May 2026)",
+   "probabilities" -> {
+     <|"season" -> "MJJ 2026", "la_nina" -> 0, "neutral" -> 18, "el_nino" -> 82|>,
+     <|"season" -> "JJA 2026", "la_nina" -> 0, "neutral" -> 9,  "el_nino" -> 91|>,
+     <|"season" -> "JAS 2026", "la_nina" -> 0, "neutral" -> 6,  "el_nino" -> 94|>,
+     <|"season" -> "ASO 2026", "la_nina" -> 0, "neutral" -> 5,  "el_nino" -> 95|>,
+     <|"season" -> "SON 2026", "la_nina" -> 0, "neutral" -> 4,  "el_nino" -> 96|>,
+     <|"season" -> "OND 2026", "la_nina" -> 0, "neutral" -> 4,  "el_nino" -> 96|>,
+     <|"season" -> "NDJ 2026", "la_nina" -> 0, "neutral" -> 4,  "el_nino" -> 96|>,
+     <|"season" -> "DJF 2027", "la_nina" -> 1, "neutral" -> 4,  "el_nino" -> 95|>,
+     <|"season" -> "JFM 2027", "la_nina" -> 3, "neutral" -> 9,  "el_nino" -> 88|>
+   }
+|>;
+
 
 (* ============== Recharge–discharge oscillator ====================== *)
 
@@ -141,7 +235,8 @@ forecastEnsemble[m0_Integer, nMembers_:500, leadMonths_:18, dt_:0.05] :=
 
 (* ============== Delayed-action oscillator (Suarez & Schopf) ======== *)
 
-alphaDel  = 0.75;   delayTau = 3.0;
+(* alphaDel is declared in the public section above (so Block can rebind it). *)
+delayTau = 3.0;
 sigBase   = 0.03;   sigSpring = 0.10;
 unit2Mon  = 2.0;
 

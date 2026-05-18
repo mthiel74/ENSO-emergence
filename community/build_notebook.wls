@@ -427,16 +427,15 @@ out until early 2027. The bar chart is built directly from the \
 snapshot JSON written by ", mono["wolfram/fetch_cpc_probabilities.wls"],
    ":"}],
 
-wlIn["(* Load the shared data-access helpers (LoadNino34, LoadONI, \
-LoadProbSnapshot, ...) defined in wolfram/load_data.wl *)
-Get[FileNameJoin[{NotebookDirectory[], \"..\", \"wolfram\", \"load_data.wl\"}]];
-
-(* Figure 2.1: NOAA / IRI ENSO probability bars *)
-probData = ENSOData`LoadProbSnapshot[];
+wlIn["(* Figure 2.1: NOAA / IRI ENSO probability bars.
+   LoadProbSnapshot[] is in enso_emergence_helpers.wl (the package
+   loaded by the Setup cell). It returns a hand-curated snapshot of
+   the May-2026 CPC bar chart; there is no machine-readable CPC feed. *)
+probData = LoadProbSnapshot[];
 {seasons, laNina, neutral, elNino} = Transpose[
    {#[\"season\"], #[\"la_nina\"], #[\"neutral\"], #[\"el_nino\"]} & /@
    probData[\"probabilities\"]];
-BarChart[
+probBars = BarChart[
    Transpose[{laNina, neutral, elNino}],
    ChartLayout -> \"Stacked\",
    ChartStyle -> {RGBColor[0.20, 0.45, 0.75],   (* La Niña blue *)
@@ -473,10 +472,11 @@ operationally similar May 2023 discussion gave a 90 % probability for \
 DJF 2023\[Dash]24, and the 2023\[Dash]24 super-El-Ni\[NTilde]o indeed \
 materialised."}],
 
-wlIn["(* Figure 2.2: full Niño 3.4 monthly anomaly record from NOAA PSL.
-   ENSOData`LoadNino34 parses the ASCII anomaly file fetched by
-   wolfram/fetch_nino34.wls into a {date, anom} pair list. *)
-n34 = ENSOData`LoadNino34[];
+wlIn["(* Figure 2.2: full Niño 3.4 monthly anomaly record.
+   LoadNino34[] (from the helpers package) live-fetches NOAA PSL
+   ERSSTv5 monthly anomalies and parses them into {year, month,
+   date, anom}. *)
+n34 = LoadNino34[];
 DateListPlot[
    Transpose[{n34[\"date\"], n34[\"anom\"]}],
    Joined -> True,
@@ -526,7 +526,7 @@ With[
    ]
 ],
 
-para[{"The +0.31 \[Degree]C jump from February to April \
+para[{"The +0.50 \[Degree]C jump from February to April \
 (\[Minus]0.27 \[RightArrow] +0.23) sits comfortably in the top decile \
 of all Feb\[Dash]Apr changes since 1950 (ranked 9th of 77, tied with \
 1963 \[LongDash] the top three are 1951 at +0.81, 2014 at +0.70, and \
@@ -779,7 +779,7 @@ wlIn["(* Figure 4.2: observed lagged autocorrelation rho(m0, lead).
    Flatten the monthly anomalies into a single vector indexed by
    (year - y0)*12 + month so lead lookups are O(1) offsets, then
    correlate for each (initial-month, lead) pair. *)
-n34 = ENSOData`LoadNino34[];
+n34 = LoadNino34[];
 years = Sort @ DeleteDuplicates @ n34[\"year\"];
 {y0, y1} = MinMax[years];
 nMonths = (y1 - y0 + 1)*12;
@@ -1121,7 +1121,7 @@ codeIn["simulate[T0_, h0_, m0_, tEnd_, dt_, seed_] := Module[
      eT = RandomVariate[NormalDistribution[]];
      eH = RandomVariate[NormalDistribution[]];
      eW = RandomVariate[NormalDistribution[]];
-     T += dt (Rseason[t, m0] T + gamma h) +
+     T += dt (Rseason[t, m0] T + gammaC h) +
            sqrtDt (sigmaT eT + sigWWB[t, m0] eW);
      h += dt (-rDamp h - alpha T) + sqrtDt sigmaH eH;
      t += dt;
@@ -1218,13 +1218,18 @@ seasonally as the verification month sweeps through the strong-\
 coupling autumn and the weak-coupling/high-WWB spring."],
 
 wlIn["(* Figure 5.6: ensemble std-dev as f(initial month, lead).
-   Runs forecastEnsemble[] for every m0 in 1..12, extracts the per-
-   lead StandardDeviation, and plots the {12, 16} matrix as a heatmap. *)
-spreadMatrix = Table[
+   For each calendar month m0 in 1..12 run a 250-member ensemble out
+   to lead 15 months, then extract the per-integer-lead std-dev.
+   Result is a {12, 16} matrix (rows = m0, cols = lead). Transpose
+   so rows = lead (top = lead 0) and cols = m0 (Jan..Dec). *)
+spreadByMonth = Table[
    With[{e = forecastEnsemble[m0, 250, 15, 0.1]},
-      e[\"std\"][[Table[FirstPosition[e[\"t\"], _?(# >= tau - 0.05 &)][[1]],
+      e[\"std\"][[Table[FirstPosition[e[\"t\"],
+                          _?(# >= tau - 0.05 &)][[1]],
                        {tau, 0, 15}]]]],
-   {k, Length @ leadIdx}, {m0, 1, 12}];
+   {m0, 1, 12}];
+spreadMatrix = Transpose[spreadByMonth];   (* {16 leads, 12 months} *)
+
 ArrayPlot[spreadMatrix,
    ColorFunction -> \"TemperatureMap\",
    Frame -> True,
@@ -1232,7 +1237,7 @@ ArrayPlot[spreadMatrix,
                   {\"initial calendar month m\\:2080\", None}},
    FrameTicks -> {
       {Table[{tau + 1, ToString[tau]}, {tau, 0, 15}], None},
-      {Table[{m, months[[m]]}, {m, 12}], None}},
+      {Table[{m, monthNames[[m]]}, {m, 12}], None}},
    PlotLegends -> Placed[BarLegend[Automatic,
       LegendLabel -> \"ensemble std (\\[Degree]C)\"], Right],
    Mesh -> All, ImageSize -> 820, AspectRatio -> 1.05]"],
@@ -1504,7 +1509,7 @@ confidence intervals, is:"}],
 wlIn["(* Figure 6.1: live RDO forecast from observed April 2026 state.
    Re-uses simulate[] from the helpers package and seeds 500 members
    with the same (T0, h0). *)
-n34 = ENSOData`LoadNino34[];
+n34 = LoadNino34[];
 {Tlast, Tprev2, m0last} = {n34[\"anom\"][[-1]], n34[\"anom\"][[-3]],
                            n34[\"month\"][[-1]]};
 dTdt = (Tlast - Tprev2)/2.;
@@ -1521,7 +1526,7 @@ med  = Median /@ Tmat;
 p75  = Map[Quantile[#, 0.75] &, Tmat];
 p95  = Map[Quantile[#, 0.95] &, Tmat];
 
-Show[
+coneFig = Show[
    ListLinePlot[{Transpose[{t, p05}], Transpose[{t, p95}]},
       Filling -> {1 -> {{2}, Directive[Opacity[0.18],
          RGBColor[0.83, 0.32, 0.10]]}}],
@@ -1555,18 +1560,21 @@ the cone's width should be of similar order, and both should narrow \
 into autumn (strong coupling reduces sensitivity to noise) and widen \
 into next spring (the barrier reasserts itself)."}],
 
-wlIn["(* Figure 6.2: three-panel side-by-side. Combines the IRI plume
-   PNG (fetched by wolfram/fetch_iri_plume.wls), the toy-model cone
-   from above, and the NOAA probability bars from Figure 2.1. *)
-iriImg = Image[Import[
-   FileNameJoin[{NotebookDirectory[], \"..\", \"data\", \"raw\",
-                 \"iri_plume_current.png\"}]],
-   ImageSize -> 900];
-Grid[{{Labeled[iriImg,
-         Style[\"IRI / CPC plume (latest issue)\", Bold], Top]},
-      {(* the cone Show[] from Figure 6.1 *)},
-      {(* the BarChart from Figure 2.1 *)}},
-   Spacings -> {2, 2}, ItemSize -> {Full, Automatic}]"],
+wlIn["(* Figure 6.2: three-panel side-by-side. Reuses two variables
+   you've already computed in earlier cells: coneFig (from Figure
+   6.1) and probBars (from Figure 2.1). The third panel is the live
+   IRI plume PNG fetched by wolfram/fetch_iri_plume.wls. *)
+iriUrl = \"https://ensoforecast.iri.columbia.edu/cgi-bin/sst_table_img?month=4&year=2026\";
+iriImg = Image[Import[iriUrl], ImageSize -> 900];
+
+Grid[{
+   {Labeled[iriImg,
+      Style[\"IRI / CPC plume (latest issue)\", Bold], Top]},
+   {Labeled[coneFig,
+      Style[\"Recharge-discharge ensemble cone (April 2026 init)\", Bold], Top]},
+   {Labeled[probBars,
+      Style[\"NOAA / IRI probability bars (May 2026 issuance)\", Bold], Top]}
+}, Spacings -> {2, 2}, ItemSize -> {Full, Automatic}]"],
 
 imgCell["forecast_overlay.png"],
 captionCell["Figure 6.2  Three-panel live overlay: IRI/CPC operational \
