@@ -212,9 +212,13 @@ aiNote[fig_String] := Cell[
 illustration; there is no WL code to run for this figure. See \
 \[Section]9 Acknowledgements for the licence."
    }], "Text",
-   FontSize -> 11, FontColor -> GrayLevel[0.4],
+   FontSize -> 11, FontColor -> GrayLevel[0.3],
    CellMargins -> {{70, 70}, {6, 4}},
-   Background -> RGBColor[0.97, 0.96, 0.92]];
+   (* Distinct grey-blue strip so readers don't confuse this with the
+      cream abstract box (RGBColor[0.98, 0.96, 0.90]). *)
+   Background -> RGBColor[0.88, 0.91, 0.95],
+   CellFrame -> {{4, 0}, {0, 0}},
+   CellFrameColor -> RGBColor[0.45, 0.55, 0.70]];
 
 (* Inline hyperlink that renders well in both interactive and PDF
    views: link text followed by the URL in parentheses. *)
@@ -665,20 +669,29 @@ yourself, fetch them with this short loop:"
    Background -> RGBColor[0.97, 0.96, 0.92]],
 
 wlIn["(* Download the 15 most recent ERSSTv5 monthly NetCDFs into a
-   local folder before re-running the renderer below. *)
-ncDir = CreateDirectory[FileNameJoin[{NotebookDirectory[], \"ersst\"}]];
+   local folder. Idempotent: safe to re-run; CreateDirectory if
+   missing, skip already-fetched files, guard against 404s (the
+   current month's file is usually not published until ~10th). *)
+ncDir = With[{d = FileNameJoin[{NotebookDirectory[], \"ersst\"}]},
+   If[! DirectoryQ[d], CreateDirectory[d]]; d];
 today = Take[DateList[], 2];
 monthSeq = NestList[
    With[{y = #[[1]], m = #[[2]] - 1},
       If[m == 0, {y - 1, 12}, {y, m}]] &,
-   today, 15];
+   today, 14];   (* 15 months including `today` *)
+
 Do[
-   With[{ym = ym, url = \"https://www.ncei.noaa.gov/pub/data/cmb/ersst/v5/netcdf/ersst.v5.\" <>
-      ToString[ym[[1]]] <> StringPadLeft[ToString[ym[[2]]], 2, \"0\"] <> \".nc\",
+   With[{url = \"https://www.ncei.noaa.gov/pub/data/cmb/ersst/v5/netcdf/ersst.v5.\" <>
+        ToString[ym[[1]]] <> StringPadLeft[ToString[ym[[2]]], 2, \"0\"] <> \".nc\",
       dest = FileNameJoin[{ncDir, \"ersst.v5.\" <> ToString[ym[[1]]] <>
          StringPadLeft[ToString[ym[[2]]], 2, \"0\"] <> \".nc\"}]},
-      If[! FileExistsQ[dest], URLDownload[url, dest]]],
-   {ym, monthSeq}];"],
+      If[! FileExistsQ[dest],
+         URLDownload[url, dest];
+         (* Guard: NCEI may not have published this month yet -> empty body *)
+         If[FileExistsQ[dest] && FileByteCount[dest] < 1000,
+            Print[\"  skipped (not yet published): \", ym]; DeleteFile[dest]]]],
+   {ym, monthSeq}];
+Print[\"NetCDFs in \", ncDir, \": \", Length @ FileNames[\"ersst.v5.*.nc\", ncDir]]"],
 
 codeIn["(* Load one month of gridded SST anomaly from the NetCDF *)
 ssta = Normal @ Import[file, {\"NetCDF\", \"Data\", \"ssta\"}];
@@ -1200,11 +1213,9 @@ para[{"A 20-year free run reproduces the irregular \
 \[Dash]3 \[Degree]C:"}],
 
 wlIn["(* Figure 5.3: a single 20-year RDO realisation.
-   The full simulate[] above is bundled in wolfram/rdo.wls; the
-   constants gamma, rDamp, alpha, sigmaT, sigmaH are the same as in
-   Figure 5.2 plus gamma=0.06, rDamp=0.04, alpha=0.15, sigmaT=0.06,
-   sigmaH=0.04. *)
-Get[FileNameJoin[{NotebookDirectory[], \"..\", \"wolfram\", \"rdo.wls\"}]];
+   simulate[] is already loaded from the Setup cell's
+   Get[\"enso_emergence_helpers.wl\"]; the constants gammaC, rDamp,
+   alpha, sigmaT, sigmaH are exported by the same package. *)
 samp = simulate[0.3, 0.6, 1, 12*20, 0.05, 17];
 ListLinePlot[Transpose[{samp[\"t\"]/12., samp[\"T\"]}],
    PlotStyle -> Directive[Thickness[0.003], RGBColor[0.83, 0.32, 0.10]],
@@ -1383,21 +1394,28 @@ leading (real) eigenvalue passes through zero \[LongDash] this is the \
 pitchfork transition, marking the loss of stability of the trivial \
 fixed point. For ", math["\[Alpha] < 1"], " the origin is unstable in \
 the deterministic system and the cubic damping ", math["\[Minus] T^3"],
-   " saturates trajectories near ", math["T = \[PlusMinus]1"], "; \
-adding the delayed feedback at finite ", math["\[Delta]"], " converts \
-the would-be stable fixed points into sustained limit-cycle \
-oscillations of period ", math["\[TildeTilde] 4 \[Delta]"], " through \
-the original Suarez\[Dash]Schopf mechanism. Below we sweep ",
+   " saturates trajectories near ", math["T = \[PlusMinus]\[Sqrt](1\[Minus]\[Alpha])"],
+   " \[LongDash] so the stable fixed-point magnitude ", ital["decreases"],
+   " with ", math["\[Alpha]"], ", going from \[PlusMinus]1 at ",
+   math["\[Alpha] = 0"], " down to 0 at the pitchfork. Adding the \
+delayed feedback at finite ", math["\[Delta]"], " has an opposite \
+effect on the ", ital["dynamic"], " amplitude: for small ",
+   math["\[Alpha]"], " the trajectory rattles inside one of the ",
+   math["\[PlusMinus]\[Sqrt](1\[Minus]\[Alpha])"], " basins and the \
+peak-to-peak swing is small, while for larger ", math["\[Alpha]"],
+   " the delayed negative feedback becomes strong enough to flip the \
+sign each half-period, producing a sustained limit cycle of period ",
+   math["\[TildeTilde] 4 \[Delta]"], " and full peak-to-peak ",
+   math["\[TildeTilde] \[PlusMinus]1.5"], ". Below we sweep ",
    math["\[Alpha]"], " at fixed ", math["\[Delta] = 3"],
-   " and report the amplitude envelope from stochastic runs."}],
+   " and plot the stationary min/max envelope from the stochastic \
+runs."}],
 
 wlIn["(* Figure 5.7: bifurcation sweep -- min/max of T as a function of
    the wave-coupling alpha, at fixed delta = 3.  simulateDDE[] (shown
    in full below) is the same Euler-Maruyama DDE integrator used for
    the other delayed-osc panels; full implementation in
-   wolfram/delayed.wls. *)
-Get[FileNameJoin[{NotebookDirectory[], \"..\", \"wolfram\", \"delayed.wls\"}]];
-
+   the helpers package (loaded by the Setup cell). *)
 alphaList = Range[0.3, 1.15, 0.05];
 bifurc = Table[
    Block[{alphaDel = aL},
@@ -1416,14 +1434,17 @@ Show[
    ImageSize -> 720, AspectRatio -> 0.55]"],
 
 imgCell["delayed_bifurcation.png"],
-captionCell["Figure 5.7  Min and max of T in long stochastic runs of \
-the delayed oscillator, as a function of the wave-coupling ",
-   math["\[Alpha]"], ", with ", math["\[Delta] = 3"],
-   " (= 6 months) held fixed. The amplitude grows continuously from \
-near zero at small ", math["\[Alpha]"],
-   " (where the cubic damping holds the trajectory close to \
-", math["T = \[PlusMinus]1"], ") to a full \[PlusMinus]1.2 swing at \
-", math["\[Alpha] = 0.75\[Dash]1.0"], "."],
+captionCell["Figure 5.7  Stationary min and max of T in long \
+stochastic runs of the delayed oscillator, as a function of the \
+wave-coupling ", math["\[Alpha]"], ", with ", math["\[Delta] = 3"],
+   " (= 6 months) held fixed. At small ", math["\[Alpha]"],
+   " (~0.3) the trajectory remains trapped in one of the ",
+   math["\[PlusMinus]\[Sqrt](1\[Minus]\[Alpha])"],
+   " deterministic basins and the peak-to-peak swing is small \
+(\[TildeTilde] 0.9); as ", math["\[Alpha]"], " grows toward 1 the \
+delayed negative feedback becomes strong enough to drive a full \
+sign-reversing limit cycle of peak-to-peak \[TildeTilde] 3 (i.e. ",
+   math["\[PlusMinus]1.5"], ")."],
 
 para[{ital["Implementation."], " The Wolfram implementation maintains \
 a circular history buffer so the delayed value ", math["T(t-\[Delta])"],
@@ -1476,11 +1497,17 @@ oscillations of period ", math["\[TildeTilde] 4\[Delta] = 24"],
 ENSO band, but the delay-induced limit-cycle phenomenology is \
 correct."],
 
-wlIn["(* Figure 5.9: DDE ensemble cones, 400 members per init month.
-   Initial state drawn from a model-internal climatology pool. Same
-   percentile-band pattern as Figure 5.5 but the underlying dynamics
-   are the limit cycle, not the stochastic-RDO recharge mode. *)
-panelDDE[m0_] := With[{f = forecastEnsembleDDE[m0]},
+wlIn["(* Figure 5.9: DDE ensemble cones. Same percentile-band pattern as
+   Figure 5.5 but the underlying dynamics are the delay-induced limit
+   cycle, not the stochastic-RDO recharge mode.
+
+   PERFORMANCE: the displayed figure used 400 members; this cell uses
+   150 to keep it under ~40 s. The first call also builds a 400-yr
+   model climatology pool (a few seconds, one-time). *)
+
+panelDDE[m0_, nMem_:150] := Module[{f},
+   PrintTemporary[\"DDE ensemble for init month \", m0, \" ...\"];
+   f = forecastEnsembleDDE[m0, nMem, 18, 0.05];
    Show[
       ListLinePlot[{Transpose[{f[\"t\"], f[\"p05\"]}],
                     Transpose[{f[\"t\"], f[\"p95\"]}]},
@@ -1576,7 +1603,8 @@ forecast median to come down somewhat \[LongDash] our +2 to +3 \
    " estimate."}],
 
 para[{"With ", math["(T, h)"], " = (+0.23, +4.9) as the initial \
-condition, we run a 500-member RDO ensemble out 18 months \
+condition, we run a 500-member RDO ensemble (200 in the live wlIn \
+cell below) out 18 months \
 (April 2026 \[RightArrow] October 2027). The resulting ", bold["live \
 toy-model forecast"], ", with explicit 5\[Dash]95 % and 25\[Dash]75 % \
 confidence intervals, is:"}],
@@ -1641,17 +1669,33 @@ into next spring (the barrier reasserts itself)."}],
 wlIn["(* Figure 6.2: three-panel side-by-side. Reuses two variables
    you've already computed in earlier cells: coneFig (from Figure
    6.1) and probBars (from Figure 2.1). The third panel is the live
-   IRI plume PNG fetched by wolfram/fetch_iri_plume.wls. *)
-iriUrl = \"https://ensoforecast.iri.columbia.edu/cgi-bin/sst_table_img?month=4&year=2026\";
-iriImg = Image[Import[iriUrl], ImageSize -> 900];
+   IRI plume PNG fetched on demand from ensoforecast.iri.columbia.edu;
+   we walk back from the current month until we hit an existing
+   issue (IRI publishes around mid-month). *)
+findIRIPlume[] := Module[{y, m, i, url, resp},
+   {y, m} = Take[DateList[], 2];
+   Do[
+      url = \"https://ensoforecast.iri.columbia.edu/cgi-bin/sst_table_img?month=\" <>
+         ToString[m] <> \"&year=\" <> ToString[y];
+      resp = URLRead[HTTPRequest[url]];
+      If[resp[\"StatusCode\"] == 200,
+         Return[{url, {y, m}, resp[\"BodyBytes\"]}]];
+      If[m == 1, m = 12; y -= 1, m -= 1],
+      {i, 6}];
+   $Failed];
+{iriUrl, iriYM, iriBytes} = findIRIPlume[];
+iriImg = ImageResize[Image[ImportByteArray[iriBytes, \"PNG\"]], 900];
+iriCaption = \"IRI / CPC plume (\" <>
+   {\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\",
+    \"Jul\",\"Aug\",\"Sep\",\"Oct\",\"Nov\",\"Dec\"}[[iriYM[[2]]]] <>
+   \" \" <> ToString[iriYM[[1]]] <> \" issuance)\";
 
 Grid[{
-   {Labeled[iriImg,
-      Style[\"IRI / CPC plume (latest issue)\", Bold], Top]},
+   {Labeled[iriImg, Style[iriCaption, Bold], Top]},
    {Labeled[coneFig,
-      Style[\"Recharge-discharge ensemble cone (April 2026 init)\", Bold], Top]},
+      Style[\"Recharge-discharge ensemble cone\", Bold], Top]},
    {Labeled[probBars,
-      Style[\"NOAA / IRI probability bars (May 2026 issuance)\", Bold], Top]}
+      Style[\"NOAA / IRI probability bars\", Bold], Top]}
 }, Spacings -> {2, 2}, ItemSize -> {Full, Automatic}]"],
 
 imgCell["forecast_overlay.png"],
@@ -1661,7 +1705,8 @@ probability bars (bottom). All three panels share the same calendar \
 horizon."],
 
 para[{ital["Toy-model probability of El Ni\[NTilde]o vs the NOAA \
-issuance."], " The fraction of the 500-member ensemble whose monthly \
+issuance."], " The fraction of the ensemble (500-member in the \
+pre-rendered figure, 200 in the live wlIn cell) whose monthly \
 T exceeds the +0.5 \[Degree]C threshold, season by season, gives the \
 toy model's analogue of the NOAA probability bar:"}],
 
@@ -1679,7 +1724,7 @@ With[
           "Estimated thermocline state from the observed monthly tendency: ",
           bold[ToString[NumberForm[hEst, {4, 2}]]],
           " (large positive recharge consistent with the residual heat \
-content from the previous La Ni\[NTilde]a). The 500-member toy-model \
+content from the previous La Ni\[NTilde]a). The toy-model \
 ensemble is initialised from (T, h) = (",
           bold[ToString[NumberForm[Tlast, {3, 2}]]], ", ",
           bold[ToString[NumberForm[hEst, {3, 2}]]], "). ",
