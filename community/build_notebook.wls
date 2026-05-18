@@ -180,14 +180,21 @@ captionCell[args__] := Cell[
    CellMargins -> {{70, 70}, {2, 14}}
 ];
 
-(* Code blocks: a "Program" cell style displays text as a fixed-width
-   block but doesn't try to syntax-highlight it as Wolfram code, so
-   shell snippets with `#` comments don't confuse the parser. *)
+(* "Program" cell — fixed-width text, no Wolfram syntax-highlighting,
+   safe for shell snippets, URLs, etc. *)
 codeIn[code_String] := Cell[code, "Program",
    CellMargins -> {{60, 30}, {6, 6}},
    FontFamily -> "Courier", FontSize -> 11,
    ShowStringCharacters -> False,
    Background -> RGBColor[0.95, 0.96, 0.98]];
+
+(* Wolfram-Language Input cell — runnable, syntax-highlighted. Use
+   wlIn for the snippets that actually generate each figure, so a
+   reader following the post on Wolfram Community can shift-Enter
+   each one and see the same plot. *)
+wlIn[code_String] := Cell[code, "Input",
+   CellMargins -> {{60, 30}, {6, 6}},
+   FontSize -> 11];
 
 (* Inline hyperlink that renders well in both interactive and PDF
    views: link text followed by the URL in parentheses. *)
@@ -395,7 +402,33 @@ para[{"The May 2026 issuance is unambiguous. The probability bars \
 below show El Ni\[NTilde]o probabilities climbing from 82 % in \
 May\[Dash]June\[Dash]July 2026 to 96 % in the four overlapping seasons \
 straddling DJF 2026\[Dash]27, with La Ni\[NTilde]a essentially ruled \
-out until early 2027."}],
+out until early 2027. The bar chart is built directly from the \
+snapshot JSON written by ", mono["wolfram/fetch_cpc_probabilities.wls"],
+   ":"}],
+
+wlIn["(* Load the shared data-access helpers (LoadNino34, LoadONI, \
+LoadProbSnapshot, ...) defined in wolfram/load_data.wl *)
+Get[FileNameJoin[{NotebookDirectory[], \"..\", \"wolfram\", \"load_data.wl\"}]];
+
+(* Figure 2.1: NOAA / IRI ENSO probability bars *)
+probData = ENSOData`LoadProbSnapshot[];
+{seasons, laNina, neutral, elNino} = Transpose[
+   {#[\"season\"], #[\"la_nina\"], #[\"neutral\"], #[\"el_nino\"]} & /@
+   probData[\"probabilities\"]];
+BarChart[
+   Transpose[{laNina, neutral, elNino}],
+   ChartLayout -> \"Stacked\",
+   ChartStyle -> {RGBColor[0.20, 0.45, 0.75],   (* La Niña blue *)
+                  RGBColor[0.6, 0.6, 0.6],      (* Neutral grey *)
+                  RGBColor[0.83, 0.32, 0.10]},  (* El Niño red  *)
+   ChartLabels -> {Style[#, FontSize -> 9] & /@ seasons, None},
+   ChartLegends -> Placed[
+     {\"La Ni\\[NTilde]a\", \"Neutral\", \"El Ni\\[NTilde]o\"}, Right],
+   Frame -> True,
+   FrameLabel -> {{\"probability (%)\", None},
+                  {\"rolling 3-month season\", None}},
+   PlotRange -> {Automatic, {0, 100}},
+   AspectRatio -> 0.45, ImageSize -> 900]"],
 
 imgCell["noaa_probabilities.png"],
 captionCell["Figure 2.1  Official NOAA / IRI ENSO probabilities for \
@@ -418,6 +451,24 @@ of persistence to DJF is exceptionally high (96 %); for context, the \
 operationally similar May 2023 discussion gave a 90 % probability for \
 DJF 2023\[Dash]24, and the 2023\[Dash]24 super-El-Ni\[NTilde]o indeed \
 materialised."}],
+
+wlIn["(* Figure 2.2: full Niño 3.4 monthly anomaly record from NOAA PSL.
+   ENSOData`LoadNino34 parses the ASCII anomaly file fetched by
+   wolfram/fetch_nino34.wls into a {date, anom} pair list. *)
+n34 = ENSOData`LoadNino34[];
+DateListPlot[
+   Transpose[{n34[\"date\"], n34[\"anom\"]}],
+   Joined -> True,
+   PlotStyle -> Directive[Thickness[0.0035], RGBColor[0.85, 0.32, 0.10]],
+   Filling -> 0,
+   FillingStyle -> Directive[Opacity[0.25], RGBColor[0.85, 0.32, 0.10]],
+   Frame -> True,
+   FrameLabel -> {{\"Ni\\[NTilde]o 3.4 anomaly (\\[Degree]C)\", None},
+                  {\"year\", None}},
+   PlotLabel -> \"Monthly Ni\\[NTilde]o 3.4 SST anomaly (ERSSTv5, NOAA PSL)\",
+   GridLines -> {None, {-0.5, 0, 0.5}},
+   GridLinesStyle -> Directive[Gray, Dashed],
+   ImageSize -> 1100, AspectRatio -> 1/3.4]"],
 
 imgCell["nino34_record.png"],
 captionCell["Figure 2.2  The full monthly Ni\[NTilde]o 3.4 SST anomaly \
@@ -703,6 +754,51 @@ sinusoid, ", math["\[Rho]"], " would oscillate forever between \
 para[{"Computing this from 77 years of monthly ERSSTv5 anomalies \
 gives:"}],
 
+wlIn["(* Figure 4.2: observed lagged autocorrelation rho(m0, lead).
+   Flatten the monthly anomalies into a single vector indexed by
+   (year - y0)*12 + month so lead lookups are O(1) offsets, then
+   correlate for each (initial-month, lead) pair. *)
+n34 = ENSOData`LoadNino34[];
+years = Sort @ DeleteDuplicates @ n34[\"year\"];
+{y0, y1} = MinMax[years];
+nMonths = (y1 - y0 + 1)*12;
+flat = ConstantArray[Missing[\"NotAvailable\"], nMonths];
+MapThread[
+   (flat[[(#1 - y0)*12 + #2]] = #3) &,
+   {n34[\"year\"], n34[\"month\"], n34[\"anom\"]}];
+
+pairAt[m1_, tau_] := Module[{idx0, pairs},
+   idx0 = Range[m1, nMonths - tau, 12];
+   pairs = Transpose[{flat[[idx0]], flat[[idx0 + tau]]}];
+   Select[pairs, And @@ (NumberQ /@ #) &]];
+
+rhoMatrix = Table[
+   With[{p = pairAt[m1, tau]},
+      If[Length[p] < 4, 0., Correlation[p[[All, 1]], p[[All, 2]]]]],
+   {tau, 0, 15}, {m1, 1, 12}];
+
+(* Heatmap: rows = lead 0..15 from top, columns = Jan..Dec *)
+months = {\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\",
+          \"Jul\",\"Aug\",\"Sep\",\"Oct\",\"Nov\",\"Dec\"};
+cmap = Blend[{
+   {-0.2, RGBColor[0.65, 0.10, 0.10]},
+   { 0.0, RGBColor[0.90, 0.50, 0.40]},
+   { 0.3, RGBColor[0.97, 0.97, 0.95]},
+   { 0.6, RGBColor[0.35, 0.55, 0.85]},
+   { 1.0, RGBColor[0.05, 0.20, 0.55]}}, #] &;
+ArrayPlot[rhoMatrix,
+   ColorFunction -> cmap, ColorFunctionScaling -> False,
+   Frame -> True,
+   FrameLabel -> {{\"initial calendar month m\\:2080\", None},
+                  {\"lead (months)\", None}},
+   FrameTicks -> {
+     {Table[{tau + 1, ToString[tau]}, {tau, 0, 15}],
+      Table[{tau + 1, ToString[tau]}, {tau, 0, 15}]},
+     {Table[{m, months[[m]]}, {m, 12}],
+      Table[{m, months[[m]]}, {m, 12}]}},
+   Mesh -> All, MeshStyle -> Directive[GrayLevel[0.85]],
+   ImageSize -> 820, AspectRatio -> 1.05]"],
+
 imgCell["spring_barrier_obs.png"],
 captionCell["Figure 4.2  Observed Ni\[NTilde]o 3.4 lagged \
 autocorrelation \[Rho](m\:2080, lead). Rows = lead in months, columns \
@@ -721,6 +817,22 @@ behaviour. The asymmetry is the barrier."}],
 
 para[{"The same data in a different cut: the persistence-skill curves \
 collapse by start month."}],
+
+wlIn["(* Figure 4.3: persistence-skill curves, one per starting month *)
+ListLinePlot[
+   Table[
+      Tooltip[
+         Transpose[{Range[0, 15], rhoMatrix[[All, m1]]}],
+         months[[m1]]],
+      {m1, 12}],
+   PlotRange -> {{0, 15}, {-0.2, 1.05}},
+   Frame -> True,
+   FrameLabel -> {{\"autocorrelation \\[Rho]\", None},
+                  {\"lead (months from m\\:2080)\", None}},
+   GridLines -> {Automatic, {0, 0.5}},
+   GridLinesStyle -> Directive[Gray, Dashed],
+   PlotLegends -> Placed[months, Right],
+   ImageSize -> 900, AspectRatio -> 0.55]"],
 
 imgCell["persistence_drop.png"],
 captionCell["Figure 4.3  Persistence-skill curves: ", math["\[Rho]"],
@@ -918,7 +1030,27 @@ displayMath[
 para[{Rt, " peaks in September (most positive, strongest \
 growth) and dips in March (least positive or negative, strongest \
 damping); ", sigW, " peaks in March\[Dash]April \
-(spring WWB activity), giving the model an in-built spring barrier."}],
+(spring WWB activity), giving the model an in-built spring barrier. \
+The two cycles together:"}],
+
+wlIn["(* Figure 5.2: seasonal cycles of R(t) and sigma_w(t).
+   Parameters live at the top of wolfram/rdo.wls. *)
+R0 = -0.03; R1 = 0.18; phiR = 9.0;
+sigW0 = 0.22; aW = 0.80; phiW = 3.0;
+Rseason[t_, m0_]  := R0 + R1 Cos[2 Pi (t + m0 - phiR)/12];
+sigWWB[t_, m0_]   := sigW0 (1 + aW Cos[2 Pi (t + m0 - phiW)/12]);
+months = {\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\",
+          \"Jul\",\"Aug\",\"Sep\",\"Oct\",\"Nov\",\"Dec\"};
+Plot[{Rseason[t - 1, 1], sigWWB[t - 1, 1]}, {t, 1, 13},
+   PlotStyle -> {RGBColor[0.05, 0.20, 0.55], RGBColor[0.85, 0.32, 0.10]},
+   PlotLegends -> {\"R(t)  Bjerknes feedback\", \"\\[Sigma]_w(t)  WWB std-dev\"},
+   Frame -> True, Axes -> False,
+   FrameTicks -> {{Automatic, None},
+      {Table[{m, months[[m]]}, {m, 12}], None}},
+   FrameLabel -> {{\"value (month\\[Minus]\\:00b9 or \\[Degree]C)\", None},
+                  {\"calendar month\", None}},
+   GridLines -> {None, {0}},
+   ImageSize -> 720, AspectRatio -> 0.55]"],
 
 imgCell["rdo_seasonality.png"],
 captionCell["Figure 5.2  The two seasonally varying coefficients used \
@@ -981,11 +1113,36 @@ para[{"A 20-year free run reproduces the irregular \
 3\[Dash]6-year-period ENSO oscillation with amplitude \[PlusMinus]2\
 \[Dash]3 \[Degree]C:"}],
 
+wlIn["(* Figure 5.3: a single 20-year RDO realisation.
+   The full simulate[] above is bundled in wolfram/rdo.wls; the
+   constants gamma, rDamp, alpha, sigmaT, sigmaH are the same as in
+   Figure 5.2 plus gamma=0.06, rDamp=0.04, alpha=0.15, sigmaT=0.06,
+   sigmaH=0.04. *)
+Get[FileNameJoin[{NotebookDirectory[], \"..\", \"wolfram\", \"rdo.wls\"}]];
+samp = simulate[0.3, 0.6, 1, 12*20, 0.05, 17];
+ListLinePlot[Transpose[{samp[\"t\"]/12., samp[\"T\"]}],
+   PlotStyle -> Directive[Thickness[0.003], RGBColor[0.83, 0.32, 0.10]],
+   Frame -> True,
+   FrameLabel -> {{\"T anomaly (\\[Degree]C)\", None}, {\"years\", None}},
+   PlotRange -> {Automatic, {-3.5, 3.5}},
+   GridLines -> {Automatic, {-0.5, 0, 0.5}},
+   ImageSize -> 950, AspectRatio -> 1/3.2]"],
+
 imgCell["rdo_timeseries.png"],
 captionCell["Figure 5.3  Single 20-year stochastic realisation of the \
 recharge\[Dash]discharge oscillator with seasonally modulated \
 coefficients. Period is irregular (3\[Dash]6 years) and amplitude is \
 variable, as in observations."],
+
+wlIn["(* Figure 5.4: phase-space orbit of (T, h) from the same run *)
+ListLinePlot[Transpose[{samp[\"T\"], samp[\"h\"]}],
+   PlotStyle -> Directive[Thickness[0.0012], Opacity[0.55],
+      RGBColor[0.20, 0.40, 0.65]],
+   Frame -> True,
+   FrameLabel -> {{\"thermocline anomaly h\", None},
+                  {\"SST anomaly T (\\[Degree]C)\", None}},
+   GridLines -> {{0}, {0}},
+   ImageSize -> 480, AspectRatio -> 1]"],
 
 imgCell["rdo_phase.png"],
 captionCell["Figure 5.4  Phase-space portrait. The trajectory orbits \
@@ -1003,6 +1160,30 @@ distribution conditioned on that month. The ensemble spread at lead \
 each lead with five percentiles and report the 5\[Dash]95 % and \
 25\[Dash]75 % bands as our confidence intervals:"}],
 
+wlIn["(* Figure 5.5: 4-panel ensemble cone, init Jan/Apr/Jul/Oct.
+   forecastEnsemble[m0] runs 500 stochastic copies of simulate[]
+   from climatological initial (T,h) for that month and returns
+   per-lead percentiles. Full helper in wolfram/rdo.wls. *)
+Get[FileNameJoin[{NotebookDirectory[], \"..\", \"wolfram\", \"rdo.wls\"}]];
+
+panel[m0_] := With[{f = forecastEnsemble[m0]},
+   Show[
+      ListLinePlot[
+         {Transpose[{f[\"t\"], f[\"p05\"]}], Transpose[{f[\"t\"], f[\"p95\"]}]},
+         Filling -> {1 -> {{2}, Directive[Opacity[0.18],
+            RGBColor[0.83, 0.32, 0.10]]}}],
+      ListLinePlot[
+         {Transpose[{f[\"t\"], f[\"p25\"]}], Transpose[{f[\"t\"], f[\"p75\"]}]},
+         Filling -> {1 -> {{2}, Directive[Opacity[0.45],
+            RGBColor[0.83, 0.32, 0.10]]}}],
+      ListLinePlot[Transpose[{f[\"t\"], f[\"median\"]}],
+         PlotStyle -> Directive[Thickness[0.005], Black]],
+      Frame -> True, PlotRange -> {{0, 18}, {-3, 3}},
+      PlotLabel -> \"init \" <> monthNames[[m0]],
+      AspectRatio -> 0.7, ImageSize -> 520]];
+
+Grid[Partition[panel /@ {1, 4, 7, 10}, 2], Spacings -> {1.5, 1.5}]"],
+
 imgCell["rdo_barrier_cone.png"],
 captionCell["Figure 5.5  Ensemble forecast cones from the \
 recharge\[Dash]discharge oscillator. Each panel is a different initial \
@@ -1014,6 +1195,26 @@ on the initial state, which is the toy-model analogue of forecast \
 uncertainty. The cones \[OpenCurlyDoubleQuote]breathe\[CloseCurlyDoubleQuote] \
 seasonally as the verification month sweeps through the strong-\
 coupling autumn and the weak-coupling/high-WWB spring."],
+
+wlIn["(* Figure 5.6: ensemble std-dev as f(initial month, lead).
+   Runs forecastEnsemble[] for every m0 in 1..12, extracts the per-
+   lead StandardDeviation, and plots the {12, 16} matrix as a heatmap. *)
+spreadMatrix = Table[
+   With[{e = forecastEnsemble[m0, 250, 15, 0.1]},
+      e[\"std\"][[Table[FirstPosition[e[\"t\"], _?(# >= tau - 0.05 &)][[1]],
+                       {tau, 0, 15}]]]],
+   {k, Length @ leadIdx}, {m0, 1, 12}];
+ArrayPlot[spreadMatrix,
+   ColorFunction -> \"TemperatureMap\",
+   Frame -> True,
+   FrameLabel -> {{\"lead (months)\", None},
+                  {\"initial calendar month m\\:2080\", None}},
+   FrameTicks -> {
+      {Table[{tau + 1, ToString[tau]}, {tau, 0, 15}], None},
+      {Table[{m, months[[m]]}, {m, 12}], None}},
+   PlotLegends -> Placed[BarLegend[Automatic,
+      LegendLabel -> \"ensemble std (\\[Degree]C)\"], Right],
+   Mesh -> All, ImageSize -> 820, AspectRatio -> 1.05]"],
 
 imgCell["rdo_spread_heatmap.png"],
 captionCell["Figure 5.6  Ensemble standard deviation as a function of \
@@ -1089,6 +1290,30 @@ the original Suarez\[Dash]Schopf mechanism. Below we sweep ",
    math["\[Alpha]"], " at fixed ", math["\[Delta] = 3"],
    " and report the amplitude envelope from stochastic runs."}],
 
+wlIn["(* Figure 5.7: bifurcation sweep — min/max of T as a function of
+   the wave-coupling alpha, at fixed delta = 3.  simulateDDE[] (shown
+   in full below) is the same Euler-Maruyama DDE integrator used for
+   the other delayed-osc panels; full implementation in
+   wolfram/delayed.wls. *)
+Get[FileNameJoin[{NotebookDirectory[], \"..\", \"wolfram\", \"delayed.wls\"}]];
+
+alphaList = Range[0.3, 1.15, 0.05];
+bifurc = Table[
+   Block[{alphaDel = aL},
+      With[{r = simulateDDE[1, 600., 0.1, 0.3, 13]},
+         {aL, MinMax @ Drop[r[\"T\"], Round[200./0.1]]}]],
+   {aL, alphaList}];
+Show[
+   ListPlot[{#1, #2[[1]]} & @@@ bifurc,
+      PlotStyle -> Directive[PointSize[0.012], RGBColor[0.20, 0.45, 0.75]]],
+   ListPlot[{#1, #2[[2]]} & @@@ bifurc,
+      PlotStyle -> Directive[PointSize[0.012], RGBColor[0.85, 0.32, 0.10]]],
+   Frame -> True,
+   FrameLabel -> {{\"min / max of T (steady state)\", None},
+                  {\"wave coupling \\[Alpha]\", None}},
+   GridLines -> {{0.5, 1.0}, {0}},
+   ImageSize -> 720, AspectRatio -> 0.55]"],
+
 imgCell["delayed_bifurcation.png"],
 captionCell["Figure 5.7  Min and max of T in long stochastic runs of \
 the delayed oscillator, as a function of the wave-coupling ",
@@ -1127,6 +1352,17 @@ codeIn["simulateDDE[m0_, tEnd_, dt_, hist0_, seed_] := Module[
    <|\"t\" -> ts, \"T\" -> Ts|>
 ];"],
 
+wlIn["(* Figure 5.8: a 20-year realisation at alpha=0.75, delta=6 mo *)
+alphaDel = 0.75; delayTau = 3.0;
+samp = simulateDDE[1, 20*12/2., 0.05, 0.3, 7];
+ListLinePlot[Transpose[{samp[\"t\"]*2./12., samp[\"T\"]}],
+   PlotStyle -> Directive[Thickness[0.003], RGBColor[0.20, 0.45, 0.75]],
+   Frame -> True,
+   FrameLabel -> {{\"T anomaly\", None}, {\"years\", None}},
+   PlotRange -> {Automatic, {-1.6, 1.6}},
+   GridLines -> {Automatic, {-0.5, 0, 0.5}},
+   ImageSize -> 950, AspectRatio -> 1/3.2]"],
+
 imgCell["delayed_timeseries.png"],
 captionCell["Figure 5.8  A 20-year realisation of the delayed \
 oscillator with ", math["\[Alpha] = 0.75"], " and ",
@@ -1138,6 +1374,27 @@ oscillations of period ", math["\[TildeTilde] 4\[Delta] = 24"],
    " months \[LongDash] shorter than the canonical 3\[Dash]6-year \
 ENSO band, but the delay-induced limit-cycle phenomenology is \
 correct."],
+
+wlIn["(* Figure 5.9: DDE ensemble cones, 400 members per init month.
+   Initial state drawn from a model-internal climatology pool. Same
+   percentile-band pattern as Figure 5.5 but the underlying dynamics
+   are the limit cycle, not the stochastic-RDO recharge mode. *)
+panelDDE[m0_] := With[{f = forecastEnsembleDDE[m0]},
+   Show[
+      ListLinePlot[{Transpose[{f[\"t\"], f[\"p05\"]}],
+                    Transpose[{f[\"t\"], f[\"p95\"]}]},
+         Filling -> {1 -> {{2}, Directive[Opacity[0.20],
+            RGBColor[0.20, 0.45, 0.75]]}}],
+      ListLinePlot[{Transpose[{f[\"t\"], f[\"p25\"]}],
+                    Transpose[{f[\"t\"], f[\"p75\"]}]},
+         Filling -> {1 -> {{2}, Directive[Opacity[0.45],
+            RGBColor[0.20, 0.45, 0.75]]}}],
+      ListLinePlot[Transpose[{f[\"t\"], f[\"median\"]}],
+         PlotStyle -> Directive[Thickness[0.005], Black]],
+      Frame -> True, PlotRange -> {{0, 18}, {-1.6, 1.6}},
+      AspectRatio -> 0.7, ImageSize -> 520]];
+
+Grid[Partition[panelDDE /@ {1, 4, 7, 10}, 2], Spacings -> {1.5, 1.5}]"],
 
 imgCell["delayed_cone.png"],
 captionCell["Figure 5.9  Delayed-oscillator ensemble forecast cones \
