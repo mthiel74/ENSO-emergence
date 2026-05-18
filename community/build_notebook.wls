@@ -104,67 +104,19 @@ resizedCopy[path_] := Module[{cached, w, h, im, target},
    cached
 ];
 
-(* Build a GraphicsBox/RasterBox/CompressedData expression by hand,
-   matching what NotebookSave normally produces. Storing the pixel
-   data as a Compress'd base64 string is 6-8× more compact than
-   ASCII InputForm of the raw NumericArray. We return a *string*
-   that, when interpolated into the .nb body via ToString[InputForm]
-   on a Skeleton stand-in, is exact byte-for-byte boxes. *)
+(* Static image cell: load via Import + Image[..., ImageSize -> ...]
+   and let Wolfram's native NB serialization compress the raster.
+   Canonical pattern from reference_wolfram_community_pattern (used in
+   GaltonBoard, ActualSizeofCountries, HistoricalWeather builders). *)
+imgWidth = 640;
 
-(* Sentinel symbols used to splice raw RasterBox text past InputForm.
-   For each image we generate a unique Symbol RasterPlaceholderN whose
-   InputForm prints as the bare identifier "RasterPlaceholderN".  After
-   ToString[InputForm], we string-substitute each placeholder with the
-   compressed-RasterBox box-text. *)
-$rasterSubstitutions = <||>;
-$rasterCounter = 0;
-
-imageBoxes[path_String] := Module[
-   {small, im, na, h, w, compressed, key, boxStr},
-   small = resizedCopy[path];
-   im = Image[Import[small], "Byte"];
-   (* RasterBox's y-axis runs bottom-to-top, while ImageData returns
-      rows top-to-bottom. Reverse the row order so the image renders
-      right-side-up. *)
-   na = Reverse @ ImageData[im, "Byte"];         (* {h, w, 3} bytes *)
-   {h, w} = Take[Dimensions[na], 2];
-   compressed = Compress[na];                    (* "1:eJ..." *)
-   $rasterCounter += 1;
-   (* Trailing letter X marks the end of the unique ID so "RasterPh1X"
-      is NOT a substring of "RasterPh10X" — otherwise the first
-      StringReplace would corrupt all higher-numbered placeholders. *)
-   key = "RasterPh" <> ToString[$rasterCounter] <> "X";
-   boxStr = StringJoin[
-      "GraphicsBox[",
-        "TagBox[",
-          "RasterBox[",
-            "CompressedData[\"", compressed, "\"], ",
-            "{{0, 0}, {", ToString[w], ", ", ToString[h], "}}, ",
-            "{0, 255}, ",
-            "ColorFunction -> RGBColor",
-          "],",
-          "BoxForm`ImageTag[\"Byte\", ColorSpace -> \"RGB\", Interleaving -> True],",
-          " Selectable -> False",
-        "],",
-        " DefaultBaseStyle -> \"ImageGraphics\",",
-        " ImageSize -> ", ToString[Round[640]], ",",
-        " ImageSizeRaw -> {", ToString[w], ", ", ToString[h], "},",
-        " PlotRange -> {{0, ", ToString[w], "}, {0, ", ToString[h], "}}",
-      "]"
-   ];
-   $rasterSubstitutions[key] = boxStr;
-   key
-];
-
-(* imageBoxes returns a placeholder string. We wrap it in a Symbol so
-   InputForm later prints it as an unquoted identifier; after
-   serialization we string-substitute the placeholder identifiers
-   with the actual compressed RasterBox boxes. *)
-imgCell[file_, opts___] := Module[{path = FileNameJoin[{imgDir, file}], key},
+imgCell[file_, opts___] := Module[
+   {path = FileNameJoin[{imgDir, file}], small, im},
    If[FileExistsQ[path],
-     key = imageBoxes[path];   (* "RasterPh<N>X" *)
-     Cell[BoxData @ Symbol[key],
-        "Output",
+     small = resizedCopy[path];
+     im = Image[Import[small], ImageSize -> imgWidth];
+     Cell[BoxData @ ToBoxes[im], "Output",
+        ShowCellLabel -> False,
         TextAlignment -> Center,
         CellMargins -> {{Automatic, Automatic}, {10, 6}}],
      Cell[
@@ -174,33 +126,42 @@ imgCell[file_, opts___] := Module[{path = FileNameJoin[{imgDir, file}], key},
    ]
 ];
 
-(* videoCell — embeds an MP4 or GIF as a Video[] cell whose ByteArray
-   is serialized inline in the .nb so the file is self-contained.
-   Wolfram Community's web renderer plays Video[] with native
-   play/scrub/fullscreen controls. Pattern from the user's
-   reference-wolfram-community-pattern memory note (proven across
-   ActualSizeofCountries, Wolfram3DObjects, HistoricalWeather). *)
-videoCell[file_] := videoCell[file, ""];
-videoCell[file_String, caption_] := Module[
-   {path = FileNameJoin[{imgDir, file}], boxes},
+(* animCell — embed a GIF as an inline AnimatedImage cell.
+   Wolfram Community's web renderer drops Video[] cells but preserves
+   AnimatedImage as a looping <img> tag, so this is the canonical
+   pattern for hook videos that actually play on the post page (see
+   reference_wolfram_community_pattern memory note + GaltonBoard,
+   ActualSizeofCountries, Wolfram3DObjects builders).
+
+   ColorQuantize per frame keeps the embedded notebook small —
+   without it the same 15-frame 700-px-wide sequence pushed the .nb
+   over 20 MB. *)
+animWidth = 640;
+
+animCell[file_] := animCell[file, ""];
+animCell[file_String, caption_] := Module[
+   {path = FileNameJoin[{imgDir, file}], all, anim, boxes},
    If[!FileExistsQ[path],
      Return @ Cell[
-       TextData[{bold["[ missing media: " <> file <> " ]"]}],
+       TextData[{bold["[ missing animation: " <> file <> " ]"]}],
        "Text", FontColor -> RGBColor[0.7, 0.1, 0.1],
        TextAlignment -> Center]];
+   all = Import[path, {"GIF", "ImageList"}];
+   (* Resize + 256-colour quantise each frame *)
+   all = ColorQuantize[ImageResize[#, {animWidth}], 256] & /@ all;
+   anim = AnimatedImage[all,
+      FrameRate -> 1.25,
+      AnimationRunning -> True,
+      AnimationRepetitions -> Infinity];
    boxes = ToBoxes[
-      Pane[
-         If[caption === "",
-            Video[path, ImageSize -> 640, Appearance -> "Basic"],
-            Column[{
-               Video[path, ImageSize -> 640, Appearance -> "Basic"],
-               Pane[Style[caption, Italic, FontSize -> 10,
-                  FontFamily -> "Helvetica", FontColor -> GrayLevel[0.35]],
-                  640, Alignment -> Center]
-            }, Alignment -> Center, Spacings -> 0.6]
-         ],
-         Full, Alignment -> Center]
-   ];
+      If[caption === "",
+         anim,
+         Column[{
+            anim,
+            Pane[Style[caption, Italic, FontSize -> 10,
+               FontFamily -> "Helvetica", FontColor -> GrayLevel[0.35]],
+               animWidth, Alignment -> Center]
+         }, Alignment -> Center, Spacings -> 0.6]]];
    Cell[BoxData[boxes], "Output",
       ShowCellLabel -> False,
       TextAlignment -> Center,
@@ -261,8 +222,10 @@ through the lens of two classical coupled ocean\[Dash]atmosphere toy models"],
 Cell["Wolfram Community submission \[LongDash] May 2026",
    "Subsubtitle", FontSlant -> Italic, FontColor -> GrayLevel[0.4]],
 
-(* Hero image: most recent monthly SST anomaly map, immediately under the title *)
-videoCell["hero_satellite.mp4",
+(* Hero animation: 15-month time-lapse, immediately under the title.
+   Uses AnimatedImage so the embedded animation plays inline both in
+   the Wolfram FrontEnd and on the Wolfram Community post page. *)
+animCell["hero_satellite.gif",
    "Cover animation.  15-month time-lapse of the NOAA ERSSTv5 monthly \
 SST anomaly field over the tropical Pacific (Feb 2025 \[Rule] Apr \
 2026), overlaid at 65 % opacity on Wolfram's built-in satellite \
@@ -271,7 +234,8 @@ at the equator; the current basin-mean Ni\[NTilde]o 3.4 anomaly \
 appears in the upper-left badge. Watch the 2024\[Dash]25 La \
 Ni\[NTilde]a cold tongue dissolve through autumn 2025, then the \
 central Pacific warm through winter and propagate eastward through \
-spring 2026."],
+spring 2026. The full code that produced this animation is given in \
+\[Section]3.5."],
 
 
 (* ----------------- ABSTRACT ----------------- *)
@@ -565,39 +529,6 @@ satellite imagery for the same region. Latitudes 40\[Degree]S to \
 the western Maritime Continent, Australia, and both American \
 coastlines are all visible for context:"}],
 
-imgCell["hero_satellite_still.png"],
-captionCell["Figure 3.5.1  Final frame (April 2026) of the 15-month \
-NOAA ERSSTv5 SST-anomaly time-lapse, overlaid at 65 % opacity on \
-Wolfram's satellite basemap. The Ni\[NTilde]o 3.4 monitoring box \
-(5\[Degree]N\[Dash]5\[Degree]S, 170\[Degree]W\[Dash]120\[Degree]W) \
-is outlined in yellow; the basin-mean Ni\[NTilde]o 3.4 anomaly is \
-in the upper-left badge. Colour scale: bright red \[Tilde] +3 \
-\[Degree]C, deep blue \[Tilde] \[Minus]3 \[Degree]C, white = 0. \
-The full animated 15-frame version (February 2025 \[Rule] April \
-2026, 1.25 fps) is downloadable as ",
-   link["hero_satellite.gif",
-     "https://github.com/mthiel74/ENSO-emergence/blob/main/docs/images/hero_satellite.gif"],
-   " (2.5 MB) or ",
-   link["hero_satellite.mp4",
-     "https://github.com/mthiel74/ENSO-emergence/blob/main/docs/images/hero_satellite.mp4"],
-   " (800 KB). The Wolfram Community version of this post embeds the \
-GIF inline above; in the static PDF only the final frame appears."],
-
-para[{ital["What the animation shows."], " The early frames (spring \
-/summer 2025) sit in the tail end of the 2024\[Dash]25 La \
-Ni\[NTilde]a: a cool band along the equator between the dateline \
-and the South American coast, with the warm pool concentrated west \
-of 160\[Degree]E. Through autumn 2025 the cold tongue weakens but \
-stays present; the basin remains sub-thermal. The shift begins in \
-December 2025\[Dash]January 2026: the central Pacific (around \
-170\[Degree]W) warms first, then the warm signature propagates \
-eastward along the equator through Feb\[Dash]Mar\[Dash]Apr 2026. By \
-the final frame the eastern Pacific cold tongue has retreated to a \
-thin sliver against the South American coast, and the basin-mean is \
-+0.37 \[Degree]C. This is the spatial manifestation of the \
-recharge\[Dash]discharge cycle described in \[Section]5.1 and \
-animated in the toy model in Figures 5.3\[Dash]5.4."}],
-
 para[{ital["How this was made."], " The grid we are plotting is the \
 ", mono["ssta"], " variable from the NCEI ERSSTv5 monthly NetCDFs \
 (2\[Degree]\[Times]2\[Degree], anomaly vs the 1971\[Dash]2000 \
@@ -605,11 +536,14 @@ climatology embedded by NCEI). One file per month, fetched from"}],
 
 codeIn["https://www.ncei.noaa.gov/pub/data/cmb/ersst/v5/netcdf/ersst.v5.YYYYMM.nc"],
 
-para[{"by ", mono["wolfram/fetch_ersst_grid.wls"], " into ",
-   mono["data/raw/"],
+para[{"by the helper script ", mono["wolfram/fetch_ersst_grid.wls"],
+   " into ", mono["data/raw/"],
    ". The frame renderer (full implementation: ",
    mono["wolfram/hero_satellite.wls"],
-   ", ~120 lines) does, per month:"}],
+   ", ~120 lines) loads the NetCDF, builds one ",
+   mono["GeoPolygon"],
+   " per 2\[Degree]\[Times]2\[Degree] cell coloured by the anomaly, \
+and renders with the satellite background:"}],
 
 codeIn["(* Load one month of gridded SST anomaly from the NetCDF *)
 ssta = Normal @ Import[file, {\"NetCDF\", \"Data\", \"ssta\"}];
@@ -642,6 +576,34 @@ Export[\"hero_satellite.gif\",
    AnimatedImage[Rasterize /@ frames, FrameRate -> 1.25], \"GIF\"];
 Export[\"hero_satellite.mp4\",
    AnimatedImage[Rasterize /@ frames, FrameRate -> 1.25], \"MP4\"];"],
+
+para[{"Running the above produces the following animation \[LongDash] \
+the same one used as the cover figure of this post, reproduced here \
+with a different caption:"}],
+
+animCell["hero_satellite.gif",
+   "Figure 3.5.1  15-month NOAA ERSSTv5 SST-anomaly time-lapse, \
+February 2025 \[Rule] April 2026, overlaid at 65 % opacity on \
+Wolfram's satellite basemap. The Ni\[NTilde]o 3.4 monitoring box \
+(5\[Degree]N\[Dash]5\[Degree]S, 170\[Degree]W\[Dash]120\[Degree]W) \
+is outlined in yellow; the basin-mean Ni\[NTilde]o 3.4 anomaly is in \
+the upper-left badge. Colour scale: bright red \[Tilde] +3 \
+\[Degree]C, deep blue \[Tilde] \[Minus]3 \[Degree]C, white = 0."],
+
+para[{ital["What the animation shows."], " The early frames (spring \
+/summer 2025) sit in the tail end of the 2024\[Dash]25 La \
+Ni\[NTilde]a: a cool band along the equator between the dateline \
+and the South American coast, with the warm pool concentrated west \
+of 160\[Degree]E. Through autumn 2025 the cold tongue weakens but \
+stays present; the basin remains sub-thermal. The shift begins in \
+December 2025\[Dash]January 2026: the central Pacific (around \
+170\[Degree]W) warms first, then the warm signature propagates \
+eastward along the equator through Feb\[Dash]Mar\[Dash]Apr 2026. By \
+the final frame the eastern Pacific cold tongue has retreated to a \
+thin sliver against the South American coast, and the basin-mean is \
++0.37 \[Degree]C. This is the spatial manifestation of the \
+recharge\[Dash]discharge cycle described in \[Section]5.1 and \
+animated in the toy model in Figures 5.3\[Dash]5.4."}],
 
 para[{ital["Note on resolution."], " ERSSTv5 is a 2\[Degree]\
 \[Times]2\[Degree] gridded product designed for long-term climate \
@@ -1588,7 +1550,10 @@ para[{Style["Generated on " <> DateString[Now, {"MonthName", " ",
 }];
 
 
-(* ---- save: write .nb directly, using standard Wolfram header ---- *)
+(* ---- save: native Export[file, Notebook] — same pattern used by
+   GaltonBoard, ActualSizeofCountries, HistoricalWeather builders.
+   Wolfram's NB writer handles Image / AnimatedImage serialisation,
+   raster compression and character escaping automatically. *)
 
 Print["assembled ", Length[$allCells], " cells"];
 
@@ -1596,48 +1561,22 @@ nbExpr = Notebook[$allCells,
    WindowSize -> {980, 800},
    StyleDefinitions -> "Default.nb"];
 
-(* InputForm serialises every expression. Wolfram's default
-   InputForm output represents non-ASCII characters as named
-   escapes like \[NTilde], so the body is pure ASCII. We then
-   write the file as raw ASCII bytes — no UTF-8 re-encoding. *)
-nbBody = ToString[nbExpr, InputForm, PageWidth -> Infinity,
-   CharacterEncoding -> "ASCII"];
-
-(* Substitute raster placeholders with the actual compressed
-   RasterBox boxes. *)
-Print["substituting ", Length[$rasterSubstitutions],
-   " raster placeholders..."];
-nbBody = Fold[
-   StringReplace[#1, #2[[1]] -> #2[[2]]] &,
-   nbBody,
-   Normal[$rasterSubstitutions]
-];
-
-nbHeader = StringJoin[
-   "(* Content-type: application/vnd.wolfram.mathematica *)\n\n",
-   "(*** Wolfram Notebook File ***)\n",
-   "(* http://www.wolfram.com/nb *)\n\n",
-   "(* CreatedBy='ENSO-emergence build pipeline' *)\n\n",
-   "(* Beginning of Notebook Content *)\n"
-];
-nbFooter = "\n(* End of Notebook Content *)\n";
-
-(* Write as raw ASCII bytes — the body is pure ASCII because
-   InputForm produced \[NTilde] etc. as escapes. *)
-Export[outNb, nbHeader <> nbBody <> nbFooter, "Text",
-   CharacterEncoding -> "ASCII"];
-Print["wrote ", outNb, " (", FileByteCount[outNb], " B)"];
-
-(* PDF via FE *)
 TimeConstrained[
    UsingFrontEnd[
-      nbObj = NotebookOpen[outNb, Visible -> False];
+      (* Save the notebook via NotebookSave + a CreateDocument hosting
+         the cells. This is what makes Export[file.nb, ...] actually
+         persist the AnimatedImage / Image cells to disk. *)
+      nbObj = CreateDocument[$allCells, Visible -> False,
+         WindowSize -> {980, 800},
+         StyleDefinitions -> "Default.nb"];
+      NotebookSave[nbObj, outNb];
+      Print["wrote ", outNb, " (", FileByteCount[outNb], " B)"];
       Quiet @ Check[
          Export[outPdf, nbObj];
          Print["wrote ", outPdf, " (", FileByteCount[outPdf], " B)"],
          Print["warn: PDF export failed"]];
       NotebookClose[nbObj];
    ],
-   300,
-   Print["warn: PDF export timed out"]
+   600,
+   Print["warn: notebook save timed out"]
 ];
