@@ -174,6 +174,39 @@ imgCell[file_, opts___] := Module[{path = FileNameJoin[{imgDir, file}], key},
    ]
 ];
 
+(* videoCell — embeds an MP4 or GIF as a Video[] cell whose ByteArray
+   is serialized inline in the .nb so the file is self-contained.
+   Wolfram Community's web renderer plays Video[] with native
+   play/scrub/fullscreen controls. Pattern from the user's
+   reference-wolfram-community-pattern memory note (proven across
+   ActualSizeofCountries, Wolfram3DObjects, HistoricalWeather). *)
+videoCell[file_] := videoCell[file, ""];
+videoCell[file_String, caption_] := Module[
+   {path = FileNameJoin[{imgDir, file}], boxes},
+   If[!FileExistsQ[path],
+     Return @ Cell[
+       TextData[{bold["[ missing media: " <> file <> " ]"]}],
+       "Text", FontColor -> RGBColor[0.7, 0.1, 0.1],
+       TextAlignment -> Center]];
+   boxes = ToBoxes[
+      Pane[
+         If[caption === "",
+            Video[path, ImageSize -> 640, Appearance -> "Basic"],
+            Column[{
+               Video[path, ImageSize -> 640, Appearance -> "Basic"],
+               Pane[Style[caption, Italic, FontSize -> 10,
+                  FontFamily -> "Helvetica", FontColor -> GrayLevel[0.35]],
+                  640, Alignment -> Center]
+            }, Alignment -> Center, Spacings -> 0.6]
+         ],
+         Full, Alignment -> Center]
+   ];
+   Cell[BoxData[boxes], "Output",
+      ShowCellLabel -> False,
+      TextAlignment -> Center,
+      CellMargins -> {{Automatic, Automatic}, {10, 14}}]
+];
+
 genImgCell[file_, opts___] := imgCell[
    FileNameJoin[{"figures-generated", file}], opts];
 
@@ -229,17 +262,16 @@ Cell["Wolfram Community submission \[LongDash] May 2026",
    "Subsubtitle", FontSlant -> Italic, FontColor -> GrayLevel[0.4]],
 
 (* Hero image: most recent monthly SST anomaly map, immediately under the title *)
-imgCell["hero_satellite_still.png"],
-captionCell["Cover figure.  Equatorial-Pacific SST anomaly for April \
-2026, from the NOAA ERSSTv5 monthly gridded analysis, overlaid at \
-65% opacity on Wolfram's built-in satellite imagery so the \
-geographic context (the Maritime Continent on the left edge, the \
-Americas on the right, the Ni\[NTilde]o 3.4 monitoring box \
-outlined in yellow at the equator) is visible. The basin is \
-dominated by warm anomalies (red), with the relic of the previous \
-La Ni\[NTilde]a cold tongue still visible as the pale band just \
-inside the eastern half of the box. The animated 15-month evolution \
-that this still is a frame of is in \[Section]3.5."],
+videoCell["hero_satellite.mp4",
+   "Cover animation.  15-month time-lapse of the NOAA ERSSTv5 monthly \
+SST anomaly field over the tropical Pacific (Feb 2025 \[Rule] Apr \
+2026), overlaid at 65 % opacity on Wolfram's built-in satellite \
+imagery. The Ni\[NTilde]o 3.4 monitoring box is outlined in yellow \
+at the equator; the current basin-mean Ni\[NTilde]o 3.4 anomaly \
+appears in the upper-left badge. Watch the 2024\[Dash]25 La \
+Ni\[NTilde]a cold tongue dissolve through autumn 2025, then the \
+central Pacific warm through winter and propagate eastward through \
+spring 2026."],
 
 
 (* ----------------- ABSTRACT ----------------- *)
