@@ -686,10 +686,12 @@ Do[
       dest = FileNameJoin[{ncDir, \"ersst.v5.\" <> ToString[ym[[1]]] <>
          StringPadLeft[ToString[ym[[2]]], 2, \"0\"] <> \".nc\"}]},
       If[! FileExistsQ[dest],
-         URLDownload[url, dest];
-         (* Guard: NCEI may not have published this month yet -> empty body *)
-         If[FileExistsQ[dest] && FileByteCount[dest] < 1000,
-            Print[\"  skipped (not yet published): \", ym]; DeleteFile[dest]]]],
+         Module[{resp = URLRead[HTTPRequest[url]]},
+            If[resp[\"StatusCode\"] == 200 &&
+               Length[resp[\"BodyBytes\"]] > 1000,
+               BinaryWrite[dest, resp[\"BodyBytes\"]]; Close[dest],
+               Print[\"  skipped \", ym, \" (HTTP \",
+                  resp[\"StatusCode\"], \")\"]]]]],
    {ym, monthSeq}];
 Print[\"NetCDFs in \", ncDir, \": \", Length @ FileNames[\"ersst.v5.*.nc\", ncDir]]"],
 
@@ -875,9 +877,8 @@ rhoMatrix = Table[
       If[Length[p] < 4, 0., Correlation[p[[All, 1]], p[[All, 2]]]]],
    {tau, 0, 15}, {m1, 1, 12}];
 
-(* Heatmap: rows = lead 0..15 from top, columns = Jan..Dec *)
-months = {\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\",
-          \"Jul\",\"Aug\",\"Sep\",\"Oct\",\"Nov\",\"Dec\"};
+(* Heatmap: rows = lead 0..15 from top, columns = Jan..Dec.
+   monthNames is loaded from the helpers package by the Setup cell. *)
 cmap = Blend[{
    {-0.2, RGBColor[0.65, 0.10, 0.10]},
    { 0.0, RGBColor[0.90, 0.50, 0.40]},
@@ -892,8 +893,8 @@ ArrayPlot[rhoMatrix,
    FrameTicks -> {
      {Table[{tau + 1, ToString[tau]}, {tau, 0, 15}],
       Table[{tau + 1, ToString[tau]}, {tau, 0, 15}]},
-     {Table[{m, months[[m]]}, {m, 12}],
-      Table[{m, months[[m]]}, {m, 12}]}},
+     {Table[{m, monthNames[[m]]}, {m, 12}],
+      Table[{m, monthNames[[m]]}, {m, 12}]}},
    Mesh -> All, MeshStyle -> Directive[GrayLevel[0.85]],
    ImageSize -> 820, AspectRatio -> 1.05]"],
 
@@ -921,7 +922,7 @@ ListLinePlot[
    Table[
       Tooltip[
          Transpose[{Range[0, 15], rhoMatrix[[All, m1]]}],
-         months[[m1]]],
+         monthNames[[m1]]],
       {m1, 12}],
    PlotRange -> {{0, 15}, {-0.2, 1.05}},
    Frame -> True,
@@ -929,7 +930,7 @@ ListLinePlot[
                   {\"lead (months from m\\:2080)\", None}},
    GridLines -> {Automatic, {0, 0.5}},
    GridLinesStyle -> Directive[Gray, Dashed],
-   PlotLegends -> Placed[months, Right],
+   PlotLegends -> Placed[monthNames, Right],
    ImageSize -> 900, AspectRatio -> 0.55]"],
 
 imgCell["persistence_drop.png"],
@@ -976,6 +977,27 @@ coupled ocean\[Dash]atmosphere problem that produces tractable models \
 exhibiting the essential ENSO physics. Both reductions are pre-PNAS-era \
 classical references and both can be implemented in under 100 lines \
 of Wolfram Language."}],
+
+Cell[TextData[{
+   StyleBox["Cell-evaluation order in this section.", FontWeight -> Bold,
+      FontSlant -> Italic],
+   "  The wlIn cells below carry forward a few variables so each one \
+runs on top of the previous. To re-run a single figure you need the \
+upstream cells live in the same kernel: ",
+   StyleBox["samp", FontFamily -> "Courier"],
+   " is defined in Figure 5.3 and reused in Figure 5.4; ",
+   StyleBox["forecastEnsemble[]", FontFamily -> "Courier"],
+   " is called separately in Figures 5.5 and 5.6 (no cross-dependency); ",
+   StyleBox["simulateDDE[]", FontFamily -> "Courier"],
+   " in 5.8 and ", StyleBox["forecastEnsembleDDE[]", FontFamily -> "Courier"],
+   " in 5.9 stand on their own. If you skipped ahead, just shift-Enter \
+the earlier cell first."
+}], "Text",
+   FontSize -> 11, FontColor -> GrayLevel[0.3],
+   CellMargins -> {{70, 70}, {6, 4}},
+   Background -> RGBColor[0.88, 0.91, 0.95],
+   CellFrame -> {{4, 0}, {0, 0}},
+   CellFrameColor -> RGBColor[0.45, 0.55, 0.70]],
 
 aiNote["Figure 5.1"],
 genImgCell["recharge_discharge_cycle.png"],
@@ -1133,19 +1155,15 @@ damping); ", sigW, " peaks in March\[Dash]April \
 The two cycles together:"}],
 
 wlIn["(* Figure 5.2: seasonal cycles of R(t) and sigma_w(t).
-   Parameters live at the top of wolfram/rdo.wls. *)
-R0 = -0.03; R1 = 0.18; phiR = 9.0;
-sigW0 = 0.22; aW = 0.80; phiW = 3.0;
-Rseason[t_, m0_]  := R0 + R1 Cos[2 Pi (t + m0 - phiR)/12];
-sigWWB[t_, m0_]   := sigW0 (1 + aW Cos[2 Pi (t + m0 - phiW)/12]);
-months = {\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\",
-          \"Jul\",\"Aug\",\"Sep\",\"Oct\",\"Nov\",\"Dec\"};
+   Rseason, sigWWB, and all parameter values are already loaded from
+   enso_emergence_helpers.wl by the Setup cell at the top of the post;
+   we just plot them here. *)
 Plot[{Rseason[t - 1, 1], sigWWB[t - 1, 1]}, {t, 1, 13},
    PlotStyle -> {RGBColor[0.05, 0.20, 0.55], RGBColor[0.85, 0.32, 0.10]},
    PlotLegends -> {\"R(t)  Bjerknes feedback\", \"\\[Sigma]_w(t)  WWB std-dev\"},
    Frame -> True, Axes -> False,
    FrameTicks -> {{Automatic, None},
-      {Table[{m, months[[m]]}, {m, 12}], None}},
+      {Table[{m, monthNames[[m]]}, {m, 12}], None}},
    FrameLabel -> {{\"value (month\\[Minus]\\:00b9 or \\[Degree]C)\", None},
                   {\"calendar month\", None}},
    GridLines -> {None, {0}},
@@ -1384,32 +1402,53 @@ modulated stochastic WWB forcing. Time is rescaled so that one model \
 time-unit = two calendar months, putting the canonical 6-month wave \
 delay at \[Delta] = 3 in dimensionless units."}],
 
-para[{ital["Bifurcation structure."], " Linearising about ",
-   math["T = 0"], " and substituting ", math["T \[Tilde] e^(\[Lambda] t)"],
+para[{ital["Bifurcation structure."], " There are two distinct \
+linearisations to keep track of: stability of the trivial fixed \
+point ", math["T = 0"], ", and stability of the nonzero fixed \
+points ", math["T\.b2 = \[PlusMinus]\[Sqrt](1\[Minus]\[Alpha])"],
+   " that emerge when the trivial one loses stability."}],
+
+para[{ital["(a) Linearisation about ", math["T = 0"], "."],
+   " Substituting ", math["T \[Tilde] e^(\[Lambda] t)"],
    " gives the characteristic equation ",
    math["\[Lambda] = 1 \[Minus] \[Alpha] e^(\[Minus] \[Lambda] \[Delta])"],
    ". This is transcendental and admits infinitely many complex \
 eigenvalues. At ", math["\[Alpha] = 1"], " the real part of the \
 leading (real) eigenvalue passes through zero \[LongDash] this is the \
 pitchfork transition, marking the loss of stability of the trivial \
-fixed point. For ", math["\[Alpha] < 1"], " the origin is unstable in \
-the deterministic system and the cubic damping ", math["\[Minus] T^3"],
-   " saturates trajectories near ", math["T = \[PlusMinus]\[Sqrt](1\[Minus]\[Alpha])"],
-   " \[LongDash] so the stable fixed-point magnitude ", ital["decreases"],
-   " with ", math["\[Alpha]"], ", going from \[PlusMinus]1 at ",
-   math["\[Alpha] = 0"], " down to 0 at the pitchfork. Adding the \
-delayed feedback at finite ", math["\[Delta]"], " has an opposite \
-effect on the ", ital["dynamic"], " amplitude: for small ",
-   math["\[Alpha]"], " the trajectory rattles inside one of the ",
-   math["\[PlusMinus]\[Sqrt](1\[Minus]\[Alpha])"], " basins and the \
-peak-to-peak swing is small, while for larger ", math["\[Alpha]"],
-   " the delayed negative feedback becomes strong enough to flip the \
-sign each half-period, producing a sustained limit cycle of period ",
-   math["\[TildeTilde] 4 \[Delta]"], " and full peak-to-peak ",
-   math["\[TildeTilde] \[PlusMinus]1.5"], ". Below we sweep ",
-   math["\[Alpha]"], " at fixed ", math["\[Delta] = 3"],
-   " and plot the stationary min/max envelope from the stochastic \
-runs."}],
+fixed point."}],
+
+para[{ital["(b) Linearisation about ",
+   math["T\.b2 = \[PlusMinus]\[Sqrt](1\[Minus]\[Alpha])"], "."],
+   " For ", math["\[Alpha] < 1"],
+   " the origin is unstable and the cubic damping ",
+   math["\[Minus] T^3"], " saturates trajectories near these nonzero \
+fixed points. Their magnitude ", ital["decreases"], " with ",
+   math["\[Alpha]"], " (from \[PlusMinus]1 at ", math["\[Alpha] = 0"],
+   " down to 0 at the pitchfork). A parallel linearisation around ",
+   math["T\.b2"], " yields its own characteristic equation; for small ",
+   math["\[Alpha]"], " or small ", math["\[Delta]"],
+   " the nonzero fixed points are stable and the trajectory \
+rattles within one basin, while above a critical line in the \
+", math["(\[Alpha], \[Delta])"], " plane a delay-induced Hopf \
+bifurcation destabilises ", math["T\.b2"], " and drives a sustained \
+limit cycle of period ", math["\[TildeTilde] 4 \[Delta]"], "."}],
+
+para[{ital["Dynamic amplitude vs deterministic fixed point."],
+   " These two analyses pull in opposite directions on the stationary \
+peak-to-peak observed in the stochastic runs. At small ",
+   math["\[Alpha]"], " the trajectory sits in one ", math["T\.b2"],
+   " basin and the peak-to-peak swing is whatever the noise rattles \
+\[LongDash] empirically about 0.9 \[Degree]C for our noise calibration \
+(read from the bifurcation sweep below; ", ital["not"], " derivable \
+from ", math["\[Sqrt](1\[Minus]\[Alpha])"], " alone, which only \
+gives the fixed-point ", ital["separation"], "). At larger ",
+   math["\[Alpha]"], " the delayed negative feedback flips the sign \
+each half-period and the dynamic amplitude grows to a full \
+peak-to-peak ", math["\[TildeTilde] 3"], " (i.e. ",
+   math["\[PlusMinus]1.5"], "). Below we sweep ", math["\[Alpha]"],
+   " at fixed ", math["\[Delta] = 3"], " and plot the stationary \
+min/max envelope:"}],
 
 wlIn["(* Figure 5.7: bifurcation sweep -- min/max of T as a function of
    the wave-coupling alpha, at fixed delta = 3.  simulateDDE[] (shown
@@ -1542,6 +1581,20 @@ modulation of the stochastic forcing."]
 writeAll[{
 
 hd1["6.  Live forecast: initialising from April 2026"],
+
+Cell[TextData[{
+   StyleBox["Cell-evaluation order in this section.", FontWeight -> Bold,
+      FontSlant -> Italic],
+   "  Figure 6.1 assigns ", StyleBox["coneFig", FontFamily -> "Courier"],
+   "; Figure 2.1 assigned ", StyleBox["probBars", FontFamily -> "Courier"],
+   "; both are reused by the three-panel overlay in Figure 6.2. If you \
+have not run Figures 2.1 and 6.1 yet, do that first."
+}], "Text",
+   FontSize -> 11, FontColor -> GrayLevel[0.3],
+   CellMargins -> {{70, 70}, {6, 4}},
+   Background -> RGBColor[0.88, 0.91, 0.95],
+   CellFrame -> {{4, 0}, {0, 0}},
+   CellFrameColor -> RGBColor[0.45, 0.55, 0.70]],
 
 para[{"To turn the RDO into a live forecast tool we need (a) the \
 current observed ", math["T"], " and (b) the current observed (or \
@@ -1683,12 +1736,21 @@ findIRIPlume[] := Module[{y, m, i, url, resp},
       If[m == 1, m = 12; y -= 1, m -= 1],
       {i, 6}];
    $Failed];
-{iriUrl, iriYM, iriBytes} = findIRIPlume[];
-iriImg = ImageResize[Image[ImportByteArray[iriBytes, \"PNG\"]], 900];
-iriCaption = \"IRI / CPC plume (\" <>
-   {\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\",
-    \"Jul\",\"Aug\",\"Sep\",\"Oct\",\"Nov\",\"Dec\"}[[iriYM[[2]]]] <>
-   \" \" <> ToString[iriYM[[1]]] <> \" issuance)\";
+iriResult = findIRIPlume[];
+If[iriResult === $Failed,
+   iriImg = Graphics[{Lighter[Gray, 0.85], Rectangle[{0, 0}, {2, 1}],
+      Text[Style[\"IRI plume fetch failed -- check URL or try later\",
+         Bold, GrayLevel[0.4]], {1, 0.5}]},
+      ImageSize -> {900, 280}];
+   iriCaption = \"IRI / CPC plume (unavailable -- live fetch returned no 200)\";
+   Print[\"Warning: IRI plume fetch failed after 6 month-back attempts.\"],
+   (* else *)
+   {iriUrl, iriYM, iriBytes} = iriResult;
+   iriImg = ImageResize[Image[ImportByteArray[iriBytes, \"PNG\"]], 900];
+   iriCaption = \"IRI / CPC plume (\" <>
+      {\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\",
+       \"Jul\",\"Aug\",\"Sep\",\"Oct\",\"Nov\",\"Dec\"}[[iriYM[[2]]]] <>
+      \" \" <> ToString[iriYM[[1]]] <> \" issuance)\"];
 
 Grid[{
    {Labeled[iriImg, Style[iriCaption, Bold], Top]},
