@@ -196,6 +196,26 @@ wlIn[code_String] := Cell[code, "Input",
    CellMargins -> {{60, 30}, {6, 6}},
    FontSize -> 11];
 
+(* aiNote — short disclosure cell placed before each of the five
+   externally-generated illustrations, so readers see the same
+   code-before-figure convention applied to the AI assets even
+   though they are not WL-generated. *)
+aiNote[fig_String] := Cell[
+   TextData[{
+     StyleBox["External asset.", FontWeight -> Bold,
+        FontSlant -> Italic],
+     " ", fig, " was generated outside Wolfram Language with OpenAI's ",
+     StyleBox["gpt-image-2", FontFamily -> "Courier"],
+     " model (the prompts and a one-off Python driver are checked into ",
+     StyleBox["docs/images/figures-generated/", FontFamily -> "Courier"],
+     " of the project repository). It is included as a static \
+illustration; there is no WL code to run for this figure. See \
+\[Section]9 Acknowledgements for the licence."
+   }], "Text",
+   FontSize -> 11, FontColor -> GrayLevel[0.4],
+   CellMargins -> {{70, 70}, {6, 4}},
+   Background -> RGBColor[0.97, 0.96, 0.92]];
+
 (* Inline hyperlink that renders well in both interactive and PDF
    views: link text followed by the URL in parentheses. *)
 link[txt_String, url_String] := Sequence[
@@ -287,17 +307,30 @@ to follow the geophysical narrative."}]
 
 (* ============================================================
    Setup — load the companion .wl package so every wlIn cell
-   below is shift-Enter runnable
+   below is shift-Enter runnable.
+
+   This section sits before §1 so the helpers are available the
+   moment a reader starts evaluating cells. Readers who only want
+   to *read* the post can skip the code below; every figure has
+   a pre-rendered static image immediately following its wlIn
+   cell, so the prose is fully readable without evaluating
+   anything.
    ============================================================ *)
 
 writeAll[{
 
-hd1["Setup"],
+hd1["Setup (optional \[LongDash] only needed if you want to run the code)"],
 
-para[{"Every code cell in this post is runnable. The simulation \
-helpers (recharge\[Dash]discharge oscillator, Suarez\[Dash]Schopf \
-delayed oscillator, ensemble forecasters, hero-animation renderer) \
-live in a single attached package, ", mono["enso_emergence_helpers.wl"],
+para[{ital["You can ignore this section entirely if you just want to \
+read the post."], " Every figure is pre-rendered into the notebook \
+as a static image, so the prose, equations, and figures all work \
+without evaluating anything."}],
+
+para[{"If you ", ital["do"], " want to run the code cells, the \
+simulation helpers (recharge\[Dash]discharge oscillator, \
+Suarez\[Dash]Schopf delayed oscillator, ensemble forecasters, \
+hero-animation renderer, live-data loaders) live in a single attached \
+package, ", mono["enso_emergence_helpers.wl"],
    ", uploaded alongside the notebook. Run the cell below once after \
 opening the notebook; it loads every helper symbol used in the rest \
 of the post."}],
@@ -337,6 +370,7 @@ Ni\[NTilde]o 3.4 anomaly (the ", bold["Oceanic Ni\[NTilde]o Index"],
    ", ONI) exceeds +0.5 \[Degree]C for five consecutive overlapping \
 seasons."}],
 
+aiNote["Figure 1.1"],
 genImgCell["nino34_region_map.png"],
 captionCell["Figure 1.1  The four ENSO monitoring regions in the \
 tropical Pacific. The Ni\[NTilde]o 3.4 box, highlighted, is the \
@@ -370,6 +404,7 @@ push the system across thresholds. WWBs are most active in boreal \
 spring (March\[Dash]April), a fact that will reappear later in this \
 notebook as a key driver of the spring predictability barrier."}],
 
+aiNote["Figure 1.2"],
 genImgCell["walker_circulation.png"],
 captionCell["Figure 1.2  Schematic of the climatological Walker \
 circulation along the equator. Easterly trade winds at the surface, \
@@ -555,6 +590,7 @@ Northern Hemisphere winter. These ", bold["teleconnections"], " are \
 strong enough to be statistically detectable and operationally \
 useful for seasonal forecasting on every continent."}],
 
+aiNote["Figure 3.1"],
 genImgCell["enso_teleconnections.png"],
 captionCell["Figure 3.1  Typical El Ni\[NTilde]o winter (DJF) climate \
 anomalies. Wet/dry/warm/cool labels indicate the dominant precipitation \
@@ -616,6 +652,33 @@ para[{"by the helper script ", mono["wolfram/fetch_ersst_grid.wls"],
    mono["GeoPolygon"],
    " per 2\[Degree]\[Times]2\[Degree] cell coloured by the anomaly, \
 and renders with the satellite background:"}],
+
+Cell[TextData[{
+   StyleBox["Note for Community readers: ", FontWeight -> Bold,
+      FontSlant -> Italic],
+   "the 15 ", mono["ersst.v5.YYYYMM.nc"], " files (~170 KB each) are \
+not shipped as notebook attachments. To re-render the animation \
+yourself, fetch them with this short loop:"
+}], "Text",
+   FontSize -> 11, FontColor -> GrayLevel[0.4],
+   CellMargins -> {{70, 70}, {6, 4}},
+   Background -> RGBColor[0.97, 0.96, 0.92]],
+
+wlIn["(* Download the 15 most recent ERSSTv5 monthly NetCDFs into a
+   local folder before re-running the renderer below. *)
+ncDir = CreateDirectory[FileNameJoin[{NotebookDirectory[], \"ersst\"}]];
+today = Take[DateList[], 2];
+monthSeq = NestList[
+   With[{y = #[[1]], m = #[[2]] - 1},
+      If[m == 0, {y - 1, 12}, {y, m}]] &,
+   today, 15];
+Do[
+   With[{ym = ym, url = \"https://www.ncei.noaa.gov/pub/data/cmb/ersst/v5/netcdf/ersst.v5.\" <>
+      ToString[ym[[1]]] <> StringPadLeft[ToString[ym[[2]]], 2, \"0\"] <> \".nc\",
+      dest = FileNameJoin[{ncDir, \"ersst.v5.\" <> ToString[ym[[1]]] <>
+         StringPadLeft[ToString[ym[[2]]], 2, \"0\"] <> \".nc\"}]},
+      If[! FileExistsQ[dest], URLDownload[url, dest]]],
+   {ym, monthSeq}];"],
 
 codeIn["(* Load one month of gridded SST anomaly from the NetCDF *)
 ssta = Normal @ Import[file, {\"NetCDF\", \"Data\", \"ssta\"}];
@@ -710,6 +773,7 @@ July forecaster, with a 13-month lead, beats the January forecaster, \
 with a 7-month lead"], ", because the January forecast has to look \
 through the spring barrier."}],
 
+aiNote["Figure 4.1"],
 genImgCell["spring_barrier_concept.png"],
 captionCell["Figure 4.1  Conceptual calendar wheel of the spring \
 predictability barrier. The Bjerknes coupled-feedback strength \
@@ -900,6 +964,7 @@ exhibiting the essential ENSO physics. Both reductions are pre-PNAS-era \
 classical references and both can be implemented in under 100 lines \
 of Wolfram Language."}],
 
+aiNote["Figure 5.1"],
 genImgCell["recharge_discharge_cycle.png"],
 captionCell["Figure 5.1  The four phases of the recharge\[Dash]discharge \
 ENSO cycle (Jin 1997), drawn schematically. \
@@ -1182,12 +1247,19 @@ each lead with five percentiles and report the 5\[Dash]95 % and \
 25\[Dash]75 % bands as our confidence intervals:"}],
 
 wlIn["(* Figure 5.5: 4-panel ensemble cone, init Jan/Apr/Jul/Oct.
-   forecastEnsemble[m0] runs 500 stochastic copies of simulate[]
-   from climatological initial (T,h) for that month and returns
-   per-lead percentiles. Full helper in wolfram/rdo.wls. *)
-Get[FileNameJoin[{NotebookDirectory[], \"..\", \"wolfram\", \"rdo.wls\"}]];
+   forecastEnsemble[m0, nMembers, leadMonths, dt] runs nMembers
+   stochastic copies of simulate[] from climatological initial
+   (T, h) for that month and returns per-lead percentiles.
 
-panel[m0_] := With[{f = forecastEnsemble[m0]},
+   PERFORMANCE: the displayed figure used 500 members per panel
+   (4 x 500 = 2000 RDO integrations -- a few minutes). The cell
+   below uses 150 members per panel (~30 s on a laptop) so the
+   reader gets a result quickly; the cone bands are noisier but
+   the visual story is the same. *)
+
+panel[m0_, nMem_:150] := Module[{f},
+   PrintTemporary[\"Ensemble for init month \", m0, \" ...\"];
+   f = forecastEnsemble[m0, nMem, 18, 0.05];
    Show[
       ListLinePlot[
          {Transpose[{f[\"t\"], f[\"p05\"]}], Transpose[{f[\"t\"], f[\"p95\"]}]},
@@ -1218,12 +1290,15 @@ seasonally as the verification month sweeps through the strong-\
 coupling autumn and the weak-coupling/high-WWB spring."],
 
 wlIn["(* Figure 5.6: ensemble std-dev as f(initial month, lead).
-   For each calendar month m0 in 1..12 run a 250-member ensemble out
+   For each calendar month m0 in 1..12 run a 100-member ensemble out
    to lead 15 months, then extract the per-integer-lead std-dev.
    Result is a {12, 16} matrix (rows = m0, cols = lead). Transpose
-   so rows = lead (top = lead 0) and cols = m0 (Jan..Dec). *)
+   so rows = lead (top = lead 0) and cols = m0 (Jan..Dec).
+   ~2-3 minutes; the displayed figure used 250 members. *)
+
 spreadByMonth = Table[
-   With[{e = forecastEnsemble[m0, 250, 15, 0.1]},
+   PrintTemporary[\"spread heatmap: m0=\", m0, \"/12\"];
+   With[{e = forecastEnsemble[m0, 100, 15, 0.1]},
       e[\"std\"][[Table[FirstPosition[e[\"t\"],
                           _?(# >= tau - 0.05 &)][[1]],
                        {tau, 0, 15}]]]],
@@ -1507,17 +1582,20 @@ toy-model forecast"], ", with explicit 5\[Dash]95 % and 25\[Dash]75 % \
 confidence intervals, is:"}],
 
 wlIn["(* Figure 6.1: live RDO forecast from observed April 2026 state.
-   Re-uses simulate[] from the helpers package and seeds 500 members
-   with the same (T0, h0). *)
+   Re-uses simulate[] from the helpers package.
+   PERFORMANCE: figure used 500 members (~90 s); this cell uses 200
+   to keep it under 30 s. *)
 n34 = LoadNino34[];
 {Tlast, Tprev2, m0last} = {n34[\"anom\"][[-1]], n34[\"anom\"][[-3]],
                            n34[\"month\"][[-1]]};
 dTdt = (Tlast - Tprev2)/2.;
 hEst = (dTdt - Rseason[0., m0last] Tlast) / gammaC;
 SeedRandom[2026];
+nMem = 200;
+PrintTemporary[\"Running \", nMem, \"-member RDO ensemble \\[Ellipsis]\"];
 trajs = Table[
    simulate[Tlast, hEst, m0last, 18, 0.05, k],
-   {k, 500}];
+   {k, nMem}];
 Tmat = Transpose[#[\"T\"] & /@ trajs];
 t    = trajs[[1, \"t\"]];
 p05  = Map[Quantile[#, 0.05] &, Tmat];
@@ -1604,7 +1682,10 @@ With[
 content from the previous La Ni\[NTilde]a). The 500-member toy-model \
 ensemble is initialised from (T, h) = (",
           bold[ToString[NumberForm[Tlast, {3, 2}]]], ", ",
-          bold[ToString[NumberForm[hEst, {3, 2}]]], ")."
+          bold[ToString[NumberForm[hEst, {3, 2}]]], "). ",
+          ital[" Note: the values above were computed at notebook-build \
+time; re-evaluate the wlIn cell at the start of \[Section]6 (which \
+calls LoadNino34[]) to refresh against today's NOAA PSL data."]
        }], "Text"]
      ]
    ]
