@@ -993,11 +993,11 @@ upstream cells live in the same kernel: ",
    " in 5.9 stand on their own. If you skipped ahead, just shift-Enter \
 the earlier cell first."
 }], "Text",
-   FontSize -> 11, FontColor -> GrayLevel[0.3],
+   FontSize -> 11, FontColor -> GrayLevel[0.25],
    CellMargins -> {{70, 70}, {6, 4}},
-   Background -> RGBColor[0.88, 0.91, 0.95],
+   Background -> RGBColor[0.97, 0.92, 0.78],
    CellFrame -> {{4, 0}, {0, 0}},
-   CellFrameColor -> RGBColor[0.45, 0.55, 0.70]],
+   CellFrameColor -> RGBColor[0.78, 0.55, 0.15]],
 
 aiNote["Figure 5.1"],
 genImgCell["recharge_discharge_cycle.png"],
@@ -1408,7 +1408,7 @@ point ", math["T = 0"], ", and stability of the nonzero fixed \
 points ", math["T\.b2 = \[PlusMinus]\[Sqrt](1\[Minus]\[Alpha])"],
    " that emerge when the trivial one loses stability."}],
 
-para[{ital["(a) Linearisation about ", math["T = 0"], "."],
+para[{ital["(a) Linearisation about "], math["T = 0"], ital["."],
    " Substituting ", math["T \[Tilde] e^(\[Lambda] t)"],
    " gives the characteristic equation ",
    math["\[Lambda] = 1 \[Minus] \[Alpha] e^(\[Minus] \[Lambda] \[Delta])"],
@@ -1418,8 +1418,8 @@ leading (real) eigenvalue passes through zero \[LongDash] this is the \
 pitchfork transition, marking the loss of stability of the trivial \
 fixed point."}],
 
-para[{ital["(b) Linearisation about ",
-   math["T\.b2 = \[PlusMinus]\[Sqrt](1\[Minus]\[Alpha])"], "."],
+para[{ital["(b) Linearisation about "],
+   math["T\.b2 = \[PlusMinus]\[Sqrt](1\[Minus]\[Alpha])"], ital["."],
    " For ", math["\[Alpha] < 1"],
    " the origin is unstable and the cubic damping ",
    math["\[Minus] T^3"], " saturates trajectories near these nonzero \
@@ -1432,7 +1432,9 @@ fixed points. Their magnitude ", ital["decreases"], " with ",
 rattles within one basin, while above a critical line in the \
 ", math["(\[Alpha], \[Delta])"], " plane a delay-induced Hopf \
 bifurcation destabilises ", math["T\.b2"], " and drives a sustained \
-limit cycle of period ", math["\[TildeTilde] 4 \[Delta]"], "."}],
+limit cycle of period ", math["\[TildeTilde] 4\[Delta]"],
+   " (i.e. 24 model months \[LongDash] roughly 4 years in calendar \
+time at our rescaling)."}],
 
 para[{ital["Dynamic amplitude vs deterministic fixed point."],
    " These two analyses pull in opposite directions on the stationary \
@@ -1490,7 +1492,7 @@ a circular history buffer so the delayed value ", math["T(t-\[Delta])"],
    " is available at every step without recomputation:"}],
 
 codeIn["simulateDDE[m0_, tEnd_, dt_, hist0_, seed_] := Module[
-   {nHist, hist, idx, T, t, sqrtDt, ts, Ts, eta, Tdel, drift, diff, nSteps},
+   {nHist, hist, idx, T, t, sqrtDt, ts, Ts, eta, Tdel, drift, diff, nSteps, i},
    SeedRandom[seed];
    nHist  = Ceiling[delayTau/dt] + 2;
    hist   = ConstantArray[hist0, nHist];   (* circular buffer *)
@@ -1590,11 +1592,11 @@ Cell[TextData[{
    "; both are reused by the three-panel overlay in Figure 6.2. If you \
 have not run Figures 2.1 and 6.1 yet, do that first."
 }], "Text",
-   FontSize -> 11, FontColor -> GrayLevel[0.3],
+   FontSize -> 11, FontColor -> GrayLevel[0.25],
    CellMargins -> {{70, 70}, {6, 4}},
-   Background -> RGBColor[0.88, 0.91, 0.95],
+   Background -> RGBColor[0.97, 0.92, 0.78],
    CellFrame -> {{4, 0}, {0, 0}},
-   CellFrameColor -> RGBColor[0.45, 0.55, 0.70]],
+   CellFrameColor -> RGBColor[0.78, 0.55, 0.15]],
 
 para[{"To turn the RDO into a live forecast tool we need (a) the \
 current observed ", math["T"], " and (b) the current observed (or \
@@ -1738,10 +1740,13 @@ findIRIPlume[] := Module[{y, m, i, url, resp},
    $Failed];
 iriResult = findIRIPlume[];
 If[iriResult === $Failed,
-   iriImg = Graphics[{Lighter[Gray, 0.85], Rectangle[{0, 0}, {2, 1}],
-      Text[Style[\"IRI plume fetch failed -- check URL or try later\",
-         Bold, GrayLevel[0.4]], {1, 0.5}]},
-      ImageSize -> {900, 280}];
+   iriImg = Graphics[{
+         EdgeForm[Directive[Thick, GrayLevel[0.55]]],
+         FaceForm[GrayLevel[0.82]],
+         Rectangle[{0, 0}, {2, 1}],
+         Text[Style[\"IRI plume fetch failed -- check URL or try later\",
+            Bold, FontSize -> 18, GrayLevel[0.25]], {1, 0.5}]},
+      ImageSize -> {900, 280}, PlotRange -> {{0, 2}, {0, 1}}];
    iriCaption = \"IRI / CPC plume (unavailable -- live fetch returned no 200)\";
    Print[\"Warning: IRI plume fetch failed after 6 month-back attempts.\"],
    (* else *)
