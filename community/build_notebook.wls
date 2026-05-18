@@ -286,10 +286,31 @@ to follow the geophysical narrative."}]
 
 
 (* ============================================================
-   §1 What is ENSO?
+   Setup — load the companion .wl package so every wlIn cell
+   below is shift-Enter runnable
    ============================================================ *)
 
 writeAll[{
+
+hd1["Setup"],
+
+para[{"Every code cell in this post is runnable. The simulation \
+helpers (recharge\[Dash]discharge oscillator, Suarez\[Dash]Schopf \
+delayed oscillator, ensemble forecasters, hero-animation renderer) \
+live in a single attached package, ", mono["enso_emergence_helpers.wl"],
+   ", uploaded alongside the notebook. Run the cell below once after \
+opening the notebook; it loads every helper symbol used in the rest \
+of the post."}],
+
+wlIn["(* Attach the helper package -- put enso_emergence_helpers.wl in
+   the same folder as this notebook and shift-Enter the line below. *)
+SetDirectory[NotebookDirectory[]];
+Get[\"enso_emergence_helpers.wl\"];"],
+
+
+(* ============================================================
+   §1 What is ENSO?
+   ============================================================ *)
 
 hd1["1.  What is ENSO?"],
 
@@ -1290,7 +1311,7 @@ the original Suarez\[Dash]Schopf mechanism. Below we sweep ",
    math["\[Alpha]"], " at fixed ", math["\[Delta] = 3"],
    " and report the amplitude envelope from stochastic runs."}],
 
-wlIn["(* Figure 5.7: bifurcation sweep — min/max of T as a function of
+wlIn["(* Figure 5.7: bifurcation sweep -- min/max of T as a function of
    the wave-coupling alpha, at fixed delta = 3.  simulateDDE[] (shown
    in full below) is the same Euler-Maruyama DDE integrator used for
    the other delayed-osc panels; full implementation in
@@ -1480,6 +1501,40 @@ condition, we run a 500-member RDO ensemble out 18 months \
 toy-model forecast"], ", with explicit 5\[Dash]95 % and 25\[Dash]75 % \
 confidence intervals, is:"}],
 
+wlIn["(* Figure 6.1: live RDO forecast from observed April 2026 state.
+   Re-uses simulate[] from the helpers package and seeds 500 members
+   with the same (T0, h0). *)
+n34 = ENSOData`LoadNino34[];
+{Tlast, Tprev2, m0last} = {n34[\"anom\"][[-1]], n34[\"anom\"][[-3]],
+                           n34[\"month\"][[-1]]};
+dTdt = (Tlast - Tprev2)/2.;
+hEst = (dTdt - Rseason[0., m0last] Tlast) / gammaC;
+SeedRandom[2026];
+trajs = Table[
+   simulate[Tlast, hEst, m0last, 18, 0.05, k],
+   {k, 500}];
+Tmat = Transpose[#[\"T\"] & /@ trajs];
+t    = trajs[[1, \"t\"]];
+p05  = Map[Quantile[#, 0.05] &, Tmat];
+p25  = Map[Quantile[#, 0.25] &, Tmat];
+med  = Median /@ Tmat;
+p75  = Map[Quantile[#, 0.75] &, Tmat];
+p95  = Map[Quantile[#, 0.95] &, Tmat];
+
+Show[
+   ListLinePlot[{Transpose[{t, p05}], Transpose[{t, p95}]},
+      Filling -> {1 -> {{2}, Directive[Opacity[0.18],
+         RGBColor[0.83, 0.32, 0.10]]}}],
+   ListLinePlot[{Transpose[{t, p25}], Transpose[{t, p75}]},
+      Filling -> {1 -> {{2}, Directive[Opacity[0.45],
+         RGBColor[0.83, 0.32, 0.10]]}}],
+   ListLinePlot[Transpose[{t, med}],
+      PlotStyle -> Directive[Thickness[0.005], Black]],
+   Frame -> True, PlotRange -> {{-12, 18}, {-3, 3}},
+   FrameLabel -> {{\"Ni\\[NTilde]o 3.4 anomaly (\\[Degree]C)\", None},
+                  {\"months from latest obs\", None}},
+   ImageSize -> 900, AspectRatio -> 0.55]"],
+
 imgCell["rdo_live_forecast.png"],
 captionCell["Figure 6.1  Recharge\[Dash]discharge oscillator live \
 ensemble forecast initialised from observed April 2026 state \
@@ -1499,6 +1554,19 @@ both represent forecast uncertainty: the plume's vertical extent and \
 the cone's width should be of similar order, and both should narrow \
 into autumn (strong coupling reduces sensitivity to noise) and widen \
 into next spring (the barrier reasserts itself)."}],
+
+wlIn["(* Figure 6.2: three-panel side-by-side. Combines the IRI plume
+   PNG (fetched by wolfram/fetch_iri_plume.wls), the toy-model cone
+   from above, and the NOAA probability bars from Figure 2.1. *)
+iriImg = Image[Import[
+   FileNameJoin[{NotebookDirectory[], \"..\", \"data\", \"raw\",
+                 \"iri_plume_current.png\"}]],
+   ImageSize -> 900];
+Grid[{{Labeled[iriImg,
+         Style[\"IRI / CPC plume (latest issue)\", Bold], Top]},
+      {(* the cone Show[] from Figure 6.1 *)},
+      {(* the BarChart from Figure 2.1 *)}},
+   Spacings -> {2, 2}, ItemSize -> {Full, Automatic}]"],
 
 imgCell["forecast_overlay.png"],
 captionCell["Figure 6.2  Three-panel live overlay: IRI/CPC operational \

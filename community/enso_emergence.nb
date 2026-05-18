@@ -10,27 +10,27 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[   7888674,     130663]
-NotebookOptionsPosition[   7869323,     130413]
-NotebookOutlinePosition[   7869769,     130431]
-CellTagsIndexPosition[   7869726,     130428]
+NotebookDataLength[   7892559,     130760]
+NotebookOptionsPosition[   7872613,     130499]
+NotebookOutlinePosition[   7873059,     130517]
+CellTagsIndexPosition[   7873016,     130514]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
 
 Cell[CellGroupData[{
-Cell["ENSO emergence and the spring predictability barrier", "Title",ExpressionUUID->"80bf96d6-cc8c-4c18-b035-300f3e73917d"],
+Cell["ENSO emergence and the spring predictability barrier", "Title",ExpressionUUID->"2ee1f326-c405-47f3-baed-b7c2ceb37886"],
 
 Cell["\<\
 A live-data exploration of NOAA's May 2026 El Ni\[NTilde]o Watch through the \
 lens of two classical coupled ocean\[Dash]atmosphere toy models\
-\>", "Subtitle",ExpressionUUID->"9768fbab-e85d-4856-95c9-f9c59b6e13ab"],
+\>", "Subtitle",ExpressionUUID->"393b8da3-9cf3-4922-9b2e-b4a4f154f6cc"],
 
 Cell["Wolfram Community submission \[LongDash] May 2026", "Subsubtitle",
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.4],ExpressionUUID->"b40970fb-bc9c-44e2-82af-fbe1ac8ab9ce"],
+  0.4],ExpressionUUID->"e880cade-a664-4b90-a43b-0c536ea68224"],
 
 Cell[BoxData[
  TagBox[GridBox[{
@@ -44604,11 +44604,11 @@ through spring 2026. The full code that produced this animation is given in \
   "Column"]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 14}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"6a361f0b-f1f8-422e-8d93-531b2fa322df"],
+ TextAlignment->Center,ExpressionUUID->"e7820e62-7c47-459f-957f-cce64abb4375"],
 
 Cell[CellGroupData[{
 
-Cell["Abstract", "Section",ExpressionUUID->"fb372714-b9ed-4851-950a-9f06a3ee6af8"],
+Cell["Abstract", "Section",ExpressionUUID->"3bda9d29-98c1-406a-bc49-2c27f2e8f85b"],
 
 Cell[TextData[{
  "NOAA's Climate Prediction Center currently has an ",
@@ -44628,7 +44628,7 @@ is warming sharply (Ni\[NTilde]o 3.4 anomaly climbed from \[Minus]0.67 \
  CellMargins->{{60, 60}, {6, 6}},
  FontSize->14,
  Background->RGBColor[
-  0.98, 0.96, 0.9],ExpressionUUID->"3b386a50-5b6c-4fdb-b548-57db517e8bf1"],
+  0.98, 0.96, 0.9],ExpressionUUID->"5555eea8-8574-43e3-88bb-91026981d53e"],
 
 Cell[TextData[{
  "This notebook does three things. First, it ",
@@ -44652,7 +44652,7 @@ for the developing 2026 event."
  CellMargins->{{60, 60}, {6, 6}},
  FontSize->14,
  Background->RGBColor[
-  0.98, 0.96, 0.9],ExpressionUUID->"4b4a6152-6ac2-4421-83a4-c743fe99eabf"],
+  0.98, 0.96, 0.9],ExpressionUUID->"22f82bae-bf7d-4d5f-92fa-7ca2c309251d"],
 
 Cell[TextData[{
  StyleBox["Audience:",
@@ -44667,12 +44667,38 @@ geophysical narrative."
  CellMargins->{{60, 60}, {6, 6}},
  FontSize->14,
  Background->RGBColor[
-  0.98, 0.96, 0.9],ExpressionUUID->"36767835-f5c9-4694-add3-2e9732112a82"]
+  0.98, 0.96, 0.9],ExpressionUUID->"a6e49089-72de-4c95-bf79-8445bac8e01d"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell["1.  What is ENSO?", "Section",ExpressionUUID->"a995e4c0-fe17-4d0a-8fe3-727ac999341b"],
+Cell["Setup", "Section",ExpressionUUID->"a163b4a0-af54-4e2f-9788-90abb69634dd"],
+
+Cell[TextData[{
+ "Every code cell in this post is runnable. The simulation helpers (recharge\
+\[Dash]discharge oscillator, Suarez\[Dash]Schopf delayed oscillator, ensemble \
+forecasters, hero-animation renderer) live in a single attached package, ",
+ StyleBox["enso_emergence_helpers.wl",
+  FontFamily->"Courier"],
+ ", uploaded alongside the notebook. Run the cell below once after opening \
+the notebook; it loads every helper symbol used in the rest of the post."
+}], "Text",
+ CellMargins->{{50, 50}, {6, 
+  6}},ExpressionUUID->"c2d69f02-e260-4b8a-9006-55de20baf667"],
+
+Cell["\<\
+(* Attach the helper package -- put enso_emergence_helpers.wl in
+   the same folder as this notebook and shift-Enter the line below. *)
+SetDirectory[NotebookDirectory[]];
+Get[\"enso_emergence_helpers.wl\"];\
+\>", "Input",
+ CellMargins->{{60, 30}, {6, 6}},
+ FontSize->11,ExpressionUUID->"010f79af-0131-47c0-8185-96bba7ccf794"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["1.  What is ENSO?", "Section",ExpressionUUID->"15135bd1-07d0-46a2-a7ba-f25b4c3ddf44"],
 
 Cell[TextData[{
  StyleBox["The basic facts.",
@@ -44693,7 +44719,7 @@ eastern Pacific cold tongue intensifies. The whole system oscillates on a \
 atmospheric variability."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"8ee03974-f31a-47b1-9ee3-0c4c679b9a36"],
+  6}},ExpressionUUID->"322f2c7e-849b-4079-8cf7-ee371886d2ae"],
 
 Cell[TextData[{
  "The ENSO state is conventionally measured by the SST anomaly (departure \
@@ -44711,7 +44737,7 @@ event is that the three-month running mean of the Ni\[NTilde]o 3.4 anomaly \
  ", ONI) exceeds +0.5 \[Degree]C for five consecutive overlapping seasons."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"b6521396-bb13-415c-b6a3-bb13f0092b69"],
+  6}},ExpressionUUID->"110f9373-65f5-49d7-88bf-2884a8950c98"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -48381,7 +48407,7 @@ JigCkWtvdnRQCTEJUyGvpE6o/A0pCEfU5keTfvS/ARTWih0=
   PlotRange->{{0, 520.}, {0, 347.}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"d4a5dbbe-868f-455e-814a-ef1b1d85a43d"],
+ TextAlignment->Center,ExpressionUUID->"ae9c4961-1ddd-4941-8ce9-0b3aa3ee8884"],
 
 Cell["\<\
 Figure 1.1  The four ENSO monitoring regions in the tropical Pacific. The Ni\
@@ -48392,7 +48418,7 @@ classification. Generated for this notebook with OpenAI gpt-image-2.\
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"9b34c2fe-dad7-41db-a407-a1609eadf374"],
+  0.35],ExpressionUUID->"ca30e6c4-8ba5-4485-a299-fe1536a86724"],
 
 Cell[TextData[{
  StyleBox["Why ENSO exists.",
@@ -48400,7 +48426,7 @@ Cell[TextData[{
  " Three ingredients combine into a self-sustaining oscillation:"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"4f9b8d4a-71f6-44e9-9dc9-f372786e5fdf"],
+  6}},ExpressionUUID->"d0816054-4120-4d2e-8b37-496d0b0c3784"],
 
 Cell[TextData[{
  "(i) ",
@@ -48414,7 +48440,7 @@ SST gradient, which weakens the trades, which weakens the upwelling of cold \
 water in the east, which amplifies the original warming. Positive feedback."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"b4002269-6ff2-4d63-8ec6-12e4044074ac"],
+  6}},ExpressionUUID->"321d38cd-2480-4cb5-a394-13d2f3078221"],
 
 Cell[TextData[{
  "(ii) ",
@@ -48427,7 +48453,7 @@ Kelvin waves several months later. The reflected upwelling eventually cools \
 the east and reverses the cycle."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"c6b1ce2e-c9bf-48f6-95db-9c7abfab6113"],
+  6}},ExpressionUUID->"4830f777-6b12-4c79-9da3-0e868d85b338"],
 
 Cell[TextData[{
  "(iii) ",
@@ -48441,7 +48467,7 @@ spring (March\[Dash]April), a fact that will reappear later in this notebook \
 as a key driver of the spring predictability barrier."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"02284847-1e65-4907-b6e1-b9b0616256dd"],
+  6}},ExpressionUUID->"7f341fc3-c65f-4402-b4c5-f9c95d04f1e4"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -54154,7 +54180,7 @@ GQ7J
   PlotRange->{{0, 520.}, {0, 347.}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"4be3177f-d0e9-4deb-9b5e-345c498a2f2a"],
+ TextAlignment->Center,ExpressionUUID->"1f6a52d2-7dfc-4db8-9349-9a756bf60b17"],
 
 Cell["\<\
 Figure 1.2  Schematic of the climatological Walker circulation along the \
@@ -54168,12 +54194,12 @@ with OpenAI gpt-image-2.\
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"8f072205-6de4-4e6a-bba4-fcb60ef3affd"]
+  0.35],ExpressionUUID->"8e1db280-42b5-4a72-890e-c888c7da028a"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell["2.  The May 2026 El Ni\[NTilde]o Watch", "Section",ExpressionUUID->"97e4f102-ef93-48a8-9c88-da31e7e1f6d8"],
+Cell["2.  The May 2026 El Ni\[NTilde]o Watch", "Section",ExpressionUUID->"36d772a1-2285-46a2-9b89-d15414ce0852"],
 
 Cell[TextData[{
  "NOAA's Climate Prediction Center and Columbia's IRI jointly issue an ENSO \
@@ -54189,7 +54215,7 @@ within the next few seasons exceeds ~55 %, the CPC raises an ",
  " (similar logic for La Ni\[NTilde]a)."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"a145f3c9-2ced-4c14-89aa-06fe8a3eae94"],
+  6}},ExpressionUUID->"21b5d54d-68d3-419b-a9f3-53f52239946a"],
 
 Cell[TextData[{
  StyleBox["Popular-science take.",
@@ -54217,7 +54243,7 @@ of the strongest on record. Some forecasters have already nicknamed it the \
  CellMargins->{{70, 70}, {6, 6}},
  FontSize->12,
  Background->RGBColor[0.93, 0.95, 0.99],
- FrameMargins -> 12,ExpressionUUID->"1fe1f3fd-4403-413c-8141-50454a98da78"],
+ FrameMargins -> 12,ExpressionUUID->"665eb78b-3973-403b-ba69-7a724e9f67dd"],
 
 Cell[TextData[{
  "The May 2026 issuance is unambiguous. The probability bars below show El Ni\
@@ -54230,7 +54256,7 @@ directly from the snapshot JSON written by ",
  ":"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"cfa1fe01-3a80-46f9-aa64-52dffd539c0c"],
+  6}},ExpressionUUID->"8453469b-d5cc-493c-976e-b027ed5efc4b"],
 
 Cell[CellGroupData[{
 
@@ -54263,7 +54289,7 @@ BarChart[
    AspectRatio -> 0.45, ImageSize -> 900]\
 \>", "Input",
  CellMargins->{{60, 30}, {6, 6}},
- FontSize->11,ExpressionUUID->"7aff7ddb-0412-4f7b-8be7-529c4c1f1d3c"],
+ FontSize->11,ExpressionUUID->"84395c0f-10d7-4dc3-98fb-b407b9e781d1"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -54596,7 +54622,7 @@ YmxZUlJy69YtejcyjyfZ2NgWkIF1mBErezLZ2P447P8D4qe7wg==
   PlotRange->{{0, 220.}, {0, 99.}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"67b20fb5-b22e-4401-86c9-8a64d536500a"]
+ TextAlignment->Center,ExpressionUUID->"d0ec47dd-a2e7-4b63-9734-edcdc4e34906"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -54616,7 +54642,7 @@ subsequent runs of the pipeline."
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"a695c7cd-38f9-4e4f-a076-112be2ca4fcf"],
+  0.35],ExpressionUUID->"5f2da938-ac34-4d19-bdc8-9f190ecf0f05"],
 
 Cell["\<\
 This Watch is striking for two reasons. (a) It comes just six months after \
@@ -54629,7 +54655,7 @@ transitions). (b) The probability of persistence to DJF is exceptionally high \
 \[NTilde]o indeed materialised.\
 \>", "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"2a0be020-f993-4677-aa38-00af057dbe95"],
+  6}},ExpressionUUID->"d9bd0e8d-77f3-463c-acf3-78befb315dbb"],
 
 Cell[CellGroupData[{
 
@@ -54655,7 +54681,7 @@ PSL)\",
    ImageSize -> 1100, AspectRatio -> 1/3.4]\
 \>", "Input",
  CellMargins->{{60, 30}, {6, 6}},
- FontSize->11,ExpressionUUID->"5777ce3c-ea70-4078-95b3-fc5f32b22675"],
+ FontSize->11,ExpressionUUID->"4b7ac762-bbc0-49a0-9749-b2829ff60f8c"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -55519,7 +55545,7 @@ PmWjUoECBQoYYCGVCjUFVwj+H9h6Yz8=
   PlotRange->{{0, 220.}, {0, 73.}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"593cfe39-b7ed-4c99-b5a5-4096e4b9c8e0"]
+ TextAlignment->Center,ExpressionUUID->"fab18389-7aaa-40b8-a076-9b149b625bf1"]
 }, Open  ]],
 
 Cell["\<\
@@ -55534,7 +55560,7 @@ warming we are about to forecast.\
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"c3eee79f-66a7-4a6e-8705-52e278c841e5"],
+  0.35],ExpressionUUID->"63f3d54f-3b22-4b76-8b99-683999415556"],
 
 Cell[TextData[{
  StyleBox["What the data show right now.",
@@ -55543,7 +55569,7 @@ Cell[TextData[{
 for this notebook, are:"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"ef45069d-923c-4eb4-8895-c74f81f92eb1"],
+  6}},ExpressionUUID->"5c47d070-6e33-412f-8d75-da68580a521c"],
 
 Cell[TextData[{
  StyleBox["November 2025",
@@ -55586,7 +55612,7 @@ Cell[TextData[{
  FontFamily->"Helvetica",
  FontSize->13,
  Background->RGBColor[
-  0.96, 0.97, 0.92],ExpressionUUID->"19d43ec0-55bc-4455-9826-2eb9fc733baf"],
+  0.96, 0.97, 0.92],ExpressionUUID->"47f34e15-4526-4801-8d81-720c74223868"],
 
 Cell["\<\
 The +0.31 \[Degree]C jump from February to April (\[Minus]0.27 \[RightArrow] \
@@ -55600,12 +55626,12 @@ starting point by the upper-ocean heat content left over from previous La Ni\
 the growth regime.\
 \>", "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"309c0c29-f172-4e3f-93d8-69679656e7e2"]
+  6}},ExpressionUUID->"475e46c9-5cbf-44c4-b1fa-2cfc7a8d9367"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell["3.  Why ENSO matters: global teleconnections", "Section",ExpressionUUID->"76a87c91-461e-4ce5-b4fd-db4e05457934"],
+Cell["3.  Why ENSO matters: global teleconnections", "Section",ExpressionUUID->"2d6edb72-11d4-4dbb-a133-b43c6ab91d87"],
 
 Cell[TextData[{
  "ENSO is not just a Pacific story. The warm pool's eastward shift during El \
@@ -55618,7 +55644,7 @@ and the storm tracks across the entire Northern Hemisphere winter. These ",
 for seasonal forecasting on every continent."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"e2f482b2-bd62-45fd-9858-f08823c6a0f7"],
+  6}},ExpressionUUID->"780eb856-7a34-4203-b706-e72cde49be82"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -62253,7 +62279,7 @@ FfI/NFyqKg==
   PlotRange->{{0, 520.}, {0, 347.}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"fecad5c3-4464-4993-831c-757352f6fe1a"],
+ TextAlignment->Center,ExpressionUUID->"299b800e-8bfd-4b57-9da5-0a008879d9d9"],
 
 Cell["\<\
 Figure 3.1  Typical El Ni\[NTilde]o winter (DJF) climate anomalies. \
@@ -62268,7 +62294,7 @@ the Gulf Coast. Generated with OpenAI gpt-image-2.\
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"a26ba426-1045-4852-b9b7-436603b4c83c"],
+  0.35],ExpressionUUID->"56eb5a8f-a60a-45ec-8c53-5034dd7377a6"],
 
 Cell[TextData[{
  StyleBox["Some concrete numbers from the most recent event.",
@@ -62282,16 +62308,16 @@ several months in advance, has billion-dollar consequences across \
 agriculture, water resources, disaster preparedness, and energy markets."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"dc59f7f6-708d-4cc7-a6cc-31414b345cb0"],
+  6}},ExpressionUUID->"4e6d6b2b-3825-4e57-8f23-b11481d09154"],
 
 Cell["Which is why the spring predictability barrier matters.", "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"656313bc-d14d-4c27-967d-021b5fea0d86"]
+  6}},ExpressionUUID->"3e8c09a0-0464-494c-8dcd-2237f982cbd1"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell["3.5  Spatial dynamics: 15 months of the basin", "Section",ExpressionUUID->"ef271e78-b684-4591-8b80-2f72071ee7cf"],
+Cell["3.5  Spatial dynamics: 15 months of the basin", "Section",ExpressionUUID->"fcac5d4c-a8fc-4540-ac25-8e4125a7b3cb"],
 
 Cell[TextData[{
  "The Ni\[NTilde]o 3.4 box-mean used everywhere else in this notebook \
@@ -62312,7 +62338,7 @@ that the western Maritime Continent, Australia, and both American coastlines \
 are all visible for context:"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"2a04463f-34a3-4d01-b83d-48d3e764e291"],
+  6}},ExpressionUUID->"5ddf5810-0ff2-4406-aac0-e7b0b4906f5f"],
 
 Cell[TextData[{
  StyleBox["How this was made.",
@@ -62325,7 +62351,7 @@ Cell[TextData[{
 file per month, fetched from"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"cef8c644-5afa-4868-80d9-404fc35798ba"],
+  6}},ExpressionUUID->"f15c0b20-933e-482a-94af-5e02b75666f7"],
 
 Cell["\<\
 https://www.ncei.noaa.gov/pub/data/cmb/ersst/v5/netcdf/ersst.v5.YYYYMM.nc\
@@ -62335,7 +62361,7 @@ https://www.ncei.noaa.gov/pub/data/cmb/ersst/v5/netcdf/ersst.v5.YYYYMM.nc\
  FontFamily->"Courier",
  FontSize->11,
  Background->RGBColor[
-  0.95, 0.96, 0.98],ExpressionUUID->"f1be0b80-273e-477b-bd0a-aec13cc5c5b4"],
+  0.95, 0.96, 0.98],ExpressionUUID->"5fffaa97-71ee-46f8-8b84-76efc190a4ff"],
 
 Cell[TextData[{
  "by the helper script ",
@@ -62354,7 +62380,7 @@ Cell[TextData[{
 with the satellite background:"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"72a652a8-2374-4e2f-b392-6569347e6c3f"],
+  6}},ExpressionUUID->"c8bc7916-6a5c-4c90-90fc-dc659c94bf4c"],
 
 Cell["\<\
 (* Load one month of gridded SST anomaly from the NetCDF *)
@@ -62394,7 +62420,7 @@ Export[\"hero_satellite.mp4\",
  FontFamily->"Courier",
  FontSize->11,
  Background->RGBColor[
-  0.95, 0.96, 0.98],ExpressionUUID->"0bd52a68-3a0a-40cd-8f58-0d2ad0a426f3"],
+  0.95, 0.96, 0.98],ExpressionUUID->"bce196b8-9712-459f-93d1-935ac3c76fa9"],
 
 Cell["\<\
 Running the above produces the following animation \[LongDash] the same one \
@@ -62402,7 +62428,7 @@ used as the cover figure of this post, reproduced here with a different \
 caption:\
 \>", "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"ede71d80-7436-4e2a-ab16-6caa159197d2"],
+  6}},ExpressionUUID->"eeb65c38-40a8-4244-b9b3-75e20fa1ad95"],
 
 Cell[BoxData[
  TagBox[GridBox[{
@@ -106974,7 +107000,7 @@ scale: bright red \[Tilde] +3 \[Degree]C, deep blue \[Tilde] \[Minus]3 \
   "Column"]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 14}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"831678e5-47c3-49b2-b32d-1b6ae02d19fd"],
+ TextAlignment->Center,ExpressionUUID->"58b2ac98-329c-487c-a62c-c5738870b44e"],
 
 Cell[TextData[{
  StyleBox["What the animation shows.",
@@ -106993,7 +107019,7 @@ recharge\[Dash]discharge cycle described in \[Section]5.1 and animated in the \
 toy model in Figures 5.3\[Dash]5.4."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"2c700d11-cdb4-405a-af5c-638517965fd3"],
+  6}},ExpressionUUID->"4dc045dd-8ee0-49ba-8b52-a4c95fe1e148"],
 
 Cell[TextData[{
  StyleBox["Note on resolution.",
@@ -107008,12 +107034,12 @@ grid suffices, and the geographic context provided by the satellite basemap \
 location of the equatorial cold tongue unambiguous to a non-specialist reader."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"5d688279-a01e-4228-ac03-9bdbd4ee41f2"]
+  6}},ExpressionUUID->"0965a1c0-163d-42db-b0d7-6c85c4fbbefe"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell["4.  The spring predictability barrier", "Section",ExpressionUUID->"652f82a8-a09e-4ed1-96f9-654732692e6c"],
+Cell["4.  The spring predictability barrier", "Section",ExpressionUUID->"1cfcdf91-daed-48d7-a2a5-a4b08bf58bb3"],
 
 Cell[TextData[{
  StyleBox["The intuitive version.",
@@ -107031,7 +107057,7 @@ forecaster, with a 7-month lead",
  ", because the January forecast has to look through the spring barrier."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"ee4fb251-8751-4187-9b63-ff78832e83b3"],
+  6}},ExpressionUUID->"8299f84d-4cb1-4148-b4ac-d1b177c566fd"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -111522,7 +111548,7 @@ z/8FS2p5vQ==
   PlotRange->{{0, 520.}, {0, 347.}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"5e94f0f6-4136-48fc-b96c-927d48d013e9"],
+ TextAlignment->Center,ExpressionUUID->"f7bbc462-754d-4144-b44a-fbb870ed4b39"],
 
 Cell["\<\
 Figure 4.1  Conceptual calendar wheel of the spring predictability barrier. \
@@ -111537,7 +111563,7 @@ Generated with OpenAI gpt-image-2.\
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"8c8d26a8-b32e-4ea2-ade0-28c9d7592ed0"],
+  0.35],ExpressionUUID->"acfea440-2757-4991-adec-5be364a1f102"],
 
 Cell[TextData[{
  StyleBox["The quantitative version.",
@@ -111550,7 +111576,7 @@ as a function of the initial calendar month ",
  " and the lead time \[Tau] (in months):"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"4c48481c-e4a4-4c9e-afcd-77950540c1ee"],
+  6}},ExpressionUUID->"1c87f6d2-cec7-4662-9944-66163f375c79"],
 
 Cell[BoxData[
  FormBox[
@@ -111594,7 +111620,7 @@ Cell[BoxData[
          SubscriptBox["m", "0"], "+", "\[Tau]", "-", "1"}], ",", "12"}], 
        ")"}]}], ")"}]]}], TraditionalForm]], "DisplayFormula",
  CellMargins->{{80, 50}, {8, 
-  8}},ExpressionUUID->"322806e9-3974-4e35-bd73-51a455af2c08"],
+  8}},ExpressionUUID->"2a04b70e-cb9e-4f2c-ae8f-51db9989054b"],
 
 Cell[TextData[{
  "\[Rho]",
@@ -111606,7 +111632,7 @@ Cell[TextData[{
  Cell[BoxData[
   FormBox[
    SubscriptBox["\[Sigma]", "T"], TraditionalForm]], "InlineFormula",
-  ExpressionUUID->"174555c5-bd83-4809-912d-fdf76173a2bb"],
+  ExpressionUUID->"171f92fd-ca75-4b70-9097-33d66c3b20a8"],
  " is the marginal standard deviation for that calendar month; the floor and \
 mod arithmetic carry the verification time forward into the next year when ",
  StyleBox["m\:2080 + \[Tau] > 12",
@@ -111628,13 +111654,13 @@ sinusoid, ",
  " would oscillate forever between \[PlusMinus] 1."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"71c3e2db-f1fa-49e6-868b-e28e23589274"],
+  6}},ExpressionUUID->"e14e7ad0-bc52-434b-9171-f7a3871cad53"],
 
 Cell["\<\
 Computing this from 77 years of monthly ERSSTv5 anomalies gives:\
 \>", "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"8f6b2c21-64f2-4135-b866-025b40feb9f1"],
+  6}},ExpressionUUID->"79bb507c-c9e0-4eb8-a267-60ac935b20e0"],
 
 Cell[CellGroupData[{
 
@@ -111685,7 +111711,7 @@ ArrayPlot[rhoMatrix,
    ImageSize -> 820, AspectRatio -> 1.05]\
 \>", "Input",
  CellMargins->{{60, 30}, {6, 6}},
- FontSize->11,ExpressionUUID->"fe3fa5e7-4345-40a0-967c-640d71ae9cdb"],
+ FontSize->11,ExpressionUUID->"26434b58-ac2a-41ff-b100-ceeb000fa60d"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -112626,7 +112652,7 @@ n2zHDTfccBug9kvniF8m65e+kdr3+eXffvYZOpbQO33j773ihhtuuCFpr3y4
   PlotRange->{{0, 220.}, {0, 219.}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"46369241-b1bf-4576-a84f-21c6a5861b61"]
+ TextAlignment->Center,ExpressionUUID->"ed5e203e-ce13-4b94-aa59-7b63a1ab1d5e"]
 }, Open  ]],
 
 Cell["\<\
@@ -112640,7 +112666,7 @@ May\[Dash]July verification window is the spring predictability barrier.\
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"caf3d591-56c9-42a3-92c5-6df50e86ebf9"],
+  0.35],ExpressionUUID->"2314302b-aa96-4e7f-93ae-102289679f4e"],
 
 Cell[TextData[{
  StyleBox["What the heatmap is telling you.",
@@ -112652,14 +112678,14 @@ autocorrelation drops below 0.2 by lead 5 (verifying in June). Same dataset, \
 same statistic, hugely different behaviour. The asymmetry is the barrier."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"10ecb582-b090-4184-81b4-8f478070fd41"],
+  6}},ExpressionUUID->"21765f05-68fb-4cb1-b065-705008ead089"],
 
 Cell["\<\
 The same data in a different cut: the persistence-skill curves collapse by \
 start month.\
 \>", "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"59e07ca3-0f24-405c-95a0-0eb96b3e7d86"],
+  6}},ExpressionUUID->"e1e343d3-55b6-4f75-9136-dc918da7a7c7"],
 
 Cell[CellGroupData[{
 
@@ -112681,7 +112707,7 @@ ListLinePlot[
    ImageSize -> 900, AspectRatio -> 0.55]\
 \>", "Input",
  CellMargins->{{60, 30}, {6, 6}},
- FontSize->11,ExpressionUUID->"41302f69-36e6-4e79-bcf6-d21b5fed67f5"],
+ FontSize->11,ExpressionUUID->"10f4ed07-7d1f-4b99-8d38-c3e6d87eca7d"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -113844,7 +113870,7 @@ siMjI0RzYp9BBhl8q0BkIw2Ikcvl4ssKMsjg8eD/AVBt+kk=
   PlotRange->{{0, 220.}, {0, 111.5}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"6c58d3f2-616c-4e54-a573-7a9b4884e700"]
+ TextAlignment->Center,ExpressionUUID->"ea989183-0784-4428-85e1-aa9b2c8ea21f"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -113864,7 +113890,7 @@ leads; lines that start in summer and autumn (Jul, Aug, Sep, Oct) retain ",
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"4c32229c-61fd-4661-80c5-2df696d93098"],
+  0.35],ExpressionUUID->"c06266f2-c595-4bf3-ab39-e5f8b4a4aaa5"],
 
 Cell[TextData[{
  StyleBox["Why the barrier exists.",
@@ -113873,7 +113899,7 @@ Cell[TextData[{
  Cell[BoxData[
   FormBox[
    RowBox[{"R", "(", "t", ")"}], TraditionalForm]], "InlineFormula",
-  ExpressionUUID->"97e7088d-eb23-47fe-8d05-6907a6b94cf2"],
+  ExpressionUUID->"783949cb-d2aa-4fc6-9a24-8152154635b9"],
  " (the coupled-system growth rate that we will derive in \[Section]5.1) is \
 seasonally modulated. It is strongest in boreal autumn, when the \
 climatological cold tongue and trade winds are most pronounced, and weakest \
@@ -113883,7 +113909,7 @@ spring, when the cold tongue retreats and the intertropical convergence zone \
 spring is therefore not amplified by coupling; it just sits there or decays."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"7baf279a-5715-41b1-8f00-62e4a1906bd2"],
+  6}},ExpressionUUID->"68922da5-45be-49c1-ae9b-5f85cda72293"],
 
 Cell["\<\
 (b) Westerly-wind-burst (WWB) activity in the western Pacific peaks in March\
@@ -113892,7 +113918,7 @@ dynamics during this season, washing out the information carried by the \
 initial condition.\
 \>", "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"096c5bde-8a97-4d3d-8013-2772db95be70"],
+  6}},ExpressionUUID->"63e10f59-adc8-403d-8b79-92fd100db6f0"],
 
 Cell[TextData[{
  "(c) The thermocline phase relationship between ",
@@ -113909,12 +113935,12 @@ of the canonical recharge\[Dash]discharge cycle. Small phase errors compound \
 here."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"8401caeb-75a5-4014-b2e2-bae8dcdba232"]
+  6}},ExpressionUUID->"a67b9e2c-53ad-4810-8d23-ee8d8d65d92c"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell["5.  Two toy models of ENSO", "Section",ExpressionUUID->"9b05f19d-7e94-4611-a3e8-765a861c9c59"],
+Cell["5.  Two toy models of ENSO", "Section",ExpressionUUID->"7fa77dfb-8960-4741-a8a6-7bedd636d209"],
 
 Cell["\<\
 There is a remarkable two-fold reduction of the full coupled \
@@ -113923,7 +113949,7 @@ essential ENSO physics. Both reductions are pre-PNAS-era classical references \
 and both can be implemented in under 100 lines of Wolfram Language.\
 \>", "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"7317fdf1-44c3-455e-b425-4845af8c5d0f"],
+  6}},ExpressionUUID->"df835908-ee66-46c7-aa62-3fc3b6f5eb67"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -120493,7 +120519,7 @@ srty4dyUaKgyaYcNyQDXPGiNZYZXODWSS5dY0i+3naR/Wf5EbuuWs5XFYsyF
   PlotRange->{{0, 520.}, {0, 347.}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"bfd1fe96-5be9-4af5-bf27-c5a1188fb3a2"],
+ TextAlignment->Center,ExpressionUUID->"922542b5-a7e4-436d-994a-04621662a6e8"],
 
 Cell["\<\
 Figure 5.1  The four phases of the recharge\[Dash]discharge ENSO cycle (Jin \
@@ -120509,11 +120535,11 @@ OpenAI gpt-image-2.\
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"b19e72f5-10cf-45de-84cc-5c414499eec9"],
+  0.35],ExpressionUUID->"e1b62dff-84b4-469c-b1cb-7162ca490fcf"],
 
 Cell[CellGroupData[{
 
-Cell["5.1  Recharge\[Dash]discharge oscillator (Jin 1997)", "Subsection",ExpressionUUID->"1f245fbd-744a-4a4e-a19a-df4745ebbf6e"],
+Cell["5.1  Recharge\[Dash]discharge oscillator (Jin 1997)", "Subsection",ExpressionUUID->"c750107a-f829-4f1f-87fa-3ab4b24d838d"],
 
 Cell[TextData[{
  StyleBox["Conceptual reduction.",
@@ -120521,7 +120547,7 @@ Cell[TextData[{
  " Following Jin (1997), reduce the equatorial Pacific to two state variables:"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"b26ea897-9f22-4e59-819f-1ec48fc2fb85"],
+  6}},ExpressionUUID->"4a883752-c2fe-4b47-9f2c-b07de860d7fc"],
 
 Cell[TextData[{
  "\[Bullet] ",
@@ -120532,7 +120558,7 @@ Cell[TextData[{
 \[NTilde]o 3.4."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"59829a17-98b2-442e-ba09-6ee8940a2eb7"],
+  6}},ExpressionUUID->"a9355715-0a75-458a-945b-97f7565531fb"],
 
 Cell[TextData[{
  "\[Bullet] ",
@@ -120548,7 +120574,7 @@ warm water volume above the 20 \[Degree]C isotherm. Positive ",
 \[CloseCurlyDoubleQuote] (recharged); negative means discharged."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"1aaa7344-e4d9-4f10-b33d-4af7309089ec"],
+  6}},ExpressionUUID->"9b684c12-0dab-48b7-a8be-f5c41375bd21"],
 
 Cell[TextData[{
  StyleBox["Deterministic core.",
@@ -120556,7 +120582,7 @@ Cell[TextData[{
  " The linearised SST budget gives"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"c97930d2-05cc-43c6-b8d5-a5f87a4d61d7"],
+  6}},ExpressionUUID->"bc18c211-0670-4dcb-ab5f-7db3e5bb5e62"],
 
 Cell[BoxData[
  FormBox[
@@ -120565,7 +120591,7 @@ Cell[BoxData[
    RowBox[{"R", " ", "T"}], "+", 
    RowBox[{"\[Gamma]", " ", "h"}]}], TraditionalForm]], "DisplayFormula",
  CellMargins->{{80, 50}, {8, 
-  8}},ExpressionUUID->"11a897e8-e21d-4cc9-aaa1-7084cf4f2f04"],
+  8}},ExpressionUUID->"27dad023-1587-40dd-ba96-0f86a868f938"],
 
 Cell[TextData[{
  "where ",
@@ -120581,14 +120607,14 @@ Cell[TextData[{
 warm water eastward and warms the east."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"6158e822-1ea4-4e62-9d60-578e0bac9510"],
+  6}},ExpressionUUID->"10eabed4-c040-453f-9bd9-b6aba9a9ffee"],
 
 Cell["\<\
 The ocean-adjustment equation closes the system by transporting heat content \
 out of the basin in proportion to wind-stress-curl-driven Sverdrup flow:\
 \>", "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"c32344fe-b729-414e-b6bb-d98cb20c5254"],
+  6}},ExpressionUUID->"a6d179e5-55ce-4f7b-a165-f81346cbf410"],
 
 Cell[BoxData[
  FormBox[
@@ -120598,7 +120624,7 @@ Cell[BoxData[
     RowBox[{"-", "r"}], " ", "h"}], "-", 
    RowBox[{"\[Alpha]", " ", "T"}]}], TraditionalForm]], "DisplayFormula",
  CellMargins->{{80, 50}, {8, 
-  8}},ExpressionUUID->"ffe5cd27-6da4-4f13-83a3-1a4f35463367"],
+  8}},ExpressionUUID->"d70c7ba8-0076-4e40-bb41-9a5e9856f582"],
 
 Cell[TextData[{
  StyleBox["r",
@@ -120613,7 +120639,7 @@ an anomalously eastward wind stress, which drains the western recharge. \
 Together this is a 2 \[Times] 2 linear system with eigenvalues"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"090a20d9-5b26-4156-8c5b-9759eb621ec3"],
+  6}},ExpressionUUID->"a0f22b4e-5b22-4db9-855d-a7782675abca"],
 
 Cell[BoxData[
  FormBox[
@@ -120630,7 +120656,7 @@ Cell[BoxData[
      RowBox[{"\[Gamma]", " ", "\[Alpha]"}]}]]}], 
   TraditionalForm]], "DisplayFormula",
  CellMargins->{{80, 50}, {8, 
-  8}},ExpressionUUID->"ea9fc449-96d7-41e1-916f-69162e9675c5"],
+  8}},ExpressionUUID->"01f44b02-0718-440a-8a7d-cc06cb738474"],
 
 Cell[TextData[{
  "For the parameter regime relevant to nature (",
@@ -120649,7 +120675,7 @@ Cell[TextData[{
 years, in the observed ENSO band."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"fba3ba80-7177-4c5d-867e-6aa1e66ec470"],
+  6}},ExpressionUUID->"3b3c5b65-49b0-47a5-aabf-605b7c87bef4"],
 
 Cell[TextData[{
  StyleBox["Adding the stochastic forcing.",
@@ -120664,7 +120690,7 @@ The standard remedy is multiplicative-then-additive stochastic forcing \
 atmospheric weather that the slow ocean mode does not resolve:"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"1bb11d01-6868-4a47-bc66-bbc3abd7d708"],
+  6}},ExpressionUUID->"3b7d411e-b8a7-4237-8384-3b714a215abf"],
 
 Cell[BoxData[
  FormBox[
@@ -120680,7 +120706,7 @@ Cell[BoxData[
     SubscriptBox["\[Xi]", "w"], "(", "t", ")"}]}], 
   TraditionalForm]], "DisplayFormula",
  CellMargins->{{80, 50}, {8, 
-  8}},ExpressionUUID->"0bdef278-fb1d-42f0-b458-9543ecc8816e"],
+  8}},ExpressionUUID->"b4fe35a9-ad7d-4c63-91c5-54811d46c79f"],
 
 Cell[BoxData[
  FormBox[
@@ -120694,7 +120720,7 @@ Cell[BoxData[
     SubscriptBox["\[Xi]", "h"], "(", "t", ")"}]}], 
   TraditionalForm]], "DisplayFormula",
  CellMargins->{{80, 50}, {8, 
-  8}},ExpressionUUID->"27905ac4-dee7-4c57-90c2-66b86392603c"],
+  8}},ExpressionUUID->"7f59eb61-c56a-4828-943b-f51860b51f9d"],
 
 Cell[TextData[{
  "where the three ",
@@ -120713,24 +120739,24 @@ Cell[TextData[{
  Cell[BoxData[
   FormBox[
    SubscriptBox["\[Sigma]", "T"], TraditionalForm]], "InlineFormula",
-  ExpressionUUID->"079213e5-42fe-4118-a082-295b70c13016"],
+  ExpressionUUID->"4cf62bd3-2e19-4423-8e3c-83b2b8be26fa"],
  ", ",
  Cell[BoxData[
   FormBox[
    SubscriptBox["\[Sigma]", "h"], TraditionalForm]], "InlineFormula",
-  ExpressionUUID->"949acbe0-5ffd-4b40-a1a5-b271df930a89"],
+  ExpressionUUID->"8f52853a-9a50-4d8a-8a70-a9e022e7cd94"],
  " are the slow (synoptic + sub-monthly) stochastic forcing amplitudes, and \
 ",
  Cell[BoxData[
   FormBox[
    RowBox[{
     SubscriptBox["\[Sigma]", "w"], "(", "t", ")"}], TraditionalForm]], 
-  "InlineFormula",ExpressionUUID->"0d589125-2c47-4c55-b7a0-d4bdcbbb7706"],
+  "InlineFormula",ExpressionUUID->"63fef8e3-44df-47b5-be4b-0f3c34dcda7b"],
  " is the specifically-westerly-wind-burst forcing whose variance peaks in \
 boreal spring."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"868db328-e7a6-4be4-bba1-7f2696f47110"],
+  6}},ExpressionUUID->"86a64af8-b899-4d99-8ac5-46eb49fba3e3"],
 
 Cell[TextData[{
  StyleBox["The Stein\[Dash]Levine\[Dash]Jin seasonal mechanism.",
@@ -120738,7 +120764,7 @@ Cell[TextData[{
  " Two coefficients are taken to be seasonally periodic:"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"14bdab70-81ab-4922-9f3b-8477f1cd25a2"],
+  6}},ExpressionUUID->"10a11965-3707-409d-8ee7-1ccf4781095b"],
 
 Cell[BoxData[
  FormBox[
@@ -120751,7 +120777,7 @@ Cell[BoxData[
       RowBox[{"2", "\[Pi]", "(", "t", "-", "9", ")"}], "12"], ")"}]}]}], 
   TraditionalForm]], "DisplayFormula",
  CellMargins->{{80, 50}, {8, 
-  8}},ExpressionUUID->"14cb96a6-d45b-4b4b-b33e-b6bf9402d1c7"],
+  8}},ExpressionUUID->"ca8f8982-d1c3-444a-ba48-24025158d238"],
 
 Cell[BoxData[
  FormBox[
@@ -120768,25 +120794,25 @@ Cell[BoxData[
         RowBox[{"2", "\[Pi]", "(", "t", "-", "3", ")"}], "12"], ")"}]}]}], 
     ")"}]}], TraditionalForm]], "DisplayFormula",
  CellMargins->{{80, 50}, {8, 
-  8}},ExpressionUUID->"458a9bbe-0298-4427-8dad-aff4cc8c8bef"],
+  8}},ExpressionUUID->"8b7997ee-7e6f-42ff-887e-fe4bfd2c47e3"],
 
 Cell[TextData[{
  Cell[BoxData[
   FormBox[
    RowBox[{"R", "(", "t", ")"}], TraditionalForm]], "InlineFormula",
-  ExpressionUUID->"49687eed-b761-4a90-9c62-44b0172af5d4"],
+  ExpressionUUID->"4e56795a-5d92-4b52-963b-1b85d35534e4"],
  " peaks in September (most positive, strongest growth) and dips in March \
 (least positive or negative, strongest damping); ",
  Cell[BoxData[
   FormBox[
    RowBox[{
     SubscriptBox["\[Sigma]", "w"], "(", "t", ")"}], TraditionalForm]], 
-  "InlineFormula",ExpressionUUID->"3e7d368d-c6e5-44c3-bf47-686b508c80eb"],
+  "InlineFormula",ExpressionUUID->"82253121-e6ef-429a-90d6-c25084e54c3a"],
  " peaks in March\[Dash]April (spring WWB activity), giving the model an \
 in-built spring barrier. The two cycles together:"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"e27ae313-65b5-4733-b0cd-0ef64fd4b076"],
+  6}},ExpressionUUID->"01a35c11-241a-419e-ae1a-55e8e29c49e8"],
 
 Cell[CellGroupData[{
 
@@ -120812,7 +120838,7 @@ Plot[{Rseason[t - 1, 1], sigWWB[t - 1, 1]}, {t, 1, 13},
    ImageSize -> 720, AspectRatio -> 0.55]\
 \>", "Input",
  CellMargins->{{60, 30}, {6, 6}},
- FontSize->11,ExpressionUUID->"4b99c22d-d7c6-4923-8c2a-ae4fa01a3861"],
+ FontSize->11,ExpressionUUID->"44ef241a-0bff-46af-9b7d-a5b34780fb60"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -121234,7 +121260,7 @@ SkLRu6mpCRpr6igbgiAIgiBsjv8Pu3lhKw==
   PlotRange->{{0, 220.}, {0, 102.5}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"c681b4b7-7abf-433d-98dd-62ffc9d1e6dd"]
+ TextAlignment->Center,ExpressionUUID->"b3a94a79-ef8e-4173-86a9-7ebb205f8574"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -121243,13 +121269,13 @@ Cell[TextData[{
  Cell[BoxData[
   FormBox[
    RowBox[{"R", "(", "t", ")"}], TraditionalForm]], "InlineFormula",
-  ExpressionUUID->"fde43e2f-84dc-40a2-9172-0bcd16889432"],
+  ExpressionUUID->"35e392d5-996c-4b1f-b943-b5787496cdc5"],
  " (blue) and ",
  Cell[BoxData[
   FormBox[
    RowBox[{
     SubscriptBox["\[Sigma]", "w"], "(", "t", ")"}], TraditionalForm]], 
-  "InlineFormula",ExpressionUUID->"54dc8537-1182-4d4c-a407-c8ee48b164ea"],
+  "InlineFormula",ExpressionUUID->"38f25f4c-db86-4903-b7c6-2a9ab1d54ec6"],
  " (orange). The phase relationship is the heart of the Stein\[Dash]Levine\
 \[Dash]Jin spring-barrier mechanism."
 }], "Text",
@@ -121257,7 +121283,7 @@ Cell[TextData[{
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"a9574477-b8dc-4b07-b6bb-fcb9b54fc901"],
+  0.35],ExpressionUUID->"255c6507-9e0a-45b0-aecd-be13741881e7"],
 
 Cell[TextData[{
  StyleBox["Numerical integration.",
@@ -121269,7 +121295,7 @@ Cell[TextData[{
  " months (\[TildeTilde]36 hours). For each step:"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"4ae9abda-0069-4449-bd79-baaa151dc24d"],
+  6}},ExpressionUUID->"2cc1c333-dd8c-4f8c-9667-f0940d84b79a"],
 
 Cell[BoxData[
  FormBox[
@@ -121297,7 +121323,7 @@ Cell[BoxData[
       RowBox[{"w", ",", "n"}]]}], ")"}]}], TraditionalForm]], "DisplayFormula",\
 
  CellMargins->{{80, 50}, {8, 
-  8}},ExpressionUUID->"a50cf47a-39c0-4dbb-ab78-9bcc06c0fb7b"],
+  8}},ExpressionUUID->"1382818f-3808-4970-89ea-d5e7ccc95dff"],
 
 Cell[TextData[{
  "with ",
@@ -121307,7 +121333,7 @@ Cell[TextData[{
  " drawn from a standard normal. The Wolfram implementation is concise:"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"375ec38c-b17c-40c5-a0e5-0a1ba61ed702"],
+  6}},ExpressionUUID->"e1d46f20-eb06-4f71-b854-5b9f227da73c"],
 
 Cell["\<\
 simulate[T0_, h0_, m0_, tEnd_, dt_, seed_] := Module[
@@ -121337,14 +121363,14 @@ simulate[T0_, h0_, m0_, tEnd_, dt_, seed_] := Module[
  FontFamily->"Courier",
  FontSize->11,
  Background->RGBColor[
-  0.95, 0.96, 0.98],ExpressionUUID->"44438298-3f1f-4352-841a-310df27cb5b8"],
+  0.95, 0.96, 0.98],ExpressionUUID->"508e8f9f-f152-47c6-aa8b-e6bc52d65121"],
 
 Cell["\<\
 A 20-year free run reproduces the irregular 3\[Dash]6-year-period ENSO \
 oscillation with amplitude \[PlusMinus]2\[Dash]3 \[Degree]C:\
 \>", "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"f969ab36-36fe-4312-a4c2-c7fe3e885141"],
+  6}},ExpressionUUID->"2f90ea9d-97fd-4eb7-8919-4e367ed68941"],
 
 Cell[CellGroupData[{
 
@@ -121365,7 +121391,7 @@ ListLinePlot[Transpose[{samp[\"t\"]/12., samp[\"T\"]}],
    ImageSize -> 950, AspectRatio -> 1/3.2]\
 \>", "Input",
  CellMargins->{{60, 30}, {6, 6}},
- FontSize->11,ExpressionUUID->"1908d63c-b820-4853-bda9-12ba66dc61a0"],
+ FontSize->11,ExpressionUUID->"42479061-371b-4f5f-97c3-06bd21e47caf"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -121879,7 +121905,7 @@ kCcFCBBQB8GoT6fTVeA0WYCAKOP/AaPAnEQ=
   PlotRange->{{0, 220.}, {0, 77.}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"ba57dc2e-5338-45ef-88d8-88c728d0a74f"]
+ TextAlignment->Center,ExpressionUUID->"9c9ae919-84a7-447c-a2fb-24e9bbfcdd7e"]
 }, Open  ]],
 
 Cell["\<\
@@ -121892,7 +121918,7 @@ observations.\
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"692e70c1-3e49-4a5d-a36e-d465116bea06"],
+  0.35],ExpressionUUID->"310277ff-984f-4e54-86ac-3621a92c86c6"],
 
 Cell[CellGroupData[{
 
@@ -121908,7 +121934,7 @@ ListLinePlot[Transpose[{samp[\"T\"], samp[\"h\"]}],
    ImageSize -> 480, AspectRatio -> 1]\
 \>", "Input",
  CellMargins->{{60, 30}, {6, 6}},
- FontSize->11,ExpressionUUID->"6ab84b47-00b3-46fc-80b9-130b2107413b"],
+ FontSize->11,ExpressionUUID->"a3f93eb4-ddf2-462e-9a23-3c27560d43e0"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -123240,7 +123266,7 @@ MPMlPbzpoZGXkfxuEcga/D9sCYqy
   PlotRange->{{0, 220.}, {0, 226.}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"15d47efe-685d-4eb4-a275-432fda8dd7da"]
+ TextAlignment->Center,ExpressionUUID->"762e25e7-cfc9-45b2-8e37-9f3a8193ca6a"]
 }, Open  ]],
 
 Cell["\<\
@@ -123254,7 +123280,7 @@ recharge\[Dash]discharge cycle.\
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"c4191b74-6428-4616-9c6c-93ed37720565"],
+  0.35],ExpressionUUID->"ac7c5f27-8479-4781-92bd-26ca5f45366d"],
 
 Cell[TextData[{
  StyleBox["Ensemble forecasts and confidence intervals.",
@@ -123267,7 +123293,7 @@ forecast uncertainty. We summarise each lead with five percentiles and report \
 the 5\[Dash]95 % and 25\[Dash]75 % bands as our confidence intervals:"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"34ebdd85-62f0-4cda-aa5c-5b32210dc59a"],
+  6}},ExpressionUUID->"d1706b39-f2d7-487e-a184-87296e10f866"],
 
 Cell[CellGroupData[{
 
@@ -123299,7 +123325,7 @@ f[\"p75\"]}]},
 Grid[Partition[panel /@ {1, 4, 7, 10}, 2], Spacings -> {1.5, 1.5}]\
 \>", "Input",
  CellMargins->{{60, 30}, {6, 6}},
- FontSize->11,ExpressionUUID->"56f3ee4d-1e29-4304-b7dd-60b20a7bb849"],
+ FontSize->11,ExpressionUUID->"17610214-8118-40bc-ba74-1dcefaa05e7a"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -124385,7 +124411,7 @@ Ioooosjg8v8AzSUnvA==
   PlotRange->{{0, 220.}, {0, 165.5}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"73e52ca7-5ffc-4ba4-9a5e-1184ea59c3ad"]
+ TextAlignment->Center,ExpressionUUID->"02512948-e978-4e56-8eb5-10e025abd5e3"]
 }, Open  ]],
 
 Cell["\<\
@@ -124403,7 +124429,7 @@ autumn and the weak-coupling/high-WWB spring.\
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"b3565d60-8d73-4598-8015-f1122293ac85"],
+  0.35],ExpressionUUID->"b2b31007-7a6f-4990-ad23-30ecae7149f4"],
 
 Cell[CellGroupData[{
 
@@ -124429,7 +124455,7 @@ ArrayPlot[spreadMatrix,
    Mesh -> All, ImageSize -> 820, AspectRatio -> 1.05]\
 \>", "Input",
  CellMargins->{{60, 30}, {6, 6}},
- FontSize->11,ExpressionUUID->"9ba0e78c-a084-42ee-a8ba-c61beb6b4461"],
+ FontSize->11,ExpressionUUID->"b5670c46-086a-4eb9-aae6-40d78d060827"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -125313,7 +125339,7 @@ woB9zn+uhQPHfMT/D8vrfyY=
   PlotRange->{{0, 220.}, {0, 205.}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"35019bb3-bcda-40c1-809c-66575297253a"]
+ TextAlignment->Center,ExpressionUUID->"e1b4c19b-9e20-494c-b4bf-5ec9e56be6df"]
 }, Open  ]],
 
 Cell["\<\
@@ -125327,7 +125353,7 @@ the toy model's signature of the same barrier physics.\
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"8e0f2fb9-ab7d-476e-abed-1aa7337cc8d4"],
+  0.35],ExpressionUUID->"2e45512f-4aa5-4f13-898c-6b5c142db5ce"],
 
 Cell[TextData[{
  StyleBox["What the model gets right and what it misses.",
@@ -125343,12 +125369,12 @@ extratropical influences on the ENSO state that more complete models \
 include."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"fc5d925a-524a-4f82-832b-43317281b44e"]
+  6}},ExpressionUUID->"02a2cd09-2519-427a-86e2-269a7c67b1e7"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell["5.2  Delayed-action oscillator (Suarez & Schopf 1988)", "Subsection",ExpressionUUID->"f46c207f-fbe6-453d-82f1-54d1e1ad6214"],
+Cell["5.2  Delayed-action oscillator (Suarez & Schopf 1988)", "Subsection",ExpressionUUID->"a02b6704-a26f-42e6-81f5-45426205ca0c"],
 
 Cell[TextData[{
  StyleBox["A different conceptual reduction.",
@@ -125362,7 +125388,7 @@ east and cools the SST. The round-trip time is \[Delta] \[TildeTilde] 6 \
 months."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"bed991ad-297d-4228-b7e5-bcc512c804be"],
+  6}},ExpressionUUID->"3af709af-9c60-4cdb-b7f4-e4cc2b52503e"],
 
 Cell[BoxData[
  FormBox[
@@ -125375,7 +125401,7 @@ Cell[BoxData[
    RowBox[{"\[Sigma]", "(", "t", ")", " ", "\[Xi]", "(", "t", ")"}]}], 
   TraditionalForm]], "DisplayFormula",
  CellMargins->{{80, 50}, {8, 
-  8}},ExpressionUUID->"781c9ee6-abce-4071-bb21-eea2104c96e8"],
+  8}},ExpressionUUID->"a17a840f-c21e-44a4-acec-e3d1b1d49a37"],
 
 Cell["\<\
 The +T term is the Bjerknes feedback (growth); the negative \[Alpha] T(t-\
@@ -125386,7 +125412,7 @@ rescaled so that one model time-unit = two calendar months, putting the \
 canonical 6-month wave delay at \[Delta] = 3 in dimensionless units.\
 \>", "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"91949183-b20c-4ca6-be9c-e2a0d4fcad66"],
+  6}},ExpressionUUID->"b82e55d0-f5f9-4d29-9a35-939e9817e3d5"],
 
 Cell[TextData[{
  StyleBox["Bifurcation structure.",
@@ -125443,13 +125469,12 @@ oscillations of period ",
  " and report the amplitude envelope from stochastic runs."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"d55d6427-a81f-4256-a50c-16f0e3c9eb9b"],
+  6}},ExpressionUUID->"95887c62-e39c-4caf-8976-698798b2f775"],
 
 Cell[CellGroupData[{
 
 Cell["\<\
-(* Figure 5.7: bifurcation sweep \[AHat]\.80\.94 min/max of T as a function \
-of
+(* Figure 5.7: bifurcation sweep -- min/max of T as a function of
    the wave-coupling alpha, at fixed delta = 3.  simulateDDE[] (shown
    in full below) is the same Euler-Maruyama DDE integrator used for
    the other delayed-osc panels; full implementation in
@@ -125474,7 +125499,7 @@ Show[
    ImageSize -> 720, AspectRatio -> 0.55]\
 \>", "Input",
  CellMargins->{{60, 30}, {6, 6}},
- FontSize->11,ExpressionUUID->"88122ed2-cecf-457e-af2d-90be609326f5"],
+ FontSize->11,ExpressionUUID->"1980aeac-59cf-4cb4-a67f-b02b1256c4f1"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -125774,7 +125799,7 @@ Nm9ra5OLnIQQskCZOchntgXQ2dkp1x4fGxwiFk1LS+vu7p5tBUI84f8DEv/b
   PlotRange->{{0, 220.}, {0, 128.}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"47f94fd0-cd62-4a62-8a19-92a6858a15df"]
+ TextAlignment->Center,ExpressionUUID->"f4f61910-ca5e-48e3-9d99-8c0f9ddb349e"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -125806,7 +125831,7 @@ at small ",
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"4766be69-b46b-44d5-9953-6cf8341310b2"],
+  0.35],ExpressionUUID->"344f1dc6-9f13-44aa-af27-108caa94c7b2"],
 
 Cell[TextData[{
  StyleBox["Implementation.",
@@ -125819,7 +125844,7 @@ delayed value ",
  " is available at every step without recomputation:"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"f67cb4f4-281b-41d7-bcf0-619af1f76281"],
+  6}},ExpressionUUID->"5d2d2a11-cedf-456a-8689-8b166bff0b12"],
 
 Cell["\<\
 simulateDDE[m0_, tEnd_, dt_, hist0_, seed_] := Module[
@@ -125851,7 +125876,7 @@ simulateDDE[m0_, tEnd_, dt_, hist0_, seed_] := Module[
  FontFamily->"Courier",
  FontSize->11,
  Background->RGBColor[
-  0.95, 0.96, 0.98],ExpressionUUID->"85b8fe29-b582-4c02-90d5-37f02efab2f6"],
+  0.95, 0.96, 0.98],ExpressionUUID->"3f5a8ceb-a8e8-471e-8f83-e56655ab074e"],
 
 Cell[CellGroupData[{
 
@@ -125868,7 +125893,7 @@ ListLinePlot[Transpose[{samp[\"t\"]*2./12., samp[\"T\"]}],
    ImageSize -> 950, AspectRatio -> 1/3.2]\
 \>", "Input",
  CellMargins->{{60, 30}, {6, 6}},
- FontSize->11,ExpressionUUID->"57b0a0f2-a5da-44a1-b39e-969811911442"],
+ FontSize->11,ExpressionUUID->"74a6df6c-f6d7-4a6b-9646-2ea92ff32586"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -126556,7 +126581,7 @@ RadPn9ZqtVar9eTJkywzkMFgbFqITg4MDMB1xJ/hVTocDgTdEMbe3l4PR1NT
   PlotRange->{{0, 220.}, {0, 76.5}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"7c89b000-93ed-49f1-9d23-8f72d434b1a4"]
+ TextAlignment->Center,ExpressionUUID->"913d4c76-1698-48d6-b58e-14d41e6899f3"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -126584,7 +126609,7 @@ but the delay-induced limit-cycle phenomenology is correct."
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"e97c38c5-9add-4915-94de-1397cabc830a"],
+  0.35],ExpressionUUID->"175ee4d8-09ce-4ff1-8193-15b0df69cbc2"],
 
 Cell[CellGroupData[{
 
@@ -126611,7 +126636,7 @@ panelDDE[m0_] := With[{f = forecastEnsembleDDE[m0]},
 Grid[Partition[panelDDE /@ {1, 4, 7, 10}, 2], Spacings -> {1.5, 1.5}]\
 \>", "Input",
  CellMargins->{{60, 30}, {6, 6}},
- FontSize->11,ExpressionUUID->"b8589eed-1398-458a-9f24-41e42627550b"],
+ FontSize->11,ExpressionUUID->"18e5d1c8-4f33-4d8a-b45c-f5749ba63593"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -127799,7 +127824,7 @@ wQ==
   PlotRange->{{0, 220.}, {0, 163.}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"bd6755a9-e513-4824-9719-b99ca229d51d"]
+ TextAlignment->Center,ExpressionUUID->"d1cc6c24-bc3b-4417-92aa-7390d41e42c7"]
 }, Open  ]],
 
 Cell["\<\
@@ -127814,13 +127839,13 @@ seasonal modulation of the stochastic forcing.\
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"f94cf5cc-2ea3-4f31-8856-dd78c2f21c35"]
+  0.35],ExpressionUUID->"f2ed248d-3fcb-4ae5-a8f1-80b63959c768"]
 }, Open  ]]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell["6.  Live forecast: initialising from April 2026", "Section",ExpressionUUID->"59dea432-43a4-4e64-9630-8dd344b23035"],
+Cell["6.  Live forecast: initialising from April 2026", "Section",ExpressionUUID->"7c48aa6c-93f3-4126-8436-1c56551f3621"],
 
 Cell[TextData[{
  "To turn the RDO into a live forecast tool we need (a) the current observed ",
@@ -127837,7 +127862,7 @@ observational product for warm-water-volume anomaly that we can fetch live in \
 the same way."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"13b33ab8-e390-4e7f-980d-56a5e9096700"],
+  6}},ExpressionUUID->"35f08c4a-be54-40c1-bb49-eaf43e3f07b7"],
 
 Cell[TextData[{
  StyleBox["Inferring h from the recent tendency.",
@@ -127845,7 +127870,7 @@ Cell[TextData[{
  " The linearised SST equation gives a clean inversion. From"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"d649ada2-34bc-47ca-9f71-838c6041ec17"],
+  6}},ExpressionUUID->"12fd8e06-a319-45b8-94ce-80bc9a5a27e9"],
 
 Cell[BoxData[
  FormBox[
@@ -127854,11 +127879,11 @@ Cell[BoxData[
    RowBox[{"R", "(", "t", ")", " ", "T"}], "+", 
    RowBox[{"\[Gamma]", " ", "h"}]}], TraditionalForm]], "DisplayFormula",
  CellMargins->{{80, 50}, {8, 
-  8}},ExpressionUUID->"6010073c-7b7a-4190-91e7-0a6b9be3be9b"],
+  8}},ExpressionUUID->"ef7e030d-3300-4d0c-9fcc-dfecff8ccd9a"],
 
 Cell["we get", "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"b4e708ab-4740-4e8d-9a3a-4ef4104b1afd"],
+  6}},ExpressionUUID->"b6dcd89f-0923-480f-a2ea-2dc7a212eaf4"],
 
 Cell[BoxData[
  FormBox[
@@ -127869,7 +127894,7 @@ Cell[BoxData[
      RowBox[{"R", "(", "t", ")", " ", "T"}]}], "\[Gamma]"]}], 
   TraditionalForm]], "DisplayFormula",
  CellMargins->{{80, 50}, {8, 
-  8}},ExpressionUUID->"f8fb67d0-0a0d-4cf7-b7c4-240960e0e402"],
+  8}},ExpressionUUID->"1e55718c-a636-408d-b927-3e5d75c1abcb"],
 
 Cell[TextData[{
  "Plugging in the most recent two-month tendency ",
@@ -127894,7 +127919,7 @@ the substantial subsurface heat content remaining from the previous La Ni\
 \[NTilde]a recharge."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"27c50ef7-c162-483d-b252-c2824f6370a4"],
+  6}},ExpressionUUID->"1b21fd02-5163-46da-8e40-9e334522255b"],
 
 Cell[TextData[{
  StyleBox["Caveat on this inversion.",
@@ -127910,24 +127935,24 @@ Cell[TextData[{
  Cell[BoxData[
   FormBox[
    SubscriptBox["\[Sigma]", "T"], TraditionalForm]], "InlineFormula",
-  ExpressionUUID->"4ec53a17-b802-4ae8-9b8b-9769d23d0728"],
+  ExpressionUUID->"7b165f2b-536c-4ec8-947f-e421ac6113d4"],
  " ",
  Cell[BoxData[
   FormBox[
    SubscriptBox["\[Xi]", "T"], TraditionalForm]], "InlineFormula",
-  ExpressionUUID->"19adabab-1ab3-4617-9314-b1dfcc736311"],
+  ExpressionUUID->"a3f1ed35-834e-457a-a44a-d7c19f4b6325"],
  " and \[LongDash] in spring \[LongDash] a substantial westerly-wind-burst \
 term ",
  Cell[BoxData[
   FormBox[
    RowBox[{
     SubscriptBox["\[Sigma]", "w"], "(", "t", ")"}], TraditionalForm]], 
-  "InlineFormula",ExpressionUUID->"2481a5f5-64ce-44ee-b743-b3960aaae98e"],
+  "InlineFormula",ExpressionUUID->"1d7cf383-e012-4b51-a2c9-a7bbceabc0de"],
  " ",
  Cell[BoxData[
   FormBox[
    SubscriptBox["\[Xi]", "w"], TraditionalForm]], "InlineFormula",
-  ExpressionUUID->"03497aa8-8417-4479-af19-4270790917d0"],
+  ExpressionUUID->"3908ac6a-f447-443c-9a5b-9e0163f738d9"],
  ". Attributing the entire spring warming to ",
  StyleBox["h",
   FontFamily->"Times",
@@ -127946,7 +127971,7 @@ peak is therefore an ",
  " estimate."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"d719a5c6-4c92-4298-90e0-4e8835401253"],
+  6}},ExpressionUUID->"eeb28afd-77cf-4677-86d4-4a52ee41d246"],
 
 Cell[TextData[{
  "With ",
@@ -127960,7 +127985,47 @@ out 18 months (April 2026 \[RightArrow] October 2027). The resulting ",
  ", with explicit 5\[Dash]95 % and 25\[Dash]75 % confidence intervals, is:"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"7c6c7952-3c2b-4da5-b8c7-aca86fd789f6"],
+  6}},ExpressionUUID->"b4d83d98-f4a9-478d-9b80-7ccf887dec0d"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+(* Figure 6.1: live RDO forecast from observed April 2026 state.
+   Re-uses simulate[] from the helpers package and seeds 500 members
+   with the same (T0, h0). *)
+n34 = ENSOData`LoadNino34[];
+{Tlast, Tprev2, m0last} = {n34[\"anom\"][[-1]], n34[\"anom\"][[-3]],
+                           n34[\"month\"][[-1]]};
+dTdt = (Tlast - Tprev2)/2.;
+hEst = (dTdt - Rseason[0., m0last] Tlast) / gammaC;
+SeedRandom[2026];
+trajs = Table[
+   simulate[Tlast, hEst, m0last, 18, 0.05, k],
+   {k, 500}];
+Tmat = Transpose[#[\"T\"] & /@ trajs];
+t    = trajs[[1, \"t\"]];
+p05  = Map[Quantile[#, 0.05] &, Tmat];
+p25  = Map[Quantile[#, 0.25] &, Tmat];
+med  = Median /@ Tmat;
+p75  = Map[Quantile[#, 0.75] &, Tmat];
+p95  = Map[Quantile[#, 0.95] &, Tmat];
+
+Show[
+   ListLinePlot[{Transpose[{t, p05}], Transpose[{t, p95}]},
+      Filling -> {1 -> {{2}, Directive[Opacity[0.18],
+         RGBColor[0.83, 0.32, 0.10]]}}],
+   ListLinePlot[{Transpose[{t, p25}], Transpose[{t, p75}]},
+      Filling -> {1 -> {{2}, Directive[Opacity[0.45],
+         RGBColor[0.83, 0.32, 0.10]]}}],
+   ListLinePlot[Transpose[{t, med}],
+      PlotStyle -> Directive[Thickness[0.005], Black]],
+   Frame -> True, PlotRange -> {{-12, 18}, {-3, 3}},
+   FrameLabel -> {{\"Ni\\[NTilde]o 3.4 anomaly (\\[Degree]C)\", None},
+                  {\"months from latest obs\", None}},
+   ImageSize -> 900, AspectRatio -> 0.55]\
+\>", "Input",
+ CellMargins->{{60, 30}, {6, 6}},
+ FontSize->11,ExpressionUUID->"1b351c98-c80a-4fff-a00e-b75039309564"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -128681,7 +128746,8 @@ bOOYBoPBYDBEh/8HpCSngw==
   PlotRange->{{0, 220.}, {0, 128.}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"d6fd80a4-be51-4c47-af32-38b3c805ffa0"],
+ TextAlignment->Center,ExpressionUUID->"c74061e9-e272-4994-944d-dbf4ec152ca7"]
+}, Open  ]],
 
 Cell["\<\
 Figure 6.1  Recharge\[Dash]discharge oscillator live ensemble forecast \
@@ -128697,7 +128763,7 @@ El-Ni\[NTilde]o probability for that season.\
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"a699ffde-73e2-4c97-9f10-8c1ad1629e3a"],
+  0.35],ExpressionUUID->"b11813bc-35ba-4ef4-906d-d7818d5fe834"],
 
 Cell[TextData[{
  StyleBox["Comparison with the operational IRI/CPC plume.",
@@ -128711,7 +128777,26 @@ reduces sensitivity to noise) and widen into next spring (the barrier \
 reasserts itself)."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"06ecc4c4-bbc5-4272-9eae-bd0a4c849e4e"],
+  6}},ExpressionUUID->"1116b962-b878-41e6-a055-b2bcb10fa2fe"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+(* Figure 6.2: three-panel side-by-side. Combines the IRI plume
+   PNG (fetched by wolfram/fetch_iri_plume.wls), the toy-model cone
+   from above, and the NOAA probability bars from Figure 2.1. *)
+iriImg = Image[Import[
+   FileNameJoin[{NotebookDirectory[], \"..\", \"data\", \"raw\",
+                 \"iri_plume_current.png\"}]],
+   ImageSize -> 900];
+Grid[{{Labeled[iriImg,
+         Style[\"IRI / CPC plume (latest issue)\", Bold], Top]},
+      {(* the cone Show[] from Figure 6.1 *)},
+      {(* the BarChart from Figure 2.1 *)}},
+   Spacings -> {2, 2}, ItemSize -> {Full, Automatic}]\
+\>", "Input",
+ CellMargins->{{60, 30}, {6, 6}},
+ FontSize->11,ExpressionUUID->"34258634-d47b-4b9a-9650-5f73fbe3ee4f"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -129878,7 +129963,8 @@ fa0v9ph80ogRI19I4DpGxFooaMTIt5G/lLsDaw==
   PlotRange->{{0, 220.}, {0, 268.}}]], "Output",
  CellMargins->{{Automatic, Automatic}, {10, 6}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"88f675c0-ebc7-476b-90a8-d8215669c1ec"],
+ TextAlignment->Center,ExpressionUUID->"db37727f-63b0-4293-86aa-a3d28820358a"]
+}, Open  ]],
 
 Cell["\<\
 Figure 6.2  Three-panel live overlay: IRI/CPC operational plume (top), \
@@ -129889,7 +129975,7 @@ All three panels share the same calendar horizon.\
  FontSize->11,
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.35],ExpressionUUID->"7d57a8b3-5932-4bed-bec3-a7e803b76511"],
+  0.35],ExpressionUUID->"97aa56fc-78fb-4db3-b3c3-b95c30239ff7"],
 
 Cell[TextData[{
  StyleBox["Toy-model probability of El Ni\[NTilde]o vs the NOAA issuance.",
@@ -129899,7 +129985,7 @@ Cell[TextData[{
 NOAA probability bar:"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"2f472606-063a-4443-b34c-e5b6f68668cc"],
+  6}},ExpressionUUID->"c8a8e089-9086-4c38-b53f-97545c4d3041"],
 
 Cell[TextData[{
  "Estimated thermocline state from the observed monthly tendency: ",
@@ -129914,7 +130000,7 @@ initialised from (T, h) = (",
  StyleBox["4.88",
   FontWeight->Bold],
  ")."
-}], "Text",ExpressionUUID->"216fb459-7c51-48ec-b8a4-5b0b40fa9294"],
+}], "Text",ExpressionUUID->"b30e8e9a-b733-4985-bfdd-cb8ce581d651"],
 
 Cell[TextData[{
  StyleBox["Caveats.",
@@ -129931,12 +130017,12 @@ be interpreted as a sanity-check on the operational forecast \[LongDash] not \
 as competition with it."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"3d31e0f2-61e3-465e-804d-2a5139b6329f"]
+  6}},ExpressionUUID->"ecb7763f-368c-4702-a1a5-e340f2ab9846"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell["7.  Conclusions and outlook", "Section",ExpressionUUID->"76f76c3e-4166-4224-9892-6a080381b32b"],
+Cell["7.  Conclusions and outlook", "Section",ExpressionUUID->"9f20d6f6-c1b1-4df7-95c6-41b6a24d4e19"],
 
 Cell[TextData[{
  StyleBox["What we showed.",
@@ -129957,7 +130043,7 @@ toy model from the current observed state produces a live ensemble forecast \
 cone consistent with the NOAA 96 % peak-DJF El Ni\[NTilde]o probability."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"bb807743-74b0-482f-8488-0e1ae6e0fc4b"],
+  6}},ExpressionUUID->"3bd64cb4-b9c4-4fb6-8002-17e6f3608d14"],
 
 Cell[TextData[{
  StyleBox["What to watch in the next 60 days.",
@@ -129966,7 +130052,7 @@ Cell[TextData[{
 numbers will tell us whether the developing event is on track:"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"62760cf9-7de4-4481-80c3-5d5d3c4f5b78"],
+  6}},ExpressionUUID->"47f139fa-3f3e-4cf9-821a-eaf612b8c04c"],
 
 Cell[TextData[{
  "\[Bullet] ",
@@ -129980,7 +130066,7 @@ value is at the high end, expect the next discussion to issue an El Ni\
  " (not just a Watch)."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"20e74c5d-6ef9-47aa-bc7f-bedffcbf0967"],
+  6}},ExpressionUUID->"ba39ecb1-4ed3-46a9-af31-bae4847b7bf2"],
 
 Cell[TextData[{
  "\[Bullet] ",
@@ -129992,7 +130078,7 @@ criterion needs to be crossed for the first time. The model gives 0.30 \
 \[Degree]C (5\[Dash]95 % CI: 0.00 to 0.65)."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"47ed3dda-5a6a-42b0-9e2b-ac154a783784"],
+  6}},ExpressionUUID->"8417ed28-325d-4a0e-9423-1db85e178361"],
 
 Cell[TextData[{
  "\[Bullet] ",
@@ -130003,7 +130089,7 @@ late-spring WWB would push the central Pacific thermocline anomaly further \
 east and accelerate the warming."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"d77ffaf5-de46-484d-b0dd-c539d074dd1e"],
+  6}},ExpressionUUID->"f83e84b2-1520-428d-a5b9-2b3ed69bb5e9"],
 
 Cell[TextData[{
  StyleBox["What the barrier means for the forecast users.",
@@ -130018,12 +130104,12 @@ but the JFM 2027 \[OpenCurlyDoubleQuote]event-decay\[CloseCurlyDoubleQuote] \
 details will look quite different by July."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"e4bd03dd-b730-4525-8a61-5f096ab8168f"]
+  6}},ExpressionUUID->"c00194eb-efac-4bb2-ad69-007d62c38e20"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell["8.  References", "Section",ExpressionUUID->"bb6a5ed2-7623-4fc5-aca9-6ff9de927cd7"],
+Cell["8.  References", "Section",ExpressionUUID->"3aec9910-2344-4592-b1e7-116537ea1aa7"],
 
 Cell[TextData[{
  StyleBox["Bjerknes, J.",
@@ -130034,7 +130120,7 @@ Cell[TextData[{
  " 97, 163\[Dash]172. [Original paper on the Bjerknes positive feedback.]"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"4d0c2bf7-1f6d-42c9-8328-abc2f1874028"],
+  6}},ExpressionUUID->"0d03843c-5e5f-469e-890c-a177a50ed0e7"],
 
 Cell[TextData[{
  StyleBox["Suarez, M. J., & Schopf, P. S.",
@@ -130045,7 +130131,7 @@ Cell[TextData[{
  " 45, 3283\[Dash]3287. [Original delayed oscillator.]"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"44f5d93b-433c-49b6-8e1d-fa3d2acf13b0"],
+  6}},ExpressionUUID->"a8d6ba05-5003-4cd3-8e03-4295763ae3a9"],
 
 Cell[TextData[{
  StyleBox["Webster, P. J., & Yang, S.",
@@ -130057,7 +130143,7 @@ Cell[TextData[{
 context.]"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"60d75e55-709a-495c-88d8-6c7587d3de26"],
+  6}},ExpressionUUID->"9125aa2f-f5a0-47be-aff0-ca5947252369"],
 
 Cell[TextData[{
  StyleBox["Jin, F.-F.",
@@ -130069,7 +130155,7 @@ model. ",
  " 54, 811\[Dash]829. [Original recharge\[Dash]discharge oscillator.]"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"6c310953-43d8-47e1-88c5-a9900a55b756"],
+  6}},ExpressionUUID->"5a72b3f5-35b4-4e37-aa1d-90e4431764bf"],
 
 Cell[TextData[{
  StyleBox["Torrence, C., & Webster, P. J.",
@@ -130081,7 +130167,7 @@ Oscillation. ",
  " 124, 1985\[Dash]2004. [Wavelet decomposition of the barrier.]"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"90fb3d8f-7bf8-4827-b4d3-63c73b1a13de"],
+  6}},ExpressionUUID->"769823bf-55d8-4fd8-bd20-39c80b810899"],
 
 Cell[TextData[{
  StyleBox["Burgers, G., Jin, F.-F., & van Oldenborgh, G. J.",
@@ -130092,7 +130178,7 @@ Cell[TextData[{
  " 32, L13706. [The minimal linear-stochastic RDO used here.]"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"dff3985c-8f05-4050-bda3-915e8ae9f67a"],
+  6}},ExpressionUUID->"f2bdf0af-97f7-40bf-9c63-14370f483296"],
 
 Cell[TextData[{
  StyleBox["Levine, A. F. Z., & Jin, F.-F.",
@@ -130103,7 +130189,7 @@ Cell[TextData[{
  " 67, 529\[Dash]542. [Stochastic destabilisation mechanism.]"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"a0c905a8-51b4-49f1-bfc7-addd41a3a580"],
+  6}},ExpressionUUID->"21bd4592-3af7-4cb7-8790-66ee98af3698"],
 
 Cell[TextData[{
  StyleBox["Stein, K., Schneider, N., Timmermann, A., & Jin, F.-F.",
@@ -130116,7 +130202,7 @@ model. ",
 model.]"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"a423472c-802d-43e9-b1a8-9f1e427cedc3"],
+  6}},ExpressionUUID->"72a04941-8b5f-4f69-b16b-5d02d80ef9db"],
 
 Cell[TextData[{
  StyleBox["McPhaden, M. J., Santoso, A., & Cai, W. (Eds.)",
@@ -130127,7 +130213,7 @@ Cell[TextData[{
  ". AGU Geophysical Monograph 253. [Recent comprehensive review.]"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"7786a799-6625-42b0-a9cb-a10e8234c852"],
+  6}},ExpressionUUID->"77e6df7a-1729-480e-8ba9-519b0129ec54"],
 
 Cell[TextData[{
  StyleBox["Tippett, M. K., Barnston, A. G., & Li, S.",
@@ -130138,7 +130224,7 @@ Cell[TextData[{
  " 51, 637\[Dash]654. [Quantitative evaluation of IRI plume skill.]"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"1f97c257-2f2a-4a0d-942d-99472458ffef"],
+  6}},ExpressionUUID->"41e33ab0-15b7-4ca7-b32d-5535cca37c2e"],
 
 Cell[TextData[{
  StyleBox["Popular-science companion:",
@@ -130163,12 +130249,12 @@ lead BBC meteorologist; useful entry point for the general-audience side of \
 this notebook."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"bd00fd5a-32d7-45c9-a4ad-fc58f84c4c4a"]
+  6}},ExpressionUUID->"2a181447-4cf0-4cbc-94fb-dd79f8a5d626"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell["9.  Acknowledgements", "Section",ExpressionUUID->"c4e4a427-c849-4cb1-802f-07a4d242c64f"],
+Cell["9.  Acknowledgements", "Section",ExpressionUUID->"68e15d3a-b6e5-46cf-bc8d-2fcc17592d6c"],
 
 Cell[TextData[{
  StyleBox["Data sources and licences.",
@@ -130177,7 +130263,7 @@ Cell[TextData[{
 explicitly cleared for reuse, including for educational and commercial work."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"05e903c0-3bb0-4750-a91c-adfd36dcb284"],
+  6}},ExpressionUUID->"cac9dfd0-73f3-446f-b78a-56fce6ab620f"],
 
 Cell[TextData[{
  "\[Bullet] ",
@@ -130199,7 +130285,7 @@ Temperature (ERSST), Version 5. ",
  ". doi:10.7289/V5T72FNM."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"c87ec3ba-903b-4e2b-b0d4-a8b0bd3b95d4"],
+  6}},ExpressionUUID->"2b260f6e-20d9-474e-bb00-f93e47fbaff1"],
 
 Cell[TextData[{
  "\[Bullet] ",
@@ -130218,7 +130304,7 @@ Physical Sciences Laboratory, Boulder, CO. ",
  "."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"436ffad4-efb8-4f2e-9fc0-5984c986bf20"],
+  6}},ExpressionUUID->"259fe702-1335-42e3-b8bb-fca4fdd276fc"],
 
 Cell[TextData[{
  "\[Bullet] ",
@@ -130238,7 +130324,7 @@ Cell[TextData[{
  "."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"34eceb01-5275-4c8b-8f42-6f52d3153fec"],
+  6}},ExpressionUUID->"189641a1-d88f-4130-9bac-1b7a0522daec"],
 
 Cell[TextData[{
  "\[Bullet] ",
@@ -130259,7 +130345,7 @@ current/",
 only the rendered PNG remains publicly addressable.)"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"a5843962-e38c-4670-84a5-fe22572ff0ca"],
+  6}},ExpressionUUID->"ccd78316-bb39-40af-8a98-1bd7443a765e"],
 
 Cell[TextData[{
  "\[Bullet] ",
@@ -130271,7 +130357,7 @@ caller and are licensed for commercial use; we additionally acknowledge the \
 model here for transparency."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"e113540b-9873-423f-abde-f434533c75a3"],
+  6}},ExpressionUUID->"e4f0306b-d3cf-4b36-b490-7e6f5933254a"],
 
 Cell[TextData[{
  "\[Bullet] ",
@@ -130289,7 +130375,7 @@ redistributed; the link is fair use as a contextual reference. ",
  "."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"b7bc3544-157c-46c4-8116-672b9e88d50c"],
+  6}},ExpressionUUID->"f539d38a-5483-482b-8478-3383e199884c"],
 
 Cell[TextData[{
  StyleBox["Scientific lineage.",
@@ -130317,7 +130403,7 @@ tropical ocean\[Dash]atmosphere theory, is due to ",
  " (1969)."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"e88af79f-8d68-433f-870a-5df6f7b9fd89"],
+  6}},ExpressionUUID->"a0f82025-df4f-4332-ac5c-e294466b0063"],
 
 Cell[TextData[{
  StyleBox["Tools.",
@@ -130336,12 +130422,12 @@ generated with OpenAI's ",
 were assembled with the help of Anthropic's Claude Code."
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"a0367ae6-f280-4e73-aba5-b9af4b15593f"]
+  6}},ExpressionUUID->"8f5fc828-0c96-4edd-b5a5-d8ba9e3091d8"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell["10.  Reproducibility", "Section",ExpressionUUID->"251cc537-655f-4d54-aa8d-39d244b7c051"],
+Cell["10.  Reproducibility", "Section",ExpressionUUID->"c6e30e6e-8ab8-4afd-840b-92f7fc66f5a5"],
 
 Cell[TextData[{
  "All source code lives in the public repository ",
@@ -130363,7 +130449,7 @@ so a normal rebuild does not invoke Python. To regenerate the notebook from \
 scratch on a machine with Wolfram Language 14 installed:"
 }], "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"e427c3f9-79ba-4924-a350-e352ede28359"],
+  6}},ExpressionUUID->"5ddd1ed9-85e4-44bd-a9e5-fd5df9f9f8bd"],
 
 Cell["\<\
 # 1. Fetch the latest live data into data/
@@ -130394,7 +130480,7 @@ wolframscript -file community/build_notebook.wls
  FontFamily->"Courier",
  FontSize->11,
  Background->RGBColor[
-  0.95, 0.96, 0.98],ExpressionUUID->"37f6f602-190b-429e-8770-1ce7248448d3"],
+  0.95, 0.96, 0.98],ExpressionUUID->"8875d1b3-4083-4e8c-8809-428f44847342"],
 
 Cell["\<\
 The full pipeline runs in approximately 5 minutes on a 2024 MacBook M3. The \
@@ -130402,12 +130488,12 @@ The full pipeline runs in approximately 5 minutes on a 2024 MacBook M3. The \
 the notebook is browseable without running anything.\
 \>", "Text",
  CellMargins->{{50, 50}, {6, 
-  6}},ExpressionUUID->"7cc98751-57c1-4e2e-8a33-b2114f6f42bd"],
+  6}},ExpressionUUID->"51df4fef-889c-401f-a377-be1d4bab8706"],
 
 Cell["Generated on May 18, 2026.",
  FontSlant->Italic,
  FontColor->GrayLevel[
-  0.4],ExpressionUUID->"c0ae3bfd-3c1b-4082-b10b-f0d2dde335e8"]
+  0.4],ExpressionUUID->"faf73096-db0d-474b-a4c3-5dd2aa292ad0"]
 }, Open  ]]
 }, Open  ]]
 },
@@ -130417,7 +130503,7 @@ Visible->False,
 CellMargins->{{50, 50}, {6, 6}},
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (October 27, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"9f811234-5f64-4575-b543-952b45adf264"
+ExpressionUUID->"0f43464a-36c5-46e7-a18e-f5ccb22362ae"
 ]
 (* End of Notebook Content *)
 
@@ -130431,238 +130517,249 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[CellGroupData[{
-Cell[576, 22, 124, 0, 70, "Title",ExpressionUUID->"80bf96d6-cc8c-4c18-b035-300f3e73917d"],
-Cell[703, 24, 225, 3, 70, "Subtitle",ExpressionUUID->"9768fbab-e85d-4856-95c9-f9c59b6e13ab"],
-Cell[931, 29, 178, 3, 70, "Subsubtitle",ExpressionUUID->"b40970fb-bc9c-44e2-82af-fbe1ac8ab9ce"],
-Cell[1112, 34, 2713448, 44572, 70, "Output",ExpressionUUID->"6a361f0b-f1f8-422e-8d93-531b2fa322df"],
+Cell[576, 22, 124, 0, 70, "Title",ExpressionUUID->"2ee1f326-c405-47f3-baed-b7c2ceb37886"],
+Cell[703, 24, 225, 3, 70, "Subtitle",ExpressionUUID->"393b8da3-9cf3-4922-9b2e-b4a4f154f6cc"],
+Cell[931, 29, 178, 3, 70, "Subsubtitle",ExpressionUUID->"e880cade-a664-4b90-a43b-0c536ea68224"],
+Cell[1112, 34, 2713448, 44572, 70, "Output",ExpressionUUID->"e7820e62-7c47-459f-957f-cce64abb4375"],
 Cell[CellGroupData[{
-Cell[2714585, 44610, 82, 0, 70, "Section",ExpressionUUID->"fb372714-b9ed-4851-950a-9f06a3ee6af8"],
-Cell[2714670, 44612, 810, 18, 70, "Text",ExpressionUUID->"3b386a50-5b6c-4fdb-b548-57db517e8bf1"],
-Cell[2715483, 44632, 1130, 22, 70, "Text",ExpressionUUID->"4b4a6152-6ac2-4421-83a4-c743fe99eabf"],
-Cell[2716616, 44656, 621, 13, 70, "Text",ExpressionUUID->"36767835-f5c9-4694-add3-2e9732112a82"]
+Cell[2714585, 44610, 82, 0, 70, "Section",ExpressionUUID->"3bda9d29-98c1-406a-bc49-2c27f2e8f85b"],
+Cell[2714670, 44612, 810, 18, 70, "Text",ExpressionUUID->"5555eea8-8574-43e3-88bb-91026981d53e"],
+Cell[2715483, 44632, 1130, 22, 70, "Text",ExpressionUUID->"22f82bae-bf7d-4d5f-92fa-7ca2c309251d"],
+Cell[2716616, 44656, 621, 13, 70, "Text",ExpressionUUID->"a6e49089-72de-4c95-bf79-8445bac8e01d"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2717274, 44674, 91, 0, 70, "Section",ExpressionUUID->"a995e4c0-fe17-4d0a-8fe3-727ac999341b"],
-Cell[2717368, 44676, 926, 19, 70, "Text",ExpressionUUID->"8ee03974-f31a-47b1-9ee3-0c4c679b9a36"],
-Cell[2718297, 44697, 789, 16, 70, "Text",ExpressionUUID->"b6521396-bb13-415c-b6a3-bb13f0092b69"],
-Cell[2719089, 44715, 223208, 3668, 70, "Output",ExpressionUUID->"d4a5dbbe-868f-455e-814a-ef1b1d85a43d"],
-Cell[2942300, 48385, 399, 9, 70, "Text",ExpressionUUID->"9b34c2fe-dad7-41db-a407-a1609eadf374"],
-Cell[2942702, 48396, 237, 6, 70, "Text",ExpressionUUID->"4f9b8d4a-71f6-44e9-9dc9-f372786e5fdf"],
-Cell[2942942, 48404, 637, 12, 70, "Text",ExpressionUUID->"b4002269-6ff2-4d63-8ec6-12e4044074ac"],
-Cell[2943582, 48418, 529, 11, 70, "Text",ExpressionUUID->"c6b1ce2e-c9bf-48f6-95db-9c7abfab6113"],
-Cell[2944114, 48431, 613, 12, 70, "Text",ExpressionUUID->"02284847-1e65-4907-b6e1-b9b0616256dd"],
-Cell[2944730, 48445, 347789, 5711, 70, "Output",ExpressionUUID->"4be3177f-d0e9-4deb-9b5e-345c498a2f2a"],
-Cell[3292522, 54158, 589, 12, 70, "Text",ExpressionUUID->"8f072205-6de4-4e6a-bba4-fcb60ef3affd"]
+Cell[2717274, 44674, 79, 0, 70, "Section",ExpressionUUID->"a163b4a0-af54-4e2f-9788-90abb69634dd"],
+Cell[2717356, 44676, 569, 10, 70, "Text",ExpressionUUID->"c2d69f02-e260-4b8a-9006-55de20baf667"],
+Cell[2717928, 44688, 335, 7, 70, "Input",ExpressionUUID->"010f79af-0131-47c0-8185-96bba7ccf794"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[3293148, 54175, 112, 0, 70, "Section",ExpressionUUID->"97e4f102-ef93-48a8-9c88-da31e7e1f6d8"],
-Cell[3293263, 54177, 686, 14, 70, "Text",ExpressionUUID->"a145f3c9-2ced-4c14-89aa-06fe8a3eae94"],
-Cell[3293952, 54193, 1185, 26, 70, "Text",ExpressionUUID->"1fe1f3fd-4403-413c-8141-50454a98da78"],
-Cell[3295140, 54221, 562, 11, 70, "Text",ExpressionUUID->"cfa1fe01-3a80-46f9-aa64-52dffd539c0c"],
-Cell[CellGroupData[{
-Cell[3295727, 54236, 1282, 29, 70, "Input",ExpressionUUID->"7aff7ddb-0412-4f7b-8be7-529c4c1f1d3c"],
-Cell[3297012, 54267, 19656, 331, 70, "Output",ExpressionUUID->"67b20fb5-b22e-4401-86c9-8a64d536500a"]
-}, Open  ]],
-Cell[3316683, 54601, 837, 17, 70, "Text",ExpressionUUID->"a695c7cd-38f9-4e4f-a076-112be2ca4fcf"],
-Cell[3317523, 54620, 675, 11, 70, "Text",ExpressionUUID->"2a0be020-f993-4677-aa38-00af057dbe95"],
-Cell[CellGroupData[{
-Cell[3318223, 54635, 959, 22, 70, "Input",ExpressionUUID->"5777ce3c-ea70-4078-95b3-fc5f32b22675"],
-Cell[3319185, 54659, 52027, 862, 70, "Output",ExpressionUUID->"593cfe39-b7ed-4c99-b5a5-4096e4b9c8e0"]
-}, Open  ]],
-Cell[3371227, 55524, 583, 12, 70, "Text",ExpressionUUID->"c3eee79f-66a7-4a6e-8705-52e278c841e5"],
-Cell[3371813, 55538, 286, 7, 70, "Text",ExpressionUUID->"ef45069d-923c-4eb4-8895-c74f81f92eb1"],
-Cell[3372102, 55547, 907, 41, 70, "Text",ExpressionUUID->"19d43ec0-55bc-4455-9826-2eb9fc733baf"],
-Cell[3373012, 55590, 761, 12, 70, "Text",ExpressionUUID->"309c0c29-f172-4e3f-93d8-69679656e7e2"]
+Cell[2718300, 44700, 91, 0, 70, "Section",ExpressionUUID->"15135bd1-07d0-46a2-a7ba-f25b4c3ddf44"],
+Cell[2718394, 44702, 926, 19, 70, "Text",ExpressionUUID->"322f2c7e-849b-4079-8cf7-ee371886d2ae"],
+Cell[2719323, 44723, 789, 16, 70, "Text",ExpressionUUID->"110f9373-65f5-49d7-88bf-2884a8950c98"],
+Cell[2720115, 44741, 223208, 3668, 70, "Output",ExpressionUUID->"ae9c4961-1ddd-4941-8ce9-0b3aa3ee8884"],
+Cell[2943326, 48411, 399, 9, 70, "Text",ExpressionUUID->"ca30e6c4-8ba5-4485-a299-fe1536a86724"],
+Cell[2943728, 48422, 237, 6, 70, "Text",ExpressionUUID->"d0816054-4120-4d2e-8b37-496d0b0c3784"],
+Cell[2943968, 48430, 637, 12, 70, "Text",ExpressionUUID->"321d38cd-2480-4cb5-a394-13d2f3078221"],
+Cell[2944608, 48444, 529, 11, 70, "Text",ExpressionUUID->"4830f777-6b12-4c79-9da3-0e868d85b338"],
+Cell[2945140, 48457, 613, 12, 70, "Text",ExpressionUUID->"7f341fc3-c65f-4402-b4c5-f9c95d04f1e4"],
+Cell[2945756, 48471, 347789, 5711, 70, "Output",ExpressionUUID->"1f6a52d2-7dfc-4db8-9349-9a756bf60b17"],
+Cell[3293548, 54184, 589, 12, 70, "Text",ExpressionUUID->"8e1db280-42b5-4a72-890e-c888c7da028a"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[3373810, 55607, 118, 0, 70, "Section",ExpressionUUID->"76a87c91-461e-4ce5-b4fd-db4e05457934"],
-Cell[3373931, 55609, 603, 11, 70, "Text",ExpressionUUID->"e2f482b2-bd62-45fd-9858-f08823c6a0f7"],
-Cell[3374537, 55622, 404039, 6633, 70, "Output",ExpressionUUID->"fecad5c3-4464-4993-831c-757352f6fe1a"],
-Cell[3778579, 62257, 685, 13, 70, "Text",ExpressionUUID->"a26ba426-1045-4852-b9b7-436603b4c83c"],
-Cell[3779267, 62272, 719, 12, 70, "Text",ExpressionUUID->"dc59f7f6-708d-4cc7-a6cc-31414b345cb0"],
-Cell[3779989, 62286, 163, 2, 70, "Text",ExpressionUUID->"656313bc-d14d-4c27-967d-021b5fea0d86"]
+Cell[3294174, 54201, 112, 0, 70, "Section",ExpressionUUID->"36d772a1-2285-46a2-9b89-d15414ce0852"],
+Cell[3294289, 54203, 686, 14, 70, "Text",ExpressionUUID->"21b5d54d-68d3-419b-a9f3-53f52239946a"],
+Cell[3294978, 54219, 1185, 26, 70, "Text",ExpressionUUID->"665eb78b-3973-403b-ba69-7a724e9f67dd"],
+Cell[3296166, 54247, 562, 11, 70, "Text",ExpressionUUID->"8453469b-d5cc-493c-976e-b027ed5efc4b"],
+Cell[CellGroupData[{
+Cell[3296753, 54262, 1282, 29, 70, "Input",ExpressionUUID->"84395c0f-10d7-4dc3-98fb-b407b9e781d1"],
+Cell[3298038, 54293, 19656, 331, 70, "Output",ExpressionUUID->"d0ec47dd-a2e7-4b63-9734-edcdc4e34906"]
+}, Open  ]],
+Cell[3317709, 54627, 837, 17, 70, "Text",ExpressionUUID->"5f2da938-ac34-4d19-bdc8-9f190ecf0f05"],
+Cell[3318549, 54646, 675, 11, 70, "Text",ExpressionUUID->"d9bd0e8d-77f3-463c-acf3-78befb315dbb"],
+Cell[CellGroupData[{
+Cell[3319249, 54661, 959, 22, 70, "Input",ExpressionUUID->"4b7ac762-bbc0-49a0-9749-b2829ff60f8c"],
+Cell[3320211, 54685, 52027, 862, 70, "Output",ExpressionUUID->"fab18389-7aaa-40b8-a076-9b149b625bf1"]
+}, Open  ]],
+Cell[3372253, 55550, 583, 12, 70, "Text",ExpressionUUID->"63f3d54f-3b22-4b76-8b99-683999415556"],
+Cell[3372839, 55564, 286, 7, 70, "Text",ExpressionUUID->"5c47d070-6e33-412f-8d75-da68580a521c"],
+Cell[3373128, 55573, 907, 41, 70, "Text",ExpressionUUID->"47f34e15-4526-4801-8d81-720c74223868"],
+Cell[3374038, 55616, 761, 12, 70, "Text",ExpressionUUID->"475e46c9-5cbf-44c4-b1fa-2cfc7a8d9367"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[3780189, 62293, 119, 0, 70, "Section",ExpressionUUID->"ef271e78-b684-4591-8b80-2f72071ee7cf"],
-Cell[3780311, 62295, 982, 19, 70, "Text",ExpressionUUID->"2a04463f-34a3-4d01-b83d-48d3e764e291"],
-Cell[3781296, 62316, 436, 11, 70, "Text",ExpressionUUID->"cef8c644-5afa-4868-80d9-404fc35798ba"],
-Cell[3781735, 62329, 302, 8, 70, "Program",ExpressionUUID->"f1be0b80-273e-477b-bd0a-aec13cc5c5b4"],
-Cell[3782040, 62339, 597, 17, 70, "Text",ExpressionUUID->"72a652a8-2374-4e2f-b392-6569347e6c3f"],
-Cell[3782640, 62358, 1544, 38, 70, "Program",ExpressionUUID->"0bd52a68-3a0a-40cd-8f58-0d2ad0a426f3"],
-Cell[3784187, 62398, 276, 6, 70, "Text",ExpressionUUID->"ede71d80-7436-4e2a-ab16-6caa159197d2"],
-Cell[3784466, 62406, 2713289, 44570, 70, "Output",ExpressionUUID->"831678e5-47c3-49b2-b32d-1b6ae02d19fd"],
-Cell[6497758, 106978, 1054, 17, 70, "Text",ExpressionUUID->"2c700d11-cdb4-405a-af5c-638517965fd3"],
-Cell[6498815, 106997, 791, 13, 70, "Text",ExpressionUUID->"5d688279-a01e-4228-ac03-9bdbd4ee41f2"]
+Cell[3374836, 55633, 118, 0, 70, "Section",ExpressionUUID->"2d6edb72-11d4-4dbb-a133-b43c6ab91d87"],
+Cell[3374957, 55635, 603, 11, 70, "Text",ExpressionUUID->"780eb856-7a34-4203-b706-e72cde49be82"],
+Cell[3375563, 55648, 404039, 6633, 70, "Output",ExpressionUUID->"299b800e-8bfd-4b57-9da5-0a008879d9d9"],
+Cell[3779605, 62283, 685, 13, 70, "Text",ExpressionUUID->"56eb5a8f-a60a-45ec-8c53-5034dd7377a6"],
+Cell[3780293, 62298, 719, 12, 70, "Text",ExpressionUUID->"4e6d6b2b-3825-4e57-8f23-b11481d09154"],
+Cell[3781015, 62312, 163, 2, 70, "Text",ExpressionUUID->"3e8c09a0-0464-494c-8dcd-2237f982cbd1"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[6499643, 107015, 111, 0, 70, "Section",ExpressionUUID->"652f82a8-a09e-4ed1-96f9-654732692e6c"],
-Cell[6499757, 107017, 881, 16, 70, "Text",ExpressionUUID->"ee4fb251-8751-4187-9b63-ff78832e83b3"],
-Cell[6500641, 107035, 273253, 4489, 70, "Output",ExpressionUUID->"5e94f0f6-4136-48fc-b96c-927d48d013e9"],
-Cell[6773897, 111526, 655, 13, 70, "Text",ExpressionUUID->"8c8d26a8-b32e-4ea2-ade0-28c9d7592ed0"],
-Cell[6774555, 111541, 415, 11, 70, "Text",ExpressionUUID->"4c48481c-e4a4-4c9e-afcd-77950540c1ee"],
-Cell[6774973, 111554, 1413, 42, 70, "DisplayFormula",ExpressionUUID->"322806e9-3974-4e35-bd73-51a455af2c08"],
-Cell[6776389, 111598, 1056, 32, 70, "Text",ExpressionUUID->"71c3e2db-f1fa-49e6-868b-e28e23589274"],
-Cell[6777448, 111632, 180, 4, 70, "Text",ExpressionUUID->"8f6b2c21-64f2-4135-b866-025b40feb9f1"],
-Cell[CellGroupData[{
-Cell[6777653, 111640, 1913, 47, 70, "Input",ExpressionUUID->"fe3fa5e7-4345-40a0-967c-640d71ae9cdb"],
-Cell[6779569, 111689, 56743, 939, 70, "Output",ExpressionUUID->"46369241-b1bf-4576-a84f-21c6a5861b61"]
-}, Open  ]],
-Cell[6836327, 112631, 556, 11, 70, "Text",ExpressionUUID->"caf3d591-56c9-42a3-92c5-6df50e86ebf9"],
-Cell[6836886, 112644, 565, 10, 70, "Text",ExpressionUUID->"10ecb582-b090-4184-81b4-8f478070fd41"],
-Cell[6837454, 112656, 205, 5, 70, "Text",ExpressionUUID->"59e07ca3-0f24-405c-95a0-0eb96b3e7d86"],
-Cell[CellGroupData[{
-Cell[6837684, 112665, 675, 18, 70, "Input",ExpressionUUID->"41302f69-36e6-4e79-bcf6-d21b5fed67f5"],
-Cell[6838362, 112685, 70288, 1161, 70, "Output",ExpressionUUID->"6c58d3f2-616c-4e54-a573-7a9b4884e700"]
-}, Open  ]],
-Cell[6908665, 113849, 608, 17, 70, "Text",ExpressionUUID->"4c32229c-61fd-4661-80c5-2df696d93098"],
-Cell[6909276, 113868, 931, 17, 70, "Text",ExpressionUUID->"7baf279a-5715-41b1-8f00-62e4a1906bd2"],
-Cell[6910210, 113887, 362, 7, 70, "Text",ExpressionUUID->"096c5bde-8a97-4d3d-8013-2772db95be70"],
-Cell[6910575, 113896, 544, 15, 70, "Text",ExpressionUUID->"8401caeb-75a5-4014-b2e2-bae8dcdba232"]
+Cell[3781215, 62319, 119, 0, 70, "Section",ExpressionUUID->"fcac5d4c-a8fc-4540-ac25-8e4125a7b3cb"],
+Cell[3781337, 62321, 982, 19, 70, "Text",ExpressionUUID->"5ddf5810-0ff2-4406-aac0-e7b0b4906f5f"],
+Cell[3782322, 62342, 436, 11, 70, "Text",ExpressionUUID->"f15c0b20-933e-482a-94af-5e02b75666f7"],
+Cell[3782761, 62355, 302, 8, 70, "Program",ExpressionUUID->"5fffaa97-71ee-46f8-8b84-76efc190a4ff"],
+Cell[3783066, 62365, 597, 17, 70, "Text",ExpressionUUID->"c8bc7916-6a5c-4c90-90fc-dc659c94bf4c"],
+Cell[3783666, 62384, 1544, 38, 70, "Program",ExpressionUUID->"bce196b8-9712-459f-93d1-935ac3c76fa9"],
+Cell[3785213, 62424, 276, 6, 70, "Text",ExpressionUUID->"eeb65c38-40a8-4244-b9b3-75e20fa1ad95"],
+Cell[3785492, 62432, 2713289, 44570, 70, "Output",ExpressionUUID->"58b2ac98-329c-487c-a62c-c5738870b44e"],
+Cell[6498784, 107004, 1054, 17, 70, "Text",ExpressionUUID->"4dc045dd-8ee0-49ba-8b52-a4c95fe1e148"],
+Cell[6499841, 107023, 791, 13, 70, "Text",ExpressionUUID->"0965a1c0-163d-42db-b0d7-6c85c4fbbefe"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[6911156, 113916, 100, 0, 70, "Section",ExpressionUUID->"9b05f19d-7e94-4611-a3e8-765a861c9c59"],
-Cell[6911259, 113918, 405, 7, 70, "Text",ExpressionUUID->"7317fdf1-44c3-455e-b425-4845af8c5d0f"],
-Cell[6911667, 113927, 400082, 6568, 70, "Output",ExpressionUUID->"bfd1fe96-5be9-4af5-bf27-c5a1188fb3a2"],
-Cell[7311752, 120497, 744, 14, 70, "Text",ExpressionUUID->"b19e72f5-10cf-45de-84cc-5c414499eec9"],
+Cell[6500669, 107041, 111, 0, 70, "Section",ExpressionUUID->"1cfcdf91-daed-48d7-a2a5-a4b08bf58bb3"],
+Cell[6500783, 107043, 881, 16, 70, "Text",ExpressionUUID->"8299f84d-4cb1-4148-b4ac-d1b177c566fd"],
+Cell[6501667, 107061, 273253, 4489, 70, "Output",ExpressionUUID->"f7bbc462-754d-4144-b44a-fbb870ed4b39"],
+Cell[6774923, 111552, 655, 13, 70, "Text",ExpressionUUID->"acfea440-2757-4991-adec-5be364a1f102"],
+Cell[6775581, 111567, 415, 11, 70, "Text",ExpressionUUID->"1c87f6d2-cec7-4662-9944-66163f375c79"],
+Cell[6775999, 111580, 1413, 42, 70, "DisplayFormula",ExpressionUUID->"2a04b70e-cb9e-4f2c-ae8f-51db9989054b"],
+Cell[6777415, 111624, 1056, 32, 70, "Text",ExpressionUUID->"e14e7ad0-bc52-434b-9171-f7a3871cad53"],
+Cell[6778474, 111658, 180, 4, 70, "Text",ExpressionUUID->"79bb507c-c9e0-4eb8-a267-60ac935b20e0"],
 Cell[CellGroupData[{
-Cell[7312521, 120515, 128, 0, 70, "Subsection",ExpressionUUID->"1f245fbd-744a-4a4e-a19a-df4745ebbf6e"],
-Cell[7312652, 120517, 256, 6, 70, "Text",ExpressionUUID->"b26ea897-9f22-4e59-819f-1ec48fc2fb85"],
-Cell[7312911, 120525, 293, 9, 70, "Text",ExpressionUUID->"59829a17-98b2-442e-ba09-6ee8940a2eb7"],
-Cell[7313207, 120536, 546, 14, 70, "Text",ExpressionUUID->"1aaa7344-e4d9-4f10-b33d-4af7309089ec"],
-Cell[7313756, 120552, 210, 6, 70, "Text",ExpressionUUID->"c97930d2-05cc-43c6-b8d5-a5f87a4d61d7"],
-Cell[7313969, 120560, 268, 7, 70, "DisplayFormula",ExpressionUUID->"11a897e8-e21d-4cc9-aaa1-7084cf4f2f04"],
-Cell[7314240, 120569, 504, 14, 70, "Text",ExpressionUUID->"6158e822-1ea4-4e62-9d60-578e0bac9510"],
-Cell[7314747, 120585, 267, 5, 70, "Text",ExpressionUUID->"c32344fe-b729-414e-b6bb-d98cb20c5254"],
-Cell[7315017, 120592, 288, 8, 70, "DisplayFormula",ExpressionUUID->"ffe5cd27-6da4-4f13-83a3-1a4f35463367"],
-Cell[7315308, 120602, 524, 13, 70, "Text",ExpressionUUID->"090a20d9-5b26-4156-8c5b-9759eb621ec3"],
-Cell[7315835, 120617, 479, 15, 70, "DisplayFormula",ExpressionUUID->"ea9fc449-96d7-41e1-916f-69162e9675c5"],
-Cell[7316317, 120634, 678, 17, 70, "Text",ExpressionUUID->"fba3ba80-7177-4c5d-867e-6aa1e66ec470"],
-Cell[7316998, 120653, 615, 13, 70, "Text",ExpressionUUID->"1bb11d01-6868-4a47-bc66-bbc3abd7d708"],
-Cell[7317616, 120668, 517, 14, 70, "DisplayFormula",ExpressionUUID->"0bdef278-fb1d-42f0-b458-9543ecc8816e"],
-Cell[7318136, 120684, 399, 12, 70, "DisplayFormula",ExpressionUUID->"27905ac4-dee7-4c57-90c2-66b86392603c"],
-Cell[7318538, 120698, 1069, 34, 70, "Text",ExpressionUUID->"868db328-e7a6-4be4-bba1-7f2696f47110"],
-Cell[7319610, 120734, 265, 6, 70, "Text",ExpressionUUID->"14bdab70-81ab-4922-9f3b-8477f1cd25a2"],
-Cell[7319878, 120742, 386, 11, 70, "DisplayFormula",ExpressionUUID->"14cb96a6-d45b-4b4b-b33e-b6bf9402d1c7"],
-Cell[7320267, 120755, 504, 15, 70, "DisplayFormula",ExpressionUUID->"458a9bbe-0298-4427-8dad-aff4cc8c8bef"],
-Cell[7320774, 120772, 712, 16, 70, "Text",ExpressionUUID->"e27ae313-65b5-4733-b0cd-0ef64fd4b076"],
-Cell[CellGroupData[{
-Cell[7321511, 120792, 1079, 22, 70, "Input",ExpressionUUID->"4b99c22d-d7c6-4923-8c2a-ae4fa01a3861"],
-Cell[7322593, 120816, 25075, 420, 70, "Output",ExpressionUUID->"c681b4b7-7abf-433d-98dd-62ffc9d1e6dd"]
+Cell[6778679, 111666, 1913, 47, 70, "Input",ExpressionUUID->"26434b58-ac2a-41ff-b100-ceeb000fa60d"],
+Cell[6780595, 111715, 56743, 939, 70, "Output",ExpressionUUID->"ed5e203e-ce13-4b94-aa59-7b63a1ab1d5e"]
 }, Open  ]],
-Cell[7347683, 121239, 757, 20, 70, "Text",ExpressionUUID->"a9574477-b8dc-4b07-b6bb-fcb9b54fc901"],
-Cell[7348443, 121261, 356, 10, 70, "Text",ExpressionUUID->"4ae9abda-0069-4449-bd79-baaa151dc24d"],
-Cell[7348802, 121273, 809, 26, 70, "DisplayFormula",ExpressionUUID->"a50cf47a-39c0-4dbb-ab78-9bcc06c0fb7b"],
-Cell[7349614, 121301, 267, 8, 70, "Text",ExpressionUUID->"375ec38c-b17c-40c5-a0e5-0a1ba61ed702"],
-Cell[7349884, 121311, 1021, 28, 70, "Program",ExpressionUUID->"44438298-3f1f-4352-841a-310df27cb5b8"],
-Cell[7350908, 121341, 249, 5, 70, "Text",ExpressionUUID->"f969ab36-36fe-4312-a4c2-c7fe3e885141"],
+Cell[6837353, 112657, 556, 11, 70, "Text",ExpressionUUID->"2314302b-aa96-4e7f-93ae-102289679f4e"],
+Cell[6837912, 112670, 565, 10, 70, "Text",ExpressionUUID->"21765f05-68fb-4cb1-b065-705008ead089"],
+Cell[6838480, 112682, 205, 5, 70, "Text",ExpressionUUID->"e1e343d3-55b6-4f75-9136-dc918da7a7c7"],
 Cell[CellGroupData[{
-Cell[7351182, 121350, 871, 17, 70, "Input",ExpressionUUID->"1908d63c-b820-4853-bda9-12ba66dc61a0"],
-Cell[7352056, 121369, 30681, 512, 70, "Output",ExpressionUUID->"ba57dc2e-5338-45ef-88d8-88c728d0a74f"]
+Cell[6838710, 112691, 675, 18, 70, "Input",ExpressionUUID->"10f4ed07-7d1f-4b99-8d38-c3e6d87eca7d"],
+Cell[6839388, 112711, 70288, 1161, 70, "Output",ExpressionUUID->"ea989183-0784-4428-85e1-aa9b2c8ea21f"]
 }, Open  ]],
-Cell[7382752, 121884, 404, 10, 70, "Text",ExpressionUUID->"692e70c1-3e49-4a5d-a36e-d465116bea06"],
-Cell[CellGroupData[{
-Cell[7383181, 121898, 537, 12, 70, "Input",ExpressionUUID->"6ab84b47-00b3-46fc-80b9-130b2107413b"],
-Cell[7383721, 121912, 80574, 1330, 70, "Output",ExpressionUUID->"15d47efe-685d-4eb4-a275-432fda8dd7da"]
-}, Open  ]],
-Cell[7464310, 123245, 506, 11, 70, "Text",ExpressionUUID->"c4191b74-6428-4616-9c6c-93ed37720565"],
-Cell[7464819, 123258, 657, 11, 70, "Text",ExpressionUUID->"34ebdd85-62f0-4cda-aa5c-5b32210dc59a"],
-Cell[CellGroupData[{
-Cell[7465501, 123273, 1252, 28, 70, "Input",ExpressionUUID->"56f3ee4d-1e29-4304-b7dd-60b20a7bb849"],
-Cell[7466756, 123303, 65563, 1084, 70, "Output",ExpressionUUID->"73e52ca7-5ffc-4ba4-9a5e-1184ea59c3ad"]
-}, Open  ]],
-Cell[7532334, 124390, 832, 15, 70, "Text",ExpressionUUID->"b3565d60-8d73-4598-8015-f1122293ac85"],
-Cell[CellGroupData[{
-Cell[7533191, 124409, 1042, 22, 70, "Input",ExpressionUUID->"9ba0e78c-a084-42ee-a8ba-c61beb6b4461"],
-Cell[7534236, 124433, 53242, 882, 70, "Output",ExpressionUUID->"35019bb3-bcda-40c1-809c-66575297253a"]
-}, Open  ]],
-Cell[7587493, 125318, 535, 11, 70, "Text",ExpressionUUID->"8e0f2fb9-ab7d-476e-abed-1aa7337cc8d4"],
-Cell[7588031, 125331, 804, 14, 70, "Text",ExpressionUUID->"fc5d925a-524a-4f82-832b-43317281b44e"]
+Cell[6909691, 113875, 608, 17, 70, "Text",ExpressionUUID->"c06266f2-c595-4bf3-ab39-e5f8b4a4aaa5"],
+Cell[6910302, 113894, 931, 17, 70, "Text",ExpressionUUID->"68922da5-45be-49c1-ae9b-5f85cda72293"],
+Cell[6911236, 113913, 362, 7, 70, "Text",ExpressionUUID->"63e10f59-adc8-403d-8b79-92fd100db6f0"],
+Cell[6911601, 113922, 544, 15, 70, "Text",ExpressionUUID->"a67b9e2c-53ad-4810-8d23-ee8d8d65d92c"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[7588872, 125350, 130, 0, 70, "Subsection",ExpressionUUID->"f46c207f-fbe6-453d-82f1-54d1e1ad6214"],
-Cell[7589005, 125352, 654, 12, 70, "Text",ExpressionUUID->"bed991ad-297d-4228-b7e5-bcc512c804be"],
-Cell[7589662, 125366, 420, 11, 70, "DisplayFormula",ExpressionUUID->"781c9ee6-abce-4071-bb21-eea2104c96e8"],
-Cell[7590085, 125379, 564, 9, 70, "Text",ExpressionUUID->"91949183-b20c-4ca6-be9c-e2a0d4fcad66"],
-Cell[7590652, 125390, 1788, 55, 70, "Text",ExpressionUUID->"d55d6427-a81f-4256-a50c-16f0e3c9eb9b"],
+Cell[6912182, 113942, 100, 0, 70, "Section",ExpressionUUID->"7fa77dfb-8960-4741-a8a6-7bedd636d209"],
+Cell[6912285, 113944, 405, 7, 70, "Text",ExpressionUUID->"df835908-ee66-46c7-aa62-3fc3b6f5eb67"],
+Cell[6912693, 113953, 400082, 6568, 70, "Output",ExpressionUUID->"922542b5-a7e4-436d-994a-04621662a6e8"],
+Cell[7312778, 120523, 744, 14, 70, "Text",ExpressionUUID->"e1b62dff-84b4-469c-b1cb-7162ca490fcf"],
 Cell[CellGroupData[{
-Cell[7592465, 125449, 1175, 27, 70, "Input",ExpressionUUID->"88122ed2-cecf-457e-af2d-90be609326f5"],
-Cell[7593643, 125478, 17598, 298, 70, "Output",ExpressionUUID->"47f94fd0-cd62-4a62-8a19-92a6858a15df"]
-}, Open  ]],
-Cell[7611256, 125779, 881, 29, 70, "Text",ExpressionUUID->"4766be69-b46b-44d5-9953-6cf8341310b2"],
-Cell[7612140, 125810, 388, 11, 70, "Text",ExpressionUUID->"f67cb4f4-281b-41d7-bcf0-619af1f76281"],
-Cell[7612531, 125823, 1103, 30, 70, "Program",ExpressionUUID->"85b8fe29-b582-4c02-90d5-37f02efab2f6"],
+Cell[7313547, 120541, 128, 0, 70, "Subsection",ExpressionUUID->"c750107a-f829-4f1f-87fa-3ab4b24d838d"],
+Cell[7313678, 120543, 256, 6, 70, "Text",ExpressionUUID->"4a883752-c2fe-4b47-9f2c-b07de860d7fc"],
+Cell[7313937, 120551, 293, 9, 70, "Text",ExpressionUUID->"a9355715-0a75-458a-945b-97f7565531fb"],
+Cell[7314233, 120562, 546, 14, 70, "Text",ExpressionUUID->"9b684c12-0dab-48b7-a8be-f5c41375bd21"],
+Cell[7314782, 120578, 210, 6, 70, "Text",ExpressionUUID->"bc18c211-0670-4dcb-ab5f-7db3e5bb5e62"],
+Cell[7314995, 120586, 268, 7, 70, "DisplayFormula",ExpressionUUID->"27dad023-1587-40dd-ba96-0f86a868f938"],
+Cell[7315266, 120595, 504, 14, 70, "Text",ExpressionUUID->"10eabed4-c040-453f-9bd9-b6aba9a9ffee"],
+Cell[7315773, 120611, 267, 5, 70, "Text",ExpressionUUID->"a6d179e5-55ce-4f7b-a165-f81346cbf410"],
+Cell[7316043, 120618, 288, 8, 70, "DisplayFormula",ExpressionUUID->"d70c7ba8-0076-4e40-bb41-9a5e9856f582"],
+Cell[7316334, 120628, 524, 13, 70, "Text",ExpressionUUID->"a0f22b4e-5b22-4db9-855d-a7782675abca"],
+Cell[7316861, 120643, 479, 15, 70, "DisplayFormula",ExpressionUUID->"01f44b02-0718-440a-8a7d-cc06cb738474"],
+Cell[7317343, 120660, 678, 17, 70, "Text",ExpressionUUID->"3b3c5b65-49b0-47a5-aabf-605b7c87bef4"],
+Cell[7318024, 120679, 615, 13, 70, "Text",ExpressionUUID->"3b7d411e-b8a7-4237-8384-3b714a215abf"],
+Cell[7318642, 120694, 517, 14, 70, "DisplayFormula",ExpressionUUID->"b4fe35a9-ad7d-4c63-91c5-54811d46c79f"],
+Cell[7319162, 120710, 399, 12, 70, "DisplayFormula",ExpressionUUID->"7f59eb61-c56a-4828-943b-f51860b51f9d"],
+Cell[7319564, 120724, 1069, 34, 70, "Text",ExpressionUUID->"86a64af8-b899-4d99-8ac5-46eb49fba3e3"],
+Cell[7320636, 120760, 265, 6, 70, "Text",ExpressionUUID->"10a11965-3707-409d-8ee7-1ccf4781095b"],
+Cell[7320904, 120768, 386, 11, 70, "DisplayFormula",ExpressionUUID->"ca8f8982-d1c3-444a-ba48-24025158d238"],
+Cell[7321293, 120781, 504, 15, 70, "DisplayFormula",ExpressionUUID->"8b7997ee-7e6f-42ff-887e-fe4bfd2c47e3"],
+Cell[7321800, 120798, 712, 16, 70, "Text",ExpressionUUID->"01a35c11-241a-419e-ae1a-55e8e29c49e8"],
 Cell[CellGroupData[{
-Cell[7613659, 125857, 615, 13, 70, "Input",ExpressionUUID->"57b0a0f2-a5da-44a1-b39e-969811911442"],
-Cell[7614277, 125872, 41298, 686, 70, "Output",ExpressionUUID->"7c89b000-93ed-49f1-9d23-8f72d434b1a4"]
+Cell[7322537, 120818, 1079, 22, 70, "Input",ExpressionUUID->"44ef241a-0bff-46af-9b7d-a5b34780fb60"],
+Cell[7323619, 120842, 25075, 420, 70, "Output",ExpressionUUID->"b3a94a79-ef8e-4173-86a9-7ebb205f8574"]
 }, Open  ]],
-Cell[7655590, 126561, 919, 25, 70, "Text",ExpressionUUID->"e97c38c5-9add-4915-94de-1397cabc830a"],
+Cell[7348709, 121265, 757, 20, 70, "Text",ExpressionUUID->"255c6507-9e0a-45b0-aecd-be13741881e7"],
+Cell[7349469, 121287, 356, 10, 70, "Text",ExpressionUUID->"2cc1c333-dd8c-4f8c-9667-f0940d84b79a"],
+Cell[7349828, 121299, 809, 26, 70, "DisplayFormula",ExpressionUUID->"1382818f-3808-4970-89ea-d5e7ccc95dff"],
+Cell[7350640, 121327, 267, 8, 70, "Text",ExpressionUUID->"e1d46f20-eb06-4f71-b854-5b9f227da73c"],
+Cell[7350910, 121337, 1021, 28, 70, "Program",ExpressionUUID->"508e8f9f-f152-47c6-aa8b-e6bc52d65121"],
+Cell[7351934, 121367, 249, 5, 70, "Text",ExpressionUUID->"2f90ea9d-97fd-4eb7-8919-4e367ed68941"],
 Cell[CellGroupData[{
-Cell[7656534, 126590, 1170, 23, 70, "Input",ExpressionUUID->"b8589eed-1398-458a-9f24-41e42627550b"],
-Cell[7657707, 126615, 71766, 1186, 70, "Output",ExpressionUUID->"bd6755a9-e513-4824-9719-b99ca229d51d"]
+Cell[7352208, 121376, 871, 17, 70, "Input",ExpressionUUID->"42479061-371b-4f5f-97c3-06bd21e47caf"],
+Cell[7353082, 121395, 30681, 512, 70, "Output",ExpressionUUID->"9c9ae919-84a7-447c-a2fb-24e9bbfcdd7e"]
 }, Open  ]],
-Cell[7729488, 127804, 584, 12, 70, "Text",ExpressionUUID->"f94cf5cc-2ea3-4f31-8856-dd78c2f21c35"]
+Cell[7383778, 121910, 404, 10, 70, "Text",ExpressionUUID->"310277ff-984f-4e54-86ac-3621a92c86c6"],
+Cell[CellGroupData[{
+Cell[7384207, 121924, 537, 12, 70, "Input",ExpressionUUID->"a3f93eb4-ddf2-462e-9a23-3c27560d43e0"],
+Cell[7384747, 121938, 80574, 1330, 70, "Output",ExpressionUUID->"762e25e7-cfc9-45b2-8e37-9f3a8193ca6a"]
+}, Open  ]],
+Cell[7465336, 123271, 506, 11, 70, "Text",ExpressionUUID->"ac7c5f27-8479-4781-92bd-26ca5f45366d"],
+Cell[7465845, 123284, 657, 11, 70, "Text",ExpressionUUID->"d1706b39-f2d7-487e-a184-87296e10f866"],
+Cell[CellGroupData[{
+Cell[7466527, 123299, 1252, 28, 70, "Input",ExpressionUUID->"17610214-8118-40bc-ba74-1dcefaa05e7a"],
+Cell[7467782, 123329, 65563, 1084, 70, "Output",ExpressionUUID->"02512948-e978-4e56-8eb5-10e025abd5e3"]
+}, Open  ]],
+Cell[7533360, 124416, 832, 15, 70, "Text",ExpressionUUID->"b2b31007-7a6f-4990-ad23-30ecae7149f4"],
+Cell[CellGroupData[{
+Cell[7534217, 124435, 1042, 22, 70, "Input",ExpressionUUID->"b5670c46-086a-4eb9-aae6-40d78d060827"],
+Cell[7535262, 124459, 53242, 882, 70, "Output",ExpressionUUID->"e1b4c19b-9e20-494c-b4bf-5ec9e56be6df"]
+}, Open  ]],
+Cell[7588519, 125344, 535, 11, 70, "Text",ExpressionUUID->"2e45512f-4aa5-4f13-898c-6b5c142db5ce"],
+Cell[7589057, 125357, 804, 14, 70, "Text",ExpressionUUID->"02a2cd09-2519-427a-86e2-269a7c67b1e7"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7589898, 125376, 130, 0, 70, "Subsection",ExpressionUUID->"a02b6704-a26f-42e6-81f5-45426205ca0c"],
+Cell[7590031, 125378, 654, 12, 70, "Text",ExpressionUUID->"3af709af-9c60-4cdb-b7f4-e4cc2b52503e"],
+Cell[7590688, 125392, 420, 11, 70, "DisplayFormula",ExpressionUUID->"a17a840f-c21e-44a4-acec-e3d1b1d49a37"],
+Cell[7591111, 125405, 564, 9, 70, "Text",ExpressionUUID->"b82e55d0-f5f9-4d29-9a35-939e9817e3d5"],
+Cell[7591678, 125416, 1788, 55, 70, "Text",ExpressionUUID->"95887c62-e39c-4caf-8976-698798b2f775"],
+Cell[CellGroupData[{
+Cell[7593491, 125475, 1160, 26, 70, "Input",ExpressionUUID->"1980aeac-59cf-4cb4-a67f-b02b1256c4f1"],
+Cell[7594654, 125503, 17598, 298, 70, "Output",ExpressionUUID->"f4f61910-ca5e-48e3-9d99-8c0f9ddb349e"]
+}, Open  ]],
+Cell[7612267, 125804, 881, 29, 70, "Text",ExpressionUUID->"344f1dc6-9f13-44aa-af27-108caa94c7b2"],
+Cell[7613151, 125835, 388, 11, 70, "Text",ExpressionUUID->"5d2d2a11-cedf-456a-8689-8b166bff0b12"],
+Cell[7613542, 125848, 1103, 30, 70, "Program",ExpressionUUID->"3f5a8ceb-a8e8-471e-8f83-e56655ab074e"],
+Cell[CellGroupData[{
+Cell[7614670, 125882, 615, 13, 70, "Input",ExpressionUUID->"74a6df6c-f6d7-4a6b-9646-2ea92ff32586"],
+Cell[7615288, 125897, 41298, 686, 70, "Output",ExpressionUUID->"913d4c76-1698-48d6-b58e-14d41e6899f3"]
+}, Open  ]],
+Cell[7656601, 126586, 919, 25, 70, "Text",ExpressionUUID->"175ee4d8-09ce-4ff1-8193-15b0df69cbc2"],
+Cell[CellGroupData[{
+Cell[7657545, 126615, 1170, 23, 70, "Input",ExpressionUUID->"18e5d1c8-4f33-4d8a-b45c-f5749ba63593"],
+Cell[7658718, 126640, 71766, 1186, 70, "Output",ExpressionUUID->"d1cc6c24-bc3b-4417-92aa-7390d41e42c7"]
+}, Open  ]],
+Cell[7730499, 127829, 584, 12, 70, "Text",ExpressionUUID->"f2ed248d-3fcb-4ae5-a8f1-80b63959c768"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[7730121, 127822, 121, 0, 70, "Section",ExpressionUUID->"59dea432-43a4-4e64-9630-8dd344b23035"],
-Cell[7730245, 127824, 617, 15, 70, "Text",ExpressionUUID->"13b33ab8-e390-4e7f-980d-56a5e9096700"],
-Cell[7730865, 127841, 254, 6, 70, "Text",ExpressionUUID->"d649ada2-34bc-47ca-9f71-838c6041ec17"],
-Cell[7731122, 127849, 295, 7, 70, "DisplayFormula",ExpressionUUID->"6010073c-7b7a-4190-91e7-0a6b9be3be9b"],
-Cell[7731420, 127858, 114, 2, 70, "Text",ExpressionUUID->"b4e708ab-4740-4e8d-9a3a-4ef4104b1afd"],
-Cell[7731537, 127862, 315, 9, 70, "DisplayFormula",ExpressionUUID->"f8fb67d0-0a0d-4cf7-b7c4-240960e0e402"],
-Cell[7731855, 127873, 781, 23, 70, "Text",ExpressionUUID->"27c50ef7-c162-483d-b252-c2824f6370a4"],
-Cell[7732639, 127898, 2003, 50, 70, "Text",ExpressionUUID->"d719a5c6-4c92-4298-90e0-4e8835401253"],
-Cell[7734645, 127950, 480, 12, 70, "Text",ExpressionUUID->"7c6c7952-3c2b-4da5-b8c7-aca86fd789f6"],
-Cell[7735128, 127964, 43299, 719, 70, "Output",ExpressionUUID->"d6fd80a4-be51-4c47-af32-38b3c805ffa0"],
-Cell[7778430, 128685, 755, 14, 70, "Text",ExpressionUUID->"a699ffde-73e2-4c97-9f10-8c1ad1629e3a"],
-Cell[7779188, 128701, 674, 12, 70, "Text",ExpressionUUID->"06ecc4c4-bbc5-4272-9eae-bd0a4c849e4e"],
-Cell[7779865, 128715, 70521, 1165, 70, "Output",ExpressionUUID->"88f675c0-ebc7-476b-90a8-d8215669c1ec"],
-Cell[7850389, 129882, 380, 9, 70, "Text",ExpressionUUID->"7d57a8b3-5932-4bed-bec3-a7e803b76511"],
-Cell[7850772, 129893, 398, 8, 70, "Text",ExpressionUUID->"2f472606-063a-4443-b34c-e5b6f68668cc"],
-Cell[7851173, 129903, 458, 13, 70, "Text",ExpressionUUID->"216fb459-7c51-48ec-b8a4-5b0b40fa9294"],
-Cell[7851634, 129918, 883, 15, 70, "Text",ExpressionUUID->"3d31e0f2-61e3-465e-804d-2a5139b6329f"]
+Cell[7731132, 127847, 121, 0, 70, "Section",ExpressionUUID->"7c48aa6c-93f3-4126-8436-1c56551f3621"],
+Cell[7731256, 127849, 617, 15, 70, "Text",ExpressionUUID->"35f08c4a-be54-40c1-bb49-eaf43e3f07b7"],
+Cell[7731876, 127866, 254, 6, 70, "Text",ExpressionUUID->"12fd8e06-a319-45b8-94ce-80bc9a5a27e9"],
+Cell[7732133, 127874, 295, 7, 70, "DisplayFormula",ExpressionUUID->"ef7e030d-3300-4d0c-9fcc-dfecff8ccd9a"],
+Cell[7732431, 127883, 114, 2, 70, "Text",ExpressionUUID->"b6dcd89f-0923-480f-a2ea-2dc7a212eaf4"],
+Cell[7732548, 127887, 315, 9, 70, "DisplayFormula",ExpressionUUID->"1e55718c-a636-408d-b927-3e5d75c1abcb"],
+Cell[7732866, 127898, 781, 23, 70, "Text",ExpressionUUID->"1b21fd02-5163-46da-8e40-9e334522255b"],
+Cell[7733650, 127923, 2003, 50, 70, "Text",ExpressionUUID->"eeb28afd-77cf-4677-86d4-4a52ee41d246"],
+Cell[7735656, 127975, 480, 12, 70, "Text",ExpressionUUID->"b4d83d98-f4a9-478d-9b80-7ccf887dec0d"],
+Cell[CellGroupData[{
+Cell[7736161, 127991, 1489, 36, 70, "Input",ExpressionUUID->"1b351c98-c80a-4fff-a00e-b75039309564"],
+Cell[7737653, 128029, 43299, 719, 70, "Output",ExpressionUUID->"c74061e9-e272-4994-944d-dbf4ec152ca7"]
+}, Open  ]],
+Cell[7780967, 128751, 755, 14, 70, "Text",ExpressionUUID->"b11813bc-35ba-4ef4-906d-d7818d5fe834"],
+Cell[7781725, 128767, 674, 12, 70, "Text",ExpressionUUID->"1116b962-b878-41e6-a055-b2bcb10fa2fe"],
+Cell[CellGroupData[{
+Cell[7782424, 128783, 716, 15, 70, "Input",ExpressionUUID->"34258634-d47b-4b9a-9650-5f73fbe3ee4f"],
+Cell[7783143, 128800, 70521, 1165, 70, "Output",ExpressionUUID->"db37727f-63b0-4293-86aa-a3d28820358a"]
+}, Open  ]],
+Cell[7853679, 129968, 380, 9, 70, "Text",ExpressionUUID->"97aa56fc-78fb-4db3-b3c3-b95c30239ff7"],
+Cell[7854062, 129979, 398, 8, 70, "Text",ExpressionUUID->"c8a8e089-9086-4c38-b53f-97545c4d3041"],
+Cell[7854463, 129989, 458, 13, 70, "Text",ExpressionUUID->"b30e8e9a-b733-4985-bfdd-cb8ce581d651"],
+Cell[7854924, 130004, 883, 15, 70, "Text",ExpressionUUID->"ecb7763f-368c-4702-a1a5-e340f2ab9846"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[7852554, 129938, 101, 0, 70, "Section",ExpressionUUID->"76f76c3e-4166-4224-9892-6a080381b32b"],
-Cell[7852658, 129940, 1259, 19, 70, "Text",ExpressionUUID->"bb807743-74b0-482f-8488-0e1ae6e0fc4b"],
-Cell[7853920, 129961, 333, 7, 70, "Text",ExpressionUUID->"62760cf9-7de4-4481-80c3-5d5d3c4f5b78"],
-Cell[7854256, 129970, 443, 12, 70, "Text",ExpressionUUID->"20e74c5d-6ef9-47aa-bc7f-bedffcbf0967"],
-Cell[7854702, 129984, 447, 10, 70, "Text",ExpressionUUID->"47ed3dda-5a6a-42b0-9e2b-ac154a783784"],
-Cell[7855152, 129996, 387, 9, 70, "Text",ExpressionUUID->"d77ffaf5-de46-484d-b0dd-c539d074dd1e"],
-Cell[7855542, 130007, 790, 13, 70, "Text",ExpressionUUID->"e4bd03dd-b730-4525-8a61-5f096ab8168f"]
+Cell[7855844, 130024, 101, 0, 70, "Section",ExpressionUUID->"9f20d6f6-c1b1-4df7-95c6-41b6a24d4e19"],
+Cell[7855948, 130026, 1259, 19, 70, "Text",ExpressionUUID->"3bd64cb4-b9c4-4fb6-8002-17e6f3608d14"],
+Cell[7857210, 130047, 333, 7, 70, "Text",ExpressionUUID->"47f139fa-3f3e-4cf9-821a-eaf612b8c04c"],
+Cell[7857546, 130056, 443, 12, 70, "Text",ExpressionUUID->"ba39ecb1-4ed3-46a9-af31-bae4847b7bf2"],
+Cell[7857992, 130070, 447, 10, 70, "Text",ExpressionUUID->"8417ed28-325d-4a0e-9423-1db85e178361"],
+Cell[7858442, 130082, 387, 9, 70, "Text",ExpressionUUID->"f83e84b2-1520-428d-a5b9-2b3ed69bb5e9"],
+Cell[7858832, 130093, 790, 13, 70, "Text",ExpressionUUID->"c00194eb-efac-4bb2-ad69-007d62c38e20"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[7856369, 130025, 88, 0, 70, "Section",ExpressionUUID->"bb6a5ed2-7623-4fc5-aca9-6ff9de927cd7"],
-Cell[7856460, 130027, 370, 9, 70, "Text",ExpressionUUID->"4d0c2bf7-1f6d-42c9-8328-abc2f1874028"],
-Cell[7856833, 130038, 363, 9, 70, "Text",ExpressionUUID->"44f5d93b-433c-49b6-8e1d-fa3d2acf13b0"],
-Cell[7857199, 130049, 423, 10, 70, "Text",ExpressionUUID->"60d75e55-709a-495c-88d8-6c7587d3de26"],
-Cell[7857625, 130061, 396, 10, 70, "Text",ExpressionUUID->"6c310953-43d8-47e1-88c5-a9900a55b756"],
-Cell[7858024, 130073, 432, 10, 70, "Text",ExpressionUUID->"90fb3d8f-7bf8-4827-b4d3-63c73b1a13de"],
-Cell[7858459, 130085, 382, 9, 70, "Text",ExpressionUUID->"dff3985c-8f05-4050-bda3-915e8ae9f67a"],
-Cell[7858844, 130096, 391, 9, 70, "Text",ExpressionUUID->"a0c905a8-51b4-49f1-bfc7-addd41a3a580"],
-Cell[7859238, 130107, 437, 11, 70, "Text",ExpressionUUID->"a423472c-802d-43e9-b1a8-9f1e427cedc3"],
-Cell[7859678, 130120, 375, 9, 70, "Text",ExpressionUUID->"7786a799-6625-42b0-a9cb-a10e8234c852"],
-Cell[7860056, 130131, 409, 9, 70, "Text",ExpressionUUID->"1f97c257-2f2a-4a0d-942d-99472458ffef"],
-Cell[7860468, 130142, 798, 23, 70, "Text",ExpressionUUID->"bd00fd5a-32d7-45c9-a4ad-fc58f84c4c4a"]
+Cell[7859659, 130111, 88, 0, 70, "Section",ExpressionUUID->"3aec9910-2344-4592-b1e7-116537ea1aa7"],
+Cell[7859750, 130113, 370, 9, 70, "Text",ExpressionUUID->"0d03843c-5e5f-469e-890c-a177a50ed0e7"],
+Cell[7860123, 130124, 363, 9, 70, "Text",ExpressionUUID->"a8d6ba05-5003-4cd3-8e03-4295763ae3a9"],
+Cell[7860489, 130135, 423, 10, 70, "Text",ExpressionUUID->"9125aa2f-f5a0-47be-aff0-ca5947252369"],
+Cell[7860915, 130147, 396, 10, 70, "Text",ExpressionUUID->"5a72b3f5-35b4-4e37-aa1d-90e4431764bf"],
+Cell[7861314, 130159, 432, 10, 70, "Text",ExpressionUUID->"769823bf-55d8-4fd8-bd20-39c80b810899"],
+Cell[7861749, 130171, 382, 9, 70, "Text",ExpressionUUID->"f2bdf0af-97f7-40bf-9c63-14370f483296"],
+Cell[7862134, 130182, 391, 9, 70, "Text",ExpressionUUID->"21bd4592-3af7-4cb7-8790-66ee98af3698"],
+Cell[7862528, 130193, 437, 11, 70, "Text",ExpressionUUID->"72a04941-8b5f-4f69-b16b-5d02d80ef9db"],
+Cell[7862968, 130206, 375, 9, 70, "Text",ExpressionUUID->"77e6df7a-1729-480e-8ba9-519b0129ec54"],
+Cell[7863346, 130217, 409, 9, 70, "Text",ExpressionUUID->"41e33ab0-15b7-4ca7-b32d-5535cca37c2e"],
+Cell[7863758, 130228, 798, 23, 70, "Text",ExpressionUUID->"2a181447-4cf0-4cbc-94fb-dd79f8a5d626"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[7861303, 130170, 94, 0, 70, "Section",ExpressionUUID->"c4e4a427-c849-4cb1-802f-07a4d242c64f"],
-Cell[7861400, 130172, 332, 7, 70, "Text",ExpressionUUID->"05e903c0-3bb0-4750-a91c-adfd36dcb284"],
-Cell[7861735, 130181, 768, 20, 70, "Text",ExpressionUUID->"c87ec3ba-903b-4e2b-b0d4-a8b0bd3b95d4"],
-Cell[7862506, 130203, 597, 17, 70, "Text",ExpressionUUID->"436ffad4-efb8-4f2e-9fc0-5984c986bf20"],
-Cell[7863106, 130222, 498, 18, 70, "Text",ExpressionUUID->"34eceb01-5275-4c8b-8f42-6f52d3153fec"],
-Cell[7863607, 130242, 783, 19, 70, "Text",ExpressionUUID->"a5843962-e38c-4670-84a5-fe22572ff0ca"],
-Cell[7864393, 130263, 448, 10, 70, "Text",ExpressionUUID->"e113540b-9873-423f-abde-f434533c75a3"],
-Cell[7864844, 130275, 531, 16, 70, "Text",ExpressionUUID->"b7bc3544-157c-46c4-8116-672b9e88d50c"],
-Cell[7865378, 130293, 855, 26, 70, "Text",ExpressionUUID->"e88af79f-8d68-433f-870a-5df6f7b9fd89"],
-Cell[7866236, 130321, 663, 17, 70, "Text",ExpressionUUID->"a0367ae6-f280-4e73-aba5-b9af4b15593f"]
+Cell[7864593, 130256, 94, 0, 70, "Section",ExpressionUUID->"68e15d3a-b6e5-46cf-bc8d-2fcc17592d6c"],
+Cell[7864690, 130258, 332, 7, 70, "Text",ExpressionUUID->"cac9dfd0-73f3-446f-b78a-56fce6ab620f"],
+Cell[7865025, 130267, 768, 20, 70, "Text",ExpressionUUID->"2b260f6e-20d9-474e-bb00-f93e47fbaff1"],
+Cell[7865796, 130289, 597, 17, 70, "Text",ExpressionUUID->"259fe702-1335-42e3-b8bb-fca4fdd276fc"],
+Cell[7866396, 130308, 498, 18, 70, "Text",ExpressionUUID->"189641a1-d88f-4130-9bac-1b7a0522daec"],
+Cell[7866897, 130328, 783, 19, 70, "Text",ExpressionUUID->"ccd78316-bb39-40af-8a98-1bd7443a765e"],
+Cell[7867683, 130349, 448, 10, 70, "Text",ExpressionUUID->"e4f0306b-d3cf-4b36-b490-7e6f5933254a"],
+Cell[7868134, 130361, 531, 16, 70, "Text",ExpressionUUID->"f539d38a-5483-482b-8478-3383e199884c"],
+Cell[7868668, 130379, 855, 26, 70, "Text",ExpressionUUID->"a0f82025-df4f-4332-ac5c-e294466b0063"],
+Cell[7869526, 130407, 663, 17, 70, "Text",ExpressionUUID->"8f5fc828-0c96-4edd-b5a5-d8ba9e3091d8"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[7866936, 130343, 94, 0, 70, "Section",ExpressionUUID->"251cc537-655f-4d54-aa8d-39d244b7c051"],
-Cell[7867033, 130345, 906, 20, 70, "Text",ExpressionUUID->"e427c3f9-79ba-4924-a350-e352ede28359"],
-Cell[7867942, 130367, 883, 29, 70, "Program",ExpressionUUID->"37f6f602-190b-429e-8770-1ce7248448d3"],
-Cell[7868828, 130398, 324, 6, 70, "Text",ExpressionUUID->"7cc98751-57c1-4e2e-8a33-b2114f6f42bd"],
-Cell[7869155, 130406, 140, 3, 70, InheritFromParent,ExpressionUUID->"c0ae3bfd-3c1b-4082-b10b-f0d2dde335e8"]
+Cell[7870226, 130429, 94, 0, 70, "Section",ExpressionUUID->"c6e30e6e-8ab8-4afd-840b-92f7fc66f5a5"],
+Cell[7870323, 130431, 906, 20, 70, "Text",ExpressionUUID->"5ddd1ed9-85e4-44bd-a9e5-fd5df9f9f8bd"],
+Cell[7871232, 130453, 883, 29, 70, "Program",ExpressionUUID->"8875d1b3-4083-4e8c-8809-428f44847342"],
+Cell[7872118, 130484, 324, 6, 70, "Text",ExpressionUUID->"51df4fef-889c-401f-a377-be1d4bab8706"],
+Cell[7872445, 130492, 140, 3, 70, InheritFromParent,ExpressionUUID->"faf73096-db0d-474b-a4c3-5dd2aa292ad0"]
 }, Open  ]]
 }, Open  ]]
 }
